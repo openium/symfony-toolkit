@@ -1,6 +1,6 @@
 <?php
 
-    namespace Openium\SymfonyToolKit\Entity\Utils\Upload;
+    namespace Openium\SymfonyToolKit\Entity\Upload;
 
     use Doctrine\ORM\Mapping as ORM;
     use Symfony\Component\HttpFoundation\File\File;
@@ -50,7 +50,7 @@
          *
          * @return UploadableInterface
          */
-        public function setFile($file): UploadableInterface
+        public function setFile(File $file): UploadableInterface
         {
             $this->file = $file;
 

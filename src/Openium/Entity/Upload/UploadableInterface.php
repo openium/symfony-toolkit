@@ -1,6 +1,6 @@
 <?php
 
-    namespace Openium\SymfonyToolKit\Entity\Utils\Upload;
+    namespace Openium\SymfonyToolKit\Entity\Upload;
 
     use Symfony\Component\HttpFoundation\File\File;
 

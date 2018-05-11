@@ -5,7 +5,7 @@
     use Openium\SymfonyToolKit\DependencyInjection\OpeniumSfToolKitDIExtension;
     use Symfony\Component\HttpKernel\Bundle\Bundle;
 
-    class OpeniumSfToolKit extends Bundle
+    class OpeniumSfToolKitBundle extends Bundle
     {
         public function getContainerExtension()
         {
