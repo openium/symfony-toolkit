@@ -12,7 +12,7 @@
      *
      * To learn more see {@link http://symfony.com/doc/current/cookbook/bundles/extension.html}
      */
-    class OpeniumSymfonyToolKitDIExtension extends Extension
+    class OpeniumSfToolKitDIExtension extends Extension
     {
         /**
          * {@inheritdoc}
