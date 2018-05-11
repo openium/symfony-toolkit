@@ -1,6 +1,6 @@
 <?php
 
-    namespace App\Service\File;
+    namespace Openium\Service\File;
 
     use Openium\Entity\Utils\Upload\UploadableInterface;
     use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
