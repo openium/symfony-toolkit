@@ -1,8 +1,8 @@
 <?php
 
-    namespace Openium\Service\File;
+    namespace Openium\SymfonyToolKit\Service\File;
 
-    use Openium\Entity\Utils\Upload\UploadableInterface;
+    use Openium\SymfonyToolKit\Entity\Utils\Upload\UploadableInterface;
     use Symfony\Component\HttpFoundation\File\Exception\FileException;
     use Symfony\Component\HttpFoundation\File\UploadedFile;
     use Symfony\Component\HttpKernel\Exception\ConflictHttpException;

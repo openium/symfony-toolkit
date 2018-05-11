@@ -1,0 +1,23 @@
+services:
+
+    # ----------------------------------------------------------------
+    # Services
+
+    openium.sf_toolkit.file_uploader:
+        class:     Openium\SymfonyToolKit\Service\File\FileUploaderService
+        arguments: ['@kernel']
+
+    openium.sf_toolkit.exception_format:
+        class:     Openium\SymfonyToolKit\Service\Exception\ExceptionFormatService
+        arguments: ['@kernel']
+
+    openium.sf_toolkit.exception_handler:
+        class:     Openium\SymfonyToolKit\Service\Exception\ExceptionHandlerService
+        arguments: ['@monolog.logger']
+
+    # ----------------------------------------------------------------
+    # Interfaces
+
+    Openium\SymfonyToolKit\Service\File\FileUploaderServiceInterface: '@openium.sf_toolkit.file_uploader'
+    Openium\SymfonyToolKit\Service\Exception\ExceptionFormatServiceInterface: '@openium.sf_toolkit.exception_format'
+    Openium\SymfonyToolKit\Service\Exception\ExceptionHandlerServiceInterface: '@openium.sf_toolkit.exception_handler'

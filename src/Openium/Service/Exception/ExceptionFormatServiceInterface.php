@@ -1,6 +1,6 @@
 <?php
 
-    namespace Openium\Service\Utils\Exception;
+    namespace Openium\SymfonyToolKit\Service\Exception;
 
     use \Symfony\Component\HttpFoundation\Response;
 

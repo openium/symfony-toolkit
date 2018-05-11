@@ -1,10 +1,10 @@
 <?php
 
-    namespace Openium\Service\Exception;
+    namespace Openium\SymfonyToolKit\Service\Exception;
 
     /**
      * Class ExceptionHandlerServiceInterface
-     * @package Openium\Service\Exception
+     * @package Openium\SymfonyToolKit\Service\Exception
      */
     interface ExceptionHandlerServiceInterface
     {

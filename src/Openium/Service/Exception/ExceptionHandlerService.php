@@ -1,6 +1,6 @@
 <?php
 
-    namespace Openium\Service\Exception;
+    namespace Openium\SymfonyToolKit\Service\Exception;
 
     use Doctrine\DBAL\DBALException;
     use Doctrine\DBAL\Exception\NotNullConstraintViolationException;
