@@ -1,0 +1,34 @@
+{
+    "name": "openium/symfony-toolkit",
+    "description": "Openium Web Toolkit for Symfony Project",
+    "keywords": [
+        "symfony",
+        "toolkit",
+        "openium"
+    ],
+    "type": "library",
+    "license": "MIT",
+    "homepage" : "https://www.openium.fr",
+    "authors": [
+        {
+            "name": "Alexandre Caillot (Shiroe_sama)",
+            "email": "a.caillot@openium.fr"
+        },
+        {
+            "name": "Thomas Leduc",
+            "email": "t.leduc@openium.fr"
+        }
+    ],
+    "require": {
+        "php": "^7.1",
+        "symfony/http-foundation": "^4.0",
+        "doctrine/orm": "^2.6",
+        "symfony/validator": "^4.0",
+        "symfony/http-kernel": "^4.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Openium\\": "src/Openium"
+        }
+    }
+}

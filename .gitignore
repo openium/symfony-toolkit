@@ -1,0 +1,13 @@
+# -------------------------------
+# Files Exclusion
+# -------------------------------
+
+# IntelliJ Files
+.idea
+
+# Mac Files
+.DS_STORE
+
+# Composer Files
+vendor/
+composer.lock
