@@ -1,24 +1,32 @@
 {
-    "name": "openium/symfony-toolkit",
+    "name": "openium/symfony-toolkit-bundle",
     "description": "Openium Web Toolkit for Symfony Project",
     "keywords": [
         "symfony",
         "toolkit",
         "openium"
     ],
-    "type": "library",
+    "type": "symfony-bundle",
     "license": "MIT",
     "homepage" : "https://www.openium.fr",
     "authors": [
         {
-            "name": "Alexandre Caillot (Shiroe_sama)",
-            "email": "a.caillot@openium.fr"
+            "name": "Thomas Leduc",
+            "email": "thomaslmoi15@hotmail.fr"
         },
         {
-            "name": "Thomas Leduc",
-            "email": "t.leduc@openium.fr"
+            "name": "Alexandre Caillot (Shiroe_sama)",
+            "email": "a.caillot@openium.fr"
         }
     ],
+    "autoload": {
+        "psr-4": {
+            "Openium\\SymfonyToolKitBundle\\": ""
+        },
+        "exclude-from-classmap": [
+            "Tests/"
+        ]
+    },
     "require": {
         "php": "^7.1",
         "symfony/http-foundation": "^4.0",
@@ -29,9 +37,8 @@
         "symfony/config": "^4.0",
         "symfony/monolog-bundle": "^3.2"
     },
-    "autoload": {
-        "psr-4": {
-            "Openium\\SymfonyToolKit\\": "src/Openium"
-        }
+    "require-dev": {
+        "phpunit/phpunit": "^6",
+        "symfony/phpunit-bridge": "^4.0"
     }
 }
