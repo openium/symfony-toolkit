@@ -7,26 +7,26 @@ parameters:
 services:
 
     openium_symfony_toolkit.file_uploader:
-        class: Openium\SymfonyToolKit\Service\FileUploaderService
+        class: Openium\SymfonyToolKitBundle\Service\FileUploaderService
         arguments:
             - '%openium_symfony_toolkit.public_dir%'
             - '%openium_symfony_toolkit.uploads_dir%'
         public: true
 
     openium_symfony_toolkit.exception_format:
-        class: Openium\SymfonyToolKit\Service\ExceptionFormatService
+        class: Openium\SymfonyToolKitBundle\Service\ExceptionFormatService
         arguments:
             - '@kernel'
         public: true
 
     openium_symfony_toolkit.doctrine_exception_handler:
-        class: Openium\SymfonyToolKit\Service\DoctrineExceptionHandlerService
+        class: Openium\SymfonyToolKitBundle\Service\DoctrineExceptionHandlerService
         arguments:
             - '@monolog.logger'
         public: true
 
     openium_symfony_toolkit.server:
-        class: Openium\SymfonyToolKit\Service\ServerService
+        class: Openium\SymfonyToolKitBundle\Service\ServerService
         arguments:
             - '@request_stack'
         public: true
