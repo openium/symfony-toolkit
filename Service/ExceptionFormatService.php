@@ -24,8 +24,6 @@ use Symfony\Component\HttpKernel\KernelInterface;
  */
 class ExceptionFormatService implements ExceptionFormatServiceInterface
 {
-    protected const DEFAULT_STATUS_TEXT = 'Internal Server Error';
-
     /**
      * @var KernelInterface
      */
@@ -99,7 +97,6 @@ class ExceptionFormatService implements ExceptionFormatServiceInterface
         if ($this->kernel->getEnvironment() != 'prod') {
             $error['trace'] = $exception->getTrace();
         }
-
         return $error;
     }
 
@@ -133,7 +130,8 @@ class ExceptionFormatService implements ExceptionFormatServiceInterface
             return array_key_exists(
                 $code,
                 Response::$statusTexts
-            ) ? Response::$statusTexts[$code] : self::DEFAULT_STATUS_TEXT;
+            ) ? Response::$statusTexts[$code]
+                : Response::$statusTexts[Response::HTTP_INTERNAL_SERVER_ERROR];
         }
     }
 }

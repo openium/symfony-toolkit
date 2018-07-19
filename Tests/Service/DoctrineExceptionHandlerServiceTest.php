@@ -8,6 +8,7 @@ use Doctrine\DBAL\Exception\NotNullConstraintViolationException;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\ORMInvalidArgumentException;
 use Openium\SymfonyToolKitBundle\Service\DoctrineExceptionHandlerService;
+use Openium\SymfonyToolKitBundle\Tests\Fixtures\Exception\FakeException;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 
@@ -109,21 +110,15 @@ class DoctrineExceptionHandlerServiceTest extends TestCase
         $doctrineExceptionHandler->toHttpException($uve);
     }
 
-
-
     /**
      * @expectedException Symfony\Component\HttpKernel\Exception\ConflictHttpException
      * @expectedExceptionMessage Conflict error
      */
     public function testToHttpExceptionWith23000DBALException()
     {
-
         $exception = new \Exception("test", 23000);
-
         $dbal = new DBALException("message", 0, $exception);
-
         $this->logger->expects($this->exactly(6))->method('error');
-
         $doctrineExceptionHandler = new DoctrineExceptionHandlerService($this->logger);
         $this->assertTrue($doctrineExceptionHandler instanceof DoctrineExceptionHandlerService);
         $doctrineExceptionHandler->toHttpException($dbal);
@@ -135,13 +130,23 @@ class DoctrineExceptionHandlerServiceTest extends TestCase
      */
     public function testToHttpExceptionWith42000DBALException()
     {
-
         $exception = new \Exception("test", 42000);
-
         $dbal = new DBALException("message", 0, $exception);
-
         $this->logger->expects($this->exactly(5))->method('error');
+        $doctrineExceptionHandler = new DoctrineExceptionHandlerService($this->logger);
+        $this->assertTrue($doctrineExceptionHandler instanceof DoctrineExceptionHandlerService);
+        $doctrineExceptionHandler->toHttpException($dbal);
+    }
 
+    /**
+     * @expectedException Symfony\Component\HttpKernel\Exception\BadRequestHttpException
+     * @expectedExceptionMessage Database request error
+     */
+    public function testToHttpExceptionWith21000DBALException()
+    {
+        $exception = new \Exception("test", 21000);
+        $dbal = new DBALException("message", 0, $exception);
+        $this->logger->expects($this->exactly(5))->method('error');
         $doctrineExceptionHandler = new DoctrineExceptionHandlerService($this->logger);
         $this->assertTrue($doctrineExceptionHandler instanceof DoctrineExceptionHandlerService);
         $doctrineExceptionHandler->toHttpException($dbal);

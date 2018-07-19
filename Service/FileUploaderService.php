@@ -28,10 +28,6 @@ class FileUploaderService implements FileUploaderServiceInterface
      */
     protected $publicDirPath;
 
-    /**
-     * @var string
-     */
-    protected $uploadDirName;
 
     /**
      * @var string
@@ -42,13 +38,11 @@ class FileUploaderService implements FileUploaderServiceInterface
      * FileUploaderService constructor.
      *
      * @param string $publicDir
-     * @param string $uploadDirName
      * @param string $uploadDir
      */
-    public function __construct(string $publicDir, string $uploadDirName, string $uploadDir)
+    public function __construct(string $publicDir, string $uploadDir)
     {
         $this->publicDirPath = $publicDir;
-        $this->uploadDirName = $uploadDirName;
         $this->uploadDirPath = $uploadDir;
     }
 
@@ -97,6 +91,9 @@ class FileUploaderService implements FileUploaderServiceInterface
     public function upload(WithUploadInterface $uploadEntity): WithUploadInterface
     {
         if (!is_null($uploadEntity->getFile())) {
+            if (empty($uploadEntity->getImagePath())) {
+                throw new \UnexpectedValueException("Entity must be pre-uploaded");
+            }
             /** @var UploadedFile $file */
             $file = $uploadEntity->getFile();
             $imagePath = explode(DIRECTORY_SEPARATOR, $uploadEntity->getImagePath());

@@ -31,11 +31,11 @@ interface WithUploadInterface
     /**
      * Set the file
      *
-     * @param File $file
+     * @param $file
      *
      * @return WithUploadInterface
      */
-    public function setFile(File $file): WithUploadInterface;
+    public function setFile($file): WithUploadInterface;
 
     /**
      * Set the file local path

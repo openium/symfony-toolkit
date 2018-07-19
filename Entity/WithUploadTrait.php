@@ -44,7 +44,7 @@ trait WithUploadTrait
     /**
      * Setter for file
      *
-     * @param mixed $file
+     * @param File|null $file
      *
      * @return self
      */
@@ -67,13 +67,13 @@ trait WithUploadTrait
     /**
      * Setter for imagePath
      *
-     * @param string $imagePath
+     * @param string $path
      *
      * @return self
      */
-    public function setImagePath(string $imagePath): WithUploadInterface
+    public function setImagePath(string $path): WithUploadInterface
     {
-        $this->imagePath = $imagePath;
+        $this->imagePath = $path;
         return $this;
     }
 }

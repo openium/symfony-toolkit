@@ -12,9 +12,10 @@
 
 namespace Openium\SymfonyToolKitBundle\Service;
 
-use function Couchbase\defaultDecoder;
 use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\Exception\DriverException;
 use Doctrine\DBAL\Exception\NotNullConstraintViolationException;
+use Doctrine\DBAL\Exception\TableNotFoundException;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\ORMInvalidArgumentException;
 use Psr\Log\LoggerInterface;
@@ -63,6 +64,9 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
      * Catch & Process the throwable
      *
      * @param \Throwable $throwable
+     *
+     * @throws BadRequestHttpException
+     * @throws ConflictHttpException
      */
     public function toHttpException(\Throwable $throwable)
     {
@@ -70,6 +74,12 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
         $this->log($throwable);
         // Select the process
         switch (get_class($throwable)) {
+            case TableNotFoundException::class:
+                $this->createBadRequest($throwable, "Missing database table");
+                break;
+            case DriverException::class:
+                $this->createBadRequest($throwable, "Database schema error");
+                break;
             case UniqueConstraintViolationException::class:
                 $this->createConflict($throwable);
                 break;
@@ -112,33 +122,36 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
     }
 
     /**
-     * @param \Throwable $throwable
+     * @param DBALException $DBALException
+     *
+     * @throws BadRequestHttpException
+     * @throws ConflictHttpException
      *
      * @return void
      */
-    protected function dbalManagement(\Throwable $throwable)
+    protected function dbalManagement(DBALException $DBALException)
     {
-        $previous = $throwable->getPrevious();
+        $previous = $DBALException->getPrevious();
         $code = $previous->getCode() ?? 0;
         switch ($code) {
             case '23000':
-                $this->createConflict($throwable);
+                $this->createConflict($DBALException);
                 break;
             case '42000':
-                $this->createBadRequest($throwable, "Database error");
+                $this->createBadRequest($DBALException, "Database error");
                 break;
             case '21000':
-                $this->createBadRequest($throwable, "Database request error");
+                $this->createBadRequest($DBALException, "Database request error");
                 break;
             case '21S01':
-                $this->createBadRequest($throwable, "Database schema error (Missing property)");
+                $this->createBadRequest($DBALException, "Database schema error (Missing property)");
                 break;
             case '42S02':
-                $this->createBadRequest($throwable, "Missing database table");
+                $this->createBadRequest($DBALException, "Missing database table");
                 break;
             default:
                 break;
         }
-        $this->createBadRequest($throwable);
+        $this->createBadRequest($DBALException);
     }
 }

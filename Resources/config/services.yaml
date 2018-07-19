@@ -10,7 +10,6 @@ services:
         class: Openium\SymfonyToolKit\Service\FileUploaderService
         arguments:
             - '%openium_symfony_toolkit.public_dir%'
-            - '%openium_symfony_toolkit.uploads_dir_name%'
             - '%openium_symfony_toolkit.uploads_dir%'
         public: true
 
