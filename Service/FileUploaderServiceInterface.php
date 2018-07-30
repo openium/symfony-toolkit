@@ -13,6 +13,7 @@
 namespace Openium\SymfonyToolKitBundle\Service;
 
 use Openium\SymfonyToolKitBundle\Entity\WithUploadInterface;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 
 /**
@@ -36,9 +37,9 @@ interface FileUploaderServiceInterface
      *
      * @param WithUploadInterface $uploadEntity
      *
-     * @return WithUploadInterface
+     * @throws FileException
      *
-     * @throws ConflictHttpException
+     * @return WithUploadInterface
      */
     public function upload(WithUploadInterface $uploadEntity): WithUploadInterface;
 

@@ -12,6 +12,9 @@
 
 namespace Openium\SymfonyToolKitBundle\Service;
 
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
+
 /**
  * Interface DoctrineExceptionHandlerServiceInterface
  *
@@ -21,5 +24,13 @@ interface DoctrineExceptionHandlerServiceInterface
 {
     public function log(\Throwable $throwable);
 
+    /**
+     * Catch & Process the throwable
+     *
+     * @param \Throwable $throwable
+     *
+     * @throws BadRequestHttpException
+     * @throws ConflictHttpException
+     */
     public function toHttpException(\Throwable $throwable);
 }

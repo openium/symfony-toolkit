@@ -21,6 +21,14 @@ use \Symfony\Component\HttpFoundation\Response;
  */
 interface ExceptionFormatServiceInterface
 {
+    /**
+     * @param \Exception $exception
+     *
+     * @throws \InvalidArgumentException
+     * @throws \UnexpectedValueException
+     *
+     * @return Response
+     */
     public function formatExceptionResponse(\Exception $exception): Response;
 
     public function getArray(\Exception $exception, $code = null, $text = null, $message = null): array;
