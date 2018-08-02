@@ -19,7 +19,6 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
-use Symfony\Component\HttpKernel\KernelInterface;
 
 /**
  * Class FileUploaderService
@@ -98,7 +97,7 @@ class FileUploaderService implements FileUploaderServiceInterface
         // File Format
         $fileExtension = strtolower($file->guessClientExtension());
 
-        if (is_null($fileExtension)) {
+        if (empty($fileExtension)) {
             throw new HttpException(Response::HTTP_UNSUPPORTED_MEDIA_TYPE, 'The file extension is empty.');
         }
 

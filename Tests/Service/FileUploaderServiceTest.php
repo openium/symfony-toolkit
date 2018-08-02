@@ -36,7 +36,7 @@ class FileUploaderServiceTest extends TestCase
         $entity = new EntityWithUpload();
 
         // Get Service
-        $fileUploaderService = new FileUploaderService('/tmp', '/tmp/test');
+        $fileUploaderService = new FileUploaderService('/tmp', 'test');
         $this->assertTrue($fileUploaderService instanceof FileUploaderService);
 
         // Get Path
@@ -65,6 +65,31 @@ class FileUploaderServiceTest extends TestCase
         // Get Path
         $result = $fileUploaderService->prepareUploadPath($entity, "somename");
         $this->assertEquals("/test/withUpload/somename.png", $result->getImagePath());
+    }
+
+    /**
+     * Test prepareUploadPath method with file without extension. Prepare image path in the entity
+     *
+     * @expectedException Symfony\Component\HttpKernel\Exception\HttpException
+     * @expectedExceptionMessage The file extension is empty.
+     */
+    public function testPrepareUploadPathWithFileWithoutExtension()
+    {
+        // Make File
+        $this->file->expects($this->once())
+            ->method('guessClientExtension')
+            ->will($this->returnValue(null));
+
+        // Make Entity
+        $entity = new EntityWithUpload();
+        $entity->setFile($this->file);
+
+        // Get Service
+        $fileUploaderService = new FileUploaderService('/tmp', 'test');
+        $this->assertTrue($fileUploaderService instanceof FileUploaderService);
+
+        // Get Path
+        $fileUploaderService->prepareUploadPath($entity, "somename");
     }
 
     /**
@@ -120,7 +145,7 @@ class FileUploaderServiceTest extends TestCase
         $entity->setFile($this->file);
 
         // Get Service
-        $fileUploaderService = new FileUploaderService('/tmp', '/tmp/test');
+        $fileUploaderService = new FileUploaderService('/tmp', 'test');
         $this->assertTrue($fileUploaderService instanceof FileUploaderService);
 
         // Upload
@@ -143,7 +168,7 @@ class FileUploaderServiceTest extends TestCase
         $entity->setFile($this->file);
 
         // Get Service
-        $fileUploaderService = new FileUploaderService('/tmp', '/tmp/test');
+        $fileUploaderService = new FileUploaderService('/tmp', 'test');
         $this->assertTrue($fileUploaderService instanceof FileUploaderService);
 
         // Prepare Path
