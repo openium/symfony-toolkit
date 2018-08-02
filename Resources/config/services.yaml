@@ -2,7 +2,6 @@ parameters:
 
     openium_symfony_toolkit.public_dir: '%kernel.project_dir%/public'
     openium_symfony_toolkit.uploads_dir_name: 'uploads'
-    openium_symfony_toolkit.uploads_dir: '%openium_symfony_toolkit.public_dir%/%openium_symfony_toolkit.uploads_dir_name%'
 
 services:
 
@@ -10,7 +9,7 @@ services:
         class: Openium\SymfonyToolKitBundle\Service\FileUploaderService
         arguments:
             - '%openium_symfony_toolkit.public_dir%'
-            - '%openium_symfony_toolkit.uploads_dir%'
+            - '%openium_symfony_toolkit.uploads_dir_name%'
         public: true
 
     openium_symfony_toolkit.exception_format:

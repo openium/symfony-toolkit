@@ -14,6 +14,8 @@ namespace Openium\SymfonyToolKitBundle\Service;
 
 use Openium\SymfonyToolKitBundle\Entity\WithUploadInterface;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 
 /**
@@ -24,29 +26,56 @@ use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 interface FileUploaderServiceInterface
 {
     /**
-     * Prepare the uploaf path for the file
+     * Prepare upload path for file
      *
-     * @param WithUploadInterface $withUploadEntity
+     * @param WithUploadInterface $uploadEntity
+     * @param mixed $imageName
      *
      * @return WithUploadInterface
      */
-    public function prepareUploadPath(WithUploadInterface $withUploadEntity): WithUploadInterface;
+    public function prepareUploadPath(WithUploadInterface $uploadEntity, $imageName = null): WithUploadInterface;
+
 
     /**
-     * Upload the file
+     * Return the path to save file
+     *
+     * @param UploadedFile $file
+     * @param string $dirName
+     *
+     * @return string
+     */
+    public function getPath(UploadedFile $file, string $dirName): string;
+
+    /**
+     * Upload File of the Entity
      *
      * @param WithUploadInterface $uploadEntity
-     *
-     * @throws FileException
      *
      * @return WithUploadInterface
      */
-    public function upload(WithUploadInterface $uploadEntity): WithUploadInterface;
+    public function uploadEntity(WithUploadInterface $uploadEntity): WithUploadInterface;
 
     /**
-     * Remove the file
+     * Remove File of the Entity
      *
      * @param WithUploadInterface $uploadEntity
      */
-    public function remove(WithUploadInterface $uploadEntity);
+    public function removeEntity(WithUploadInterface $uploadEntity);
+
+    /**
+     * Upload File in the path
+     *
+     * @param File $file
+     * @param string $path
+     *
+     * @throws ConflictHttpException
+     */
+    public function upload(File $file, string $path);
+
+    /**
+     * Remove File
+     *
+     * @param null|string $path
+     */
+    public function remove(?string $path);
 }
