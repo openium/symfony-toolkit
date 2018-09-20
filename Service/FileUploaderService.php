@@ -177,7 +177,7 @@ class FileUploaderService implements FileUploaderServiceInterface
     {
         $uploadPath = explode('/', $path);
         $fileName = array_pop($uploadPath);
-        $folder = $this->publicDirPath . implode(DIRECTORY_SEPARATOR, $uploadPath);
+        $folder = $this->publicDirPath . DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR, $uploadPath);
         try {
             $file->move($folder, $fileName);
         } catch (FileException $e) {
@@ -195,7 +195,7 @@ class FileUploaderService implements FileUploaderServiceInterface
      */
     public function remove(?string $path)
     {
-        $file = $this->publicDirPath . $path;
+        $file = $this->publicDirPath . DIRECTORY_SEPARATOR  . $path;
         if (!is_null($path) && file_exists($file)) {
             unlink($file);
         }
@@ -211,7 +211,7 @@ class FileUploaderService implements FileUploaderServiceInterface
     public function removeFile(string $path)
     {
         if (!empty($path)) {
-            $file = $this->publicDirPath . $path;
+            $file = $this->publicDirPath . DIRECTORY_SEPARATOR . $path;
             if (file_exists($file)) {
                 unlink($file);
             }
