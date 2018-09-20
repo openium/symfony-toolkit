@@ -22,9 +22,16 @@ use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
  */
 interface DoctrineExceptionHandlerServiceInterface
 {
+
+    /**
+     * Log an exception information for debug
+     *
+     * @param \Throwable $throwable
+     */
     public function log(\Throwable $throwable);
 
     /**
+     * toHttpException
      * Catch & Process the throwable
      *
      * @param \Throwable $throwable

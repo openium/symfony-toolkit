@@ -61,6 +61,7 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
     }
 
     /**
+     * toHttpException
      * Catch & Process the throwable
      *
      * @param \Throwable $throwable
@@ -97,6 +98,8 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
     }
 
     /**
+     * createBadRequest
+     *
      * @param \Throwable $throwable
      * @param string|null $message
      *
@@ -110,8 +113,12 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
     }
 
     /**
+     * createConflict
+     *
      * @param \Throwable $throwable
      * @param null $message
+     *
+     * @throws ConflictHttpException
      *
      * @return void
      */
@@ -122,6 +129,8 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
     }
 
     /**
+     * dbalManagement
+     *
      * @param DBALException $DBALException
      *
      * @throws BadRequestHttpException

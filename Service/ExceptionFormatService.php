@@ -40,6 +40,8 @@ class ExceptionFormatService implements ExceptionFormatServiceInterface
     }
 
     /**
+     * formatExceptionResponse
+     *
      * @param \Exception $exception
      *
      * @throws \InvalidArgumentException
@@ -73,6 +75,8 @@ class ExceptionFormatService implements ExceptionFormatServiceInterface
     }
 
     /**
+     * getArray
+     *
      * @param \Exception $exception
      * @param null $code
      * @param null $text
@@ -101,6 +105,8 @@ class ExceptionFormatService implements ExceptionFormatServiceInterface
     }
 
     /**
+     * getStatusCode
+     *
      * @param \Exception $exception
      *
      * @return int
@@ -117,6 +123,8 @@ class ExceptionFormatService implements ExceptionFormatServiceInterface
     }
 
     /**
+     * getStatusText
+     *
      * @param \Exception $exception
      *
      * @return string
@@ -127,10 +135,8 @@ class ExceptionFormatService implements ExceptionFormatServiceInterface
         if ($code == Response::HTTP_PAYMENT_REQUIRED) {
             return 'Request Failed';
         } else {
-            return array_key_exists(
-                $code,
-                Response::$statusTexts
-            ) ? Response::$statusTexts[$code]
+            $isCodeExists = array_key_exists($code, Response::$statusTexts);
+            return ($isCodeExists) ? Response::$statusTexts[$code]
                 : Response::$statusTexts[Response::HTTP_INTERNAL_SERVER_ERROR];
         }
     }

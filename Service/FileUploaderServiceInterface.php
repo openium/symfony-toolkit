@@ -35,7 +35,6 @@ interface FileUploaderServiceInterface
      */
     public function prepareUploadPath(WithUploadInterface $uploadEntity, $imageName = null): WithUploadInterface;
 
-
     /**
      * Return the path to save file
      *
@@ -56,11 +55,13 @@ interface FileUploaderServiceInterface
     public function uploadEntity(WithUploadInterface $uploadEntity): WithUploadInterface;
 
     /**
-     * Remove File of the Entity
+     * removeUpload
      *
      * @param WithUploadInterface $uploadEntity
+     *
+     * @return void
      */
-    public function removeEntity(WithUploadInterface $uploadEntity);
+    public function removeUpload(WithUploadInterface $uploadEntity);
 
     /**
      * Upload File in the path
@@ -73,9 +74,11 @@ interface FileUploaderServiceInterface
     public function upload(File $file, string $path);
 
     /**
-     * Remove File
+     * removeFile
      *
-     * @param null|string $path
+     * @param string $path
+     *
+     * @return void
      */
-    public function remove(?string $path);
+    public function removeFile(string $path);
 }

@@ -17,8 +17,8 @@ use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
  * Class FileUploaderService
@@ -27,11 +27,20 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
  */
 class FileUploaderService implements FileUploaderServiceInterface
 {
-    /** @var string */
+    /**
+     * @var string
+     */
     protected $publicDirPath;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     protected $uploadDirPath;
+
+    /**
+     * @var string
+     */
+    protected $uploadDirName;
 
     /**
      * ThumbnailFileUploaderService constructor.
@@ -42,14 +51,17 @@ class FileUploaderService implements FileUploaderServiceInterface
     public function __construct(string $publicDir, string $uploadDirName)
     {
         $this->publicDirPath = $publicDir;
-        $this->uploadDirPath = "/{$uploadDirName}";
+        $this->uploadDirName = $uploadDirName;
+        $this->uploadDirPath = $publicDir . DIRECTORY_SEPARATOR . $uploadDirName;
     }
 
     /**
-     * Prepare upload path for file
+     * prepareUploadPath
      *
      * @param WithUploadInterface $uploadEntity
-     * @param mixed $imageName
+     * @param null $imageName
+     *
+     * @throws BadRequestHttpException
      *
      * @return WithUploadInterface
      */
@@ -58,61 +70,53 @@ class FileUploaderService implements FileUploaderServiceInterface
         if (is_null($uploadEntity->getFile())) {
             return $uploadEntity;
         }
-
         if (!is_null($uploadEntity->getImagePath())) {
-            $this->removeEntity($uploadEntity);
+            $this->removeUpload($uploadEntity);
         }
-
-        /** @var UploadedFile $file */
         $file = $uploadEntity->getFile();
-
         $path = $this->getPath($file, $uploadEntity->getUploadsDir(), $imageName);
         $uploadEntity->setImagePath($path);
-
         return $uploadEntity;
     }
 
     /**
-     * Return the path to save file
+     * getPath
      *
      * @param UploadedFile $file
      * @param string $dirName
-     * @param mixed $imageName
+     * @param null $imageName
+     *
+     * @throws BadRequestHttpException
      *
      * @return string
      */
     public function getPath(UploadedFile $file, string $dirName, $imageName = null): string
     {
-        // Root Dir
-        $filePath = "{$this->uploadDirPath}/{$dirName}";
-
-        // File Name
         if (is_null($imageName)) {
             $randString = sha1(uniqid(mt_rand(), true));
             $fileName = substr($randString, 0, 32);
         } else {
             $fileName = $imageName;
         }
-
-        // File Format
         $fileExtension = strtolower($file->guessClientExtension());
-
         if (empty($fileExtension)) {
-            throw new HttpException(Response::HTTP_UNSUPPORTED_MEDIA_TYPE, 'The file extension is empty.');
+            throw new BadRequestHttpException(
+                'The file extension is empty.',
+                null,
+                Response::HTTP_UNSUPPORTED_MEDIA_TYPE
+            );
         }
-
-        $fileName .= ".{$fileExtension}";
-
-        // Set path
-        $filePath .= DIRECTORY_SEPARATOR . $fileName;
-
+        $filePath = sprintf("%s/%s/%s.%s", $this->uploadDirName, $dirName, $fileName, $fileExtension);
         return $filePath;
     }
 
     /**
-     * Upload File of the Entity
+     * uploadEntity
      *
      * @param WithUploadInterface $uploadEntity
+     *
+     * @throws ConflictHttpException
+     * @throws \UnexpectedValueException
      *
      * @return WithUploadInterface
      */
@@ -120,24 +124,23 @@ class FileUploaderService implements FileUploaderServiceInterface
     {
         /** @var UploadedFile $file */
         $file = $uploadEntity->getFile();
-
-        // Upload for Icon
         if (!is_null($file)) {
             if (empty($uploadEntity->getImagePath())) {
                 throw new \UnexpectedValueException("Call prepareUploadPath method on the entity before upload.");
             }
-
             $this->upload($file, $uploadEntity->getImagePath());
             $uploadEntity->setFile(null);
         }
-
         return $uploadEntity;
     }
 
     /**
-     * Remove File of the Entity
+     * removeEntity
      *
      * @param WithUploadInterface $uploadEntity
+     *
+     * @return void
+     * @deprecated use removeUpload
      */
     public function removeEntity(WithUploadInterface $uploadEntity)
     {
@@ -146,18 +149,34 @@ class FileUploaderService implements FileUploaderServiceInterface
     }
 
     /**
-     * Upload File in the path
+     * removeUpload
+     *
+     * @param WithUploadInterface $uploadEntity
+     *
+     * @return void
+     */
+    public function removeUpload(WithUploadInterface $uploadEntity)
+    {
+        $path = $uploadEntity->getImagePath();
+        if (!empty($path)) {
+            $this->removeFile($path);
+        }
+    }
+
+    /**
+     * upload
      *
      * @param File $file
      * @param string $path
      *
      * @throws ConflictHttpException
+     *
+     * @return void
      */
     public function upload(File $file, string $path)
     {
         $uploadPath = explode('/', $path);
         $fileName = array_pop($uploadPath);
-
         $folder = $this->publicDirPath . implode(DIRECTORY_SEPARATOR, $uploadPath);
         try {
             $file->move($folder, $fileName);
@@ -167,16 +186,35 @@ class FileUploaderService implements FileUploaderServiceInterface
     }
 
     /**
-     * Remove File
+     * remove
      *
      * @param null|string $path
+     *
+     * @return void
+     * @deprecated use removeFile
      */
     public function remove(?string $path)
     {
         $file = $this->publicDirPath . $path;
-
         if (!is_null($path) && file_exists($file)) {
             unlink($file);
+        }
+    }
+
+    /**
+     * removeFile
+     *
+     * @param string $path
+     *
+     * @return void
+     */
+    public function removeFile(string $path)
+    {
+        if (!empty($path)) {
+            $file = $this->publicDirPath . $path;
+            if (file_exists($file)) {
+                unlink($file);
+            }
         }
     }
 }

@@ -19,5 +19,10 @@ namespace Openium\SymfonyToolKitBundle\Service;
  */
 interface ServerServiceInterface
 {
+    /**
+     * Get server base url
+     *
+     * @return string
+     */
     public function getBasePath(): string;
 }

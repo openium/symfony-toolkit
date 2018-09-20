@@ -22,7 +22,7 @@ use Symfony\Component\HttpFoundation\File\File;
 trait WithUploadTrait
 {
     /**
-     * @var ?File
+     * @var File
      */
     protected $file;
 
