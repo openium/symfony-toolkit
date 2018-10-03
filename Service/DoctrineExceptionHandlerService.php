@@ -124,7 +124,9 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
      */
     protected function createConflict(\Throwable $throwable, $message = null)
     {
-        $this->logger->error($throwable->getPrevious()->getCode());
+        if ($throwable->getPrevious()) {
+            $this->logger->error($throwable->getPrevious()->getCode());
+        }
         throw new ConflictHttpException($message ?? "Conflict error", $throwable);
     }
 
@@ -140,8 +142,13 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
      */
     protected function dbalManagement(DBALException $DBALException)
     {
+        $code = 0;
         $previous = $DBALException->getPrevious();
-        $code = $previous->getCode() ?? 0;
+        if ($previous) {
+            $code = $previous->getCode() ?? 0;
+        } elseif ($DBALException->getCode()) {
+            $code = $DBALException->getCode();
+        }
         switch ($code) {
             case '23000':
                 $this->createConflict($DBALException);

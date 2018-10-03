@@ -151,4 +151,39 @@ class DoctrineExceptionHandlerServiceTest extends TestCase
         $this->assertTrue($doctrineExceptionHandler instanceof DoctrineExceptionHandlerService);
         $doctrineExceptionHandler->toHttpException($dbal);
     }
+
+    /**
+     * @expectedException Symfony\Component\HttpKernel\Exception\BadRequestHttpException
+     * @expectedExceptionMessage Database request error
+     */
+    public function testToHttpExceptionWith21000DBALExceptionAndWithoutPreviousException()
+    {
+        $dbal = new DBALException("message", 21000, null);
+        $this->logger->expects($this->exactly(5))->method('error');
+        $doctrineExceptionHandler = new DoctrineExceptionHandlerService($this->logger);
+        $this->assertTrue($doctrineExceptionHandler instanceof DoctrineExceptionHandlerService);
+        $doctrineExceptionHandler->toHttpException($dbal);
+    }
+
+    /**
+     * @expectedException Symfony\Component\HttpKernel\Exception\BadRequestHttpException
+     * @expectedExceptionMessage Entity's management error
+     */
+    public function testToHttpExceptionWith0DBALExceptionAndWithoutPreviousException()
+    {
+        $dbal = new DBALException("message", 0, null);
+        $this->logger->expects($this->exactly(5))->method('error');
+        $doctrineExceptionHandler = new DoctrineExceptionHandlerService($this->logger);
+        $this->assertTrue($doctrineExceptionHandler instanceof DoctrineExceptionHandlerService);
+        $doctrineExceptionHandler->toHttpException($dbal);
+    }
+
+    public function testToHttpExceptionWithException()
+    {
+        $dbal = new \Exception("message", 0, null);
+        $this->logger->expects($this->exactly(5))->method('error');
+        $doctrineExceptionHandler = new DoctrineExceptionHandlerService($this->logger);
+        $this->assertTrue($doctrineExceptionHandler instanceof DoctrineExceptionHandlerService);
+        $doctrineExceptionHandler->toHttpException($dbal);
+    }
 }
