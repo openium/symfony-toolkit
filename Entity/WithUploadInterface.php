@@ -47,11 +47,11 @@ interface WithUploadInterface
     /**
      * Get the file local path
      *
-     * @param string $path
+     * @param string|null $path
      *
      * @return WithUploadInterface
      */
-    public function setImagePath(string $path): WithUploadInterface;
+    public function setImagePath($path): WithUploadInterface;
 
     /**
      * Get the uploads sub-dir name

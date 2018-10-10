@@ -67,11 +67,11 @@ trait WithUploadTrait
     /**
      * Setter for imagePath
      *
-     * @param string $path
+     * @param string|null $path
      *
      * @return self
      */
-    public function setImagePath(string $path): WithUploadInterface
+    public function setImagePath($path): WithUploadInterface
     {
         $this->imagePath = $path;
         return $this;
