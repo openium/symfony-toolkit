@@ -75,7 +75,7 @@ class AtHelper implements AtHelperInterface
         $this->logger->debug("AT Output : ${output}");
         $this->logger->debug("AT Result : ${result})");
         if (strstr($output, "garbled time") || $result != 0) {
-            $this->logger->error("Creation of AT command failed ($result) : " . $fullCmd);
+            $this->logger->error("Creation of AT command failed (${result}) : ${fullCmd}");
         }
         return $output;
     }
