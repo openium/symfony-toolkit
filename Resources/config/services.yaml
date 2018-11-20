@@ -29,3 +29,9 @@ services:
         arguments:
             - '@request_stack'
         public: true
+
+    openium_symfony_toolkit.at_helper:
+        class: Openium\SymfonyToolKitBundle\Service\AtHelper
+        arguments:
+            - '@monolog.logger'
+        public: true
