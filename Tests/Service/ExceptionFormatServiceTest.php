@@ -3,7 +3,7 @@
 namespace Openium\SymfonyToolKitBundle\Test\Service;
 
 use Openium\SymfonyToolKitBundle\Service\ExceptionFormatService;
-use PHPUnit\Framework\TestCase;
+use Symfony\Bundle\FrameworkBundle\Tests\TestCase;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\KernelInterface;

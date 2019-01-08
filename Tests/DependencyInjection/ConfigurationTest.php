@@ -3,7 +3,7 @@
 namespace Openium\SymfonyToolKitBundle\Test\DependencyInjection;
 
 use Openium\SymfonyToolKitBundle\DependencyInjection\Configuration;
-use PHPUnit\Framework\TestCase;
+use Symfony\Bundle\FrameworkBundle\Tests\TestCase;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 
 /**

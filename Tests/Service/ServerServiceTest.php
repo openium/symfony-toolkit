@@ -3,7 +3,7 @@
 namespace Openium\SymfonyToolKitBundle\Test\Service;
 
 use Openium\SymfonyToolKitBundle\Service\ServerService;
-use PHPUnit\Framework\TestCase;
+use Symfony\Bundle\FrameworkBundle\Tests\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 

@@ -4,7 +4,7 @@ namespace Openium\SymfonyToolKitBundle\Test\Service;
 
 use Openium\SymfonyToolKitBundle\Service\AtHelper;
 use Openium\SymfonyToolKitBundle\Service\AtHelperInterface;
-use PHPUnit\Framework\TestCase;
+use Symfony\Bundle\FrameworkBundle\Tests\TestCase;
 use Psr\Log\LoggerInterface;
 
 /**

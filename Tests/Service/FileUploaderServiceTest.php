@@ -4,7 +4,7 @@ namespace Openium\SymfonyToolKitBundle\Tests\Service;
 
 use Openium\SymfonyToolKitBundle\Service\FileUploaderService;
 use Openium\SymfonyToolKitBundle\Tests\Fixtures\Entity\EntityWithUpload;
-use PHPUnit\Framework\TestCase;
+use Symfony\Bundle\FrameworkBundle\Tests\TestCase;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 /**
