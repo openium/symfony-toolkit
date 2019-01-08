@@ -2,6 +2,9 @@ parameters:
 
     openium_symfony_toolkit.public_dir: '%kernel.project_dir%/public'
     openium_symfony_toolkit.uploads_dir_name: 'uploads'
+    openium_symfony_toolkit.exception_listener_enable: true
+    openium_symfony_toolkit.exception_listener_path: '/api'
+    openium_symfony_toolkit.exception_listener_class: 'Openium\SymfonyToolKitBundle\EventListener\PathExceptionListener'
 
 services:
 
@@ -35,3 +38,14 @@ services:
         arguments:
             - '@monolog.logger'
         public: true
+
+    openium_symfony_toolkit.exception_listener:
+        class: '%openium_symfony_toolkit.exception_listener_class%'
+        arguments:
+            - '@openium_symfony_toolkit.exception_format'
+            - '%openium_symfony_toolkit.exception_listener_path%'
+            - '%openium_symfony_toolkit.exception_listener_enable%'
+        public: false
+        tags:
+            - { name: kernel.event_listener, event: kernel.exception, method: onKernelException }
+            - { name: kernel.event_listener, event: security.authentication.failure, method: onSymfonyAuthenticationFailure }

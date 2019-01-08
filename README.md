@@ -1,8 +1,8 @@
-# Symfony toolkit
+Symfony toolkit
+===============
 
-
-## Installation
-
+Installation
+------------
 
 Open a command console, enter your project directory and execute:
 
@@ -10,11 +10,14 @@ Open a command console, enter your project directory and execute:
 $ composer require openium/symfony-toolkit
 ```
 
-## Usage
+Usage
+-----
 
 ### ServerService
 
 You can get the actual server url with the method `getBasePath()
+
+---
 
 ### FileUploaderService
 
@@ -32,6 +35,8 @@ Move upload to right directory
     $fileUploaderService->upload($entity);
 ~~~
 
+---
+
 ### AtHelper
 
 Allow you to execute some commande with Unix At command
@@ -44,11 +49,14 @@ Allow you to execute some commande with Unix At command
     $output = createAtCommand($cmd, time(), $result);
 ~~~
 
+---
+
 ### DoctrineExceptionHandlerService
 
 Transform doctrine exceptions to HttpException
 
 #### Example
+
 ~~~php
         try {
             $this->em->persist($y);
@@ -60,94 +68,33 @@ Transform doctrine exceptions to HttpException
 
 Work fine with doctrine exceptions but not with other/custom exceptions
 
+---
+
 ### ExceptionFormatService
 
-Transform exceptions to json
+Transform exceptions to json Response
 
-#### Example for automaticaly transform exceptions
-
-with example works with /api path
-
-Create an ExceptionListener :
+#### Example
 
 ~~~php
-<?php
-
-namespace App\EventListener;
-
-use Openium\SymfonyToolKitBundle\Service\ExceptionFormatServiceInterface;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
-use Symfony\Component\HttpKernel\Exception\HttpException;
-use Symfony\Component\Security\Core\Event\AuthenticationFailureEvent;
-
-/**
- * Class ExceptionListener
- *
- * @package App\EventListener
- */
-class ExceptionListener
-{
-    /**
-     * @var ExceptionFormatServiceInterface
-     */
-    protected $exceptionFormat;
-
-    /**
-     * ExceptionListener constructor.
-     *
-     * @param ExceptionFormatServiceInterface $exceptionFormat
-     */
-    public function __construct(ExceptionFormatServiceInterface $exceptionFormat)
-    {
-        $this->exceptionFormat = $exceptionFormat;
-    }
-
-    /**
-     * @param GetResponseForExceptionEvent $event
-     *
-     * @return void
-     */
-    public function onKernelException(GetResponseForExceptionEvent $event)
-    {
-        $exception = $event->getException();
-        if (strpos($event->getRequest()->getRequestUri(), '/api') !== false) {
-            $response = $this->exceptionFormat->formatExceptionResponse($exception);
-            $event->setResponse($response);
-        }
-    }
-
-    /**
-     * @param AuthenticationFailureEvent $event
-     *
-     * @throws HttpException
-     *
-     * @return void
-     */
-    public function onSymfonyAuthenticationFailure(AuthenticationFailureEvent $event)
-    {
-        if (strpos(
-            $event->getAuthenticationException()->getFile(),
-            'Symfony/Component/Security/Core/Authentication/Provider/UserAuthenticationProvider.php'
-        ) === false) {
-            throw new HttpException(
-                Response::HTTP_UNAUTHORIZED,
-                $event->getAuthenticationException()
-                ->getMessage()
-            );
-        }
-    }
-}
-
+    $response = $this->exceptionFormat->formatExceptionResponse($exception);
 ~~~
 
-add in service.yaml
+---
+
+### PathExceptionListener
+
+The listener catch kernel exceptions.
+it is enabled by default and have this configuration :
 
 ~~~yaml
-services:
-
-    App\EventListener\ExceptionListener:
-        tags:
-            - { name: kernel.event_listener, event: kernel.exception, method: onKernelException }
-            - { name: kernel.event_listener, event: security.authentication.failure, method: onSymfonyAuthenticationFailure }
+parameters:
+    openium_symfony_toolkit.exception_listener_enable: true
+    openium_symfony_toolkit.exception_listener_path: '/api'
+    openium_symfony_toolkit.exception_listener_class: 'Openium\SymfonyToolKitBundle\EventListener\PathExceptionListener'
 ~~~
+
+it use the ExceptionFormatService to format automatically the kernel exceptions
+only for the routes defined in exception_listener_path parameter
+
+---
