@@ -13,7 +13,7 @@ namespace Openium\SymfonyToolKitBundle\Controller;
 
 use Openium\SymfonyToolKitBundle\Exception\InvalidContentFormatException;
 use Openium\SymfonyToolKitBundle\Exception\MissingContentException;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController as BaseController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
@@ -22,7 +22,7 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
  *
  * @package Openium\SymfonyToolKitBundle\Controller
  */
-class AbstractController extends Controller
+class AbstractController extends BaseController
 {
     /**
      * getContentFromRequest
