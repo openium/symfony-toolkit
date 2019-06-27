@@ -15,7 +15,7 @@ Usage
 
 ### ServerService
 
-You can get the actual server url with the method `getBasePath()
+You can get the actual server url with the method `getBasePath()`
 
 ---
 
