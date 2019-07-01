@@ -12,6 +12,7 @@
 namespace Openium\SymfonyToolKitBundle\Tests\EventListener;
 
 use Openium\SymfonyToolKitBundle\Tests\Fixtures\EventListener\TestAuthenticationFailureListener;
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Tests\TestCase;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -26,11 +27,21 @@ use Symfony\Component\Security\Core\Exception\AuthenticationException;
  */
 class AuthenticationFailureListenerTest extends TestCase
 {
+    private $logger;
+
+    public function setUp()
+    {
+        $this->logger = $this->getMockBuilder(LoggerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        parent::setUp();
+    }
+
     public function testIsEnable()
     {
-        $listener = new TestAuthenticationFailureListener(true);
+        $listener = new TestAuthenticationFailureListener(true, $this->logger);
         $this->assertTrue($listener->getEnable());
-        $listener = new TestAuthenticationFailureListener(false);
+        $listener = new TestAuthenticationFailureListener(false, $this->logger);
         $this->assertFalse($listener->getEnable());
     }
 
@@ -39,7 +50,7 @@ class AuthenticationFailureListenerTest extends TestCase
         $authenticationException = new AuthenticationException('TestMessage');
         $token = $this->createMock(AnonymousToken::class);
         $event = new AuthenticationFailureEvent($token, $authenticationException);
-        $listener = new TestAuthenticationFailureListener(true);
+        $listener = new TestAuthenticationFailureListener(true, $this->logger);
         try {
             $listener->onSymfonyAuthenticationFailure($event);
             $this->fail('Method must throw an exception');

@@ -12,6 +12,7 @@
 namespace Openium\SymfonyToolKitBundle\EventListener;
 
 use Openium\SymfonyToolKitBundle\Service\ExceptionFormatServiceInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Security\Core\Event\AuthenticationFailureEvent;
@@ -30,13 +31,22 @@ class AuthenticationFailureListener implements AuthenticationFailureListenerInte
     private $enable;
 
     /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    /**
      * ExceptionListener constructor.
      *
      * @param bool $enable
+     * @param LoggerInterface $logger
      */
-    public function __construct(bool $enable)
-    {
+    public function __construct(
+        bool $enable,
+        LoggerInterface $logger
+    ) {
         $this->enable = $enable;
+        $this->logger = $logger;
     }
 
     /**
@@ -52,9 +62,9 @@ class AuthenticationFailureListener implements AuthenticationFailureListenerInte
     /**
      * @param AuthenticationFailureEvent $event
      *
+     * @return void
      * @throws HttpException
      *
-     * @return void
      */
     public function onSymfonyAuthenticationFailure(AuthenticationFailureEvent $event)
     {
@@ -65,6 +75,13 @@ class AuthenticationFailureListener implements AuthenticationFailureListenerInte
                 'Symfony/Component/Security/Core/Authentication/Provider/UserAuthenticationProvider.php'
             );
             if ($strposExceptionFileName === false) {
+                $this->logger->debug(
+                    sprintf(
+                        'SymfonyToolKitBundle onSymfonyAuthenticationFailure : % %',
+                        Response::HTTP_UNAUTHORIZED,
+                        $exception->getMessage()
+                    )
+                );
                 throw new HttpException(
                     Response::HTTP_UNAUTHORIZED,
                     $exception->getMessage()

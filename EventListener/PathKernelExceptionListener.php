@@ -12,6 +12,7 @@
 namespace Openium\SymfonyToolKitBundle\EventListener;
 
 use Openium\SymfonyToolKitBundle\Service\ExceptionFormatServiceInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 
 /**
@@ -37,17 +38,28 @@ class PathKernelExceptionListener implements PathKernelExceptionListenerInterfac
     private $enable;
 
     /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    /**
      * ExceptionListener constructor.
      *
      * @param ExceptionFormatServiceInterface $exceptionFormat
      * @param string $path
      * @param bool $enable
+     * @param LoggerInterface $logger
      */
-    public function __construct(ExceptionFormatServiceInterface $exceptionFormat, string $path, bool $enable)
-    {
+    public function __construct(
+        ExceptionFormatServiceInterface $exceptionFormat,
+        string $path,
+        bool $enable,
+        LoggerInterface $logger
+    ) {
         $this->exceptionFormat = $exceptionFormat;
         $this->path = $path;
         $this->enable = $enable;
+        $this->logger = $logger;
     }
 
     /**
@@ -71,9 +83,12 @@ class PathKernelExceptionListener implements PathKernelExceptionListenerInterfac
     public function onKernelException(GetResponseForExceptionEvent $event)
     {
         if ($this->isEnable()) {
-            $exception = $event->getException();
             if (strpos($event->getRequest()->getRequestUri(), $this->path) !== false) {
+                $exception = $event->getException();
                 $response = $this->exceptionFormat->formatExceptionResponse($exception);
+                $this->logger->debug(
+                    sprintf('SymfonyToolKitBundle onKernelException : % %', $response->getStatusCode(), $exception->getMessage())
+                );
                 $event->setResponse($response);
             }
         }

@@ -13,6 +13,7 @@ namespace Openium\SymfonyToolKitBundle\Tests\EventListener;
 
 use Openium\SymfonyToolKitBundle\Service\ExceptionFormatServiceInterface;
 use Openium\SymfonyToolKitBundle\Tests\Fixtures\EventListener\TestPathKernelExceptionListener;
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Tests\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -26,12 +27,22 @@ use Symfony\Component\HttpKernel\HttpKernelInterface;
  */
 class PathKernelExceptionListenerTest extends TestCase
 {
+    private $logger;
+
+    public function setUp()
+    {
+        $this->logger = $this->getMockBuilder(LoggerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        parent::setUp();
+    }
+
     public function testIsEnable()
     {
         $exceptionFormat = $this->createMock(ExceptionFormatServiceInterface::class);
-        $listener = new TestPathKernelExceptionListener($exceptionFormat, '/api', true);
+        $listener = new TestPathKernelExceptionListener($exceptionFormat, '/api', true, $this->logger);
         $this->assertTrue($listener->getEnable());
-        $listener = new TestPathKernelExceptionListener($exceptionFormat, '/api', false);
+        $listener = new TestPathKernelExceptionListener($exceptionFormat, '/api', false, $this->logger);
         $this->assertFalse($listener->getEnable());
     }
 
@@ -42,7 +53,7 @@ class PathKernelExceptionListenerTest extends TestCase
         $exceptionFormat->expects($this->once())->method('formatExceptionResponse')->will(
             $this->returnValue($response)
         );
-        $listener = new TestPathKernelExceptionListener($exceptionFormat, '/api', true);
+        $listener = new TestPathKernelExceptionListener($exceptionFormat, '/api', true, $this->logger);
         $kernel = $this->createMock(HttpKernelInterface::class);
         $request = Request::create('/api');
         $exc = new \Exception("testError", 123);
