@@ -82,16 +82,32 @@ Transform exceptions to json Response
 
 ---
 
-### PathExceptionListener
+### AuthenticationFailureListener
 
-The listener catch kernel exceptions.
-it is enabled by default and have this configuration :
+The listener catch authentication failure.
+It is enabled by default and have this configuration :
 
 ~~~yaml
 parameters:
-    openium_symfony_toolkit.exception_listener_enable: true
-    openium_symfony_toolkit.exception_listener_path: '/api'
-    openium_symfony_toolkit.exception_listener_class: 'Openium\SymfonyToolKitBundle\EventListener\PathExceptionListener'
+    openium_symfony_toolkit.authentication_failure_listener_enable: true
+    openium_symfony_toolkit.authentication_failure_listener_class: 'Openium\SymfonyToolKitBundle\EventListener\AuthenticationFailureListener'
+~~~
+
+Throw HttpException 401 when an AuthenticationFailureEvent is throw.
+Except for 'Symfony/Component/Security/Core/Authentication/Provider/UserAuthenticationProvider.php'
+
+---
+
+### PathExceptionListener
+
+The listener catch kernel exceptions.
+It is enabled by default and have this configuration :
+
+~~~yaml
+parameters:
+    openium_symfony_toolkit.kernel_exception_listener_enable: true
+    openium_symfony_toolkit.kernel_exception_listener_path: '/api'
+    openium_symfony_toolkit.kernel_exception_listener_class: 'Openium\SymfonyToolKitBundle\EventListener\PathExceptionListener'
 ~~~
 
 it use the ExceptionFormatService to format automatically the kernel exceptions

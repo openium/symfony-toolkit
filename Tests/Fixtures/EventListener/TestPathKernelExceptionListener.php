@@ -11,14 +11,14 @@
 
 namespace Openium\SymfonyToolKitBundle\Tests\Fixtures\EventListener;
 
-use Openium\SymfonyToolKitBundle\EventListener\PathExceptionListener;
+use Openium\SymfonyToolKitBundle\EventListener\PathKernelExceptionListener;
 
 /**
- * Class TestExceptionListener
+ * Class TestPathKernelExceptionListener
  *
  * @package Openium\SymfonyToolKitBundle\Tests\Fixtures\EventListener
  */
-class TestExceptionListener extends PathExceptionListener
+class TestPathKernelExceptionListener extends PathKernelExceptionListener
 {
     /**
      * getEnable

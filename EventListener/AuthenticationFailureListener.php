@@ -18,21 +18,12 @@ use Symfony\Component\Security\Core\Event\AuthenticationFailureEvent;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 
 /**
- * Class PathExceptionListener
+ * Class AuthenticationFailureListener
  *
  * @package Openium\SymfonyToolKitBundle\EventListener
  */
-class PathExceptionListener implements ExceptionListenerInterface
+class AuthenticationFailureListener implements AuthenticationFailureListenerInterface
 {
-    /**
-     * @var ExceptionFormatServiceInterface
-     */
-    protected $exceptionFormat;
-
-    /**
-     * @var string
-     */
-    protected $path;
     /**
      * @var bool
      */
@@ -41,14 +32,10 @@ class PathExceptionListener implements ExceptionListenerInterface
     /**
      * ExceptionListener constructor.
      *
-     * @param ExceptionFormatServiceInterface $exceptionFormat
-     * @param string $path
      * @param bool $enable
      */
-    public function __construct(ExceptionFormatServiceInterface $exceptionFormat, string $path, bool $enable)
+    public function __construct(bool $enable)
     {
-        $this->exceptionFormat = $exceptionFormat;
-        $this->path = $path;
         $this->enable = $enable;
     }
 
@@ -60,25 +47,6 @@ class PathExceptionListener implements ExceptionListenerInterface
     protected function isEnable(): bool
     {
         return $this->enable;
-    }
-
-    /**
-     * @param GetResponseForExceptionEvent $event
-     *
-     * @throws \InvalidArgumentException
-     * @throws \UnexpectedValueException
-     *
-     * @return void
-     */
-    public function onKernelException(GetResponseForExceptionEvent $event)
-    {
-        if ($this->isEnable()) {
-            $exception = $event->getException();
-            if (strpos($event->getRequest()->getRequestUri(), $this->path) !== false) {
-                $response = $this->exceptionFormat->formatExceptionResponse($exception);
-                $event->setResponse($response);
-            }
-        }
     }
 
     /**

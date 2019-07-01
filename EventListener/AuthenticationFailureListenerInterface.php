@@ -12,16 +12,13 @@
 namespace Openium\SymfonyToolKitBundle\EventListener;
 
 use Symfony\Component\Security\Core\Event\AuthenticationFailureEvent;
-use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 
 /**
- * Interface ExceptionListenerInterface
+ * Interface AuthenticationFailureListenerInterface
  *
  * @package  Openium\SymfonyToolKitBundle\EventListener
  */
-interface ExceptionListenerInterface
+interface AuthenticationFailureListenerInterface
 {
-    public function onKernelException(GetResponseForExceptionEvent $event);
-
     public function onSymfonyAuthenticationFailure(AuthenticationFailureEvent $event);
 }
