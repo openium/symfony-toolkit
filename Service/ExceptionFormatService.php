@@ -45,10 +45,10 @@ class ExceptionFormatService implements ExceptionFormatServiceInterface
      *
      * @param \Exception $exception
      *
-     * @throws \InvalidArgumentException
+     * @return Response
      * @throws \UnexpectedValueException
      *
-     * @return Response
+     * @throws \InvalidArgumentException
      */
     public function formatExceptionResponse(\Exception $exception): Response
     {
@@ -101,6 +101,11 @@ class ExceptionFormatService implements ExceptionFormatServiceInterface
         }
         if ($this->kernel->getEnvironment() != 'prod') {
             $error['trace'] = $exception->getTrace();
+            $error['previous'] = [];
+            if ($exception->getPrevious()) {
+                $error['previous']['message'] = $exception->getPrevious()->getMessage();
+                $error['previous']['code'] = $exception->getPrevious()->getCode();
+            }
         }
         return $error;
     }

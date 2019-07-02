@@ -93,14 +93,16 @@ class ExceptionFormatServiceTest extends TestCase
         $this->assertEquals($result['status_text'], Response::$statusTexts[Response::HTTP_NOT_FOUND]);
         $this->assertTrue(array_key_exists('message', $result));
         $this->assertFalse(array_key_exists('trace', $result));
+        $this->assertFalse(array_key_exists('previous', $result));
     }
 
     public function testGetArrayWith404HttpExceptionAndDevEnd()
     {
+        $previous = new \Exception('previous exception', 123456, null);
         $this->testKernel->expects($this->once())
             ->method('getEnvironment')
             ->will($this->returnValue("dev"));
-        $exception = new HttpException(Response::HTTP_NOT_FOUND);
+        $exception = new HttpException(Response::HTTP_NOT_FOUND, 'message exception', $previous);
         $exceptionFormatService = new ExceptionFormatService($this->testKernel);
         $this->assertTrue($exceptionFormatService instanceof ExceptionFormatService);
         $result = $exceptionFormatService->getArray($exception);
@@ -110,7 +112,11 @@ class ExceptionFormatServiceTest extends TestCase
         $this->assertTrue(array_key_exists('status_text', $result));
         $this->assertEquals($result['status_text'], Response::$statusTexts[Response::HTTP_NOT_FOUND]);
         $this->assertTrue(array_key_exists('message', $result));
+        $this->assertEquals('message exception', $result['message']);
         $this->assertTrue(array_key_exists('trace', $result));
+        $this->assertTrue(array_key_exists('previous', $result));
+        $this->assertEquals('previous exception', $result['previous']['message']);
+        $this->assertEquals(123456, $result['previous']['code']);
     }
 
     public function testFormatExceptionResponse()

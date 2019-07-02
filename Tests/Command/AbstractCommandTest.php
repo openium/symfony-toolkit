@@ -55,6 +55,5 @@ class AbstractCommandTest extends TestCase
         $command->execute($input, $output);
         $this->assertTrue($command instanceof AbstractCommand);
         $this->assertTrue($command->getHasLog());
-        $command->writeMessage('test');
     }
 }
