@@ -15,7 +15,11 @@ namespace Openium\SymfonyToolKitBundle\Service;
 
 use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\Exception\DriverException;
+use Doctrine\DBAL\Exception\ForeignKeyConstraintViolationException;
+use Doctrine\DBAL\Exception\NonUniqueFieldNameException;
 use Doctrine\DBAL\Exception\NotNullConstraintViolationException;
+use Doctrine\DBAL\Exception\SyntaxErrorException;
+use Doctrine\DBAL\Exception\TableExistsException;
 use Doctrine\DBAL\Exception\TableNotFoundException;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\ORMInvalidArgumentException;
@@ -81,9 +85,15 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
                 $this->createBadRequest($throwable, "Missing database table");
                 break;
             case DriverException::class:
+            case TableExistsException::class:
+            case NonUniqueFieldNameException::class:
                 $this->createBadRequest($throwable, "Database schema error");
                 break;
+            case SyntaxErrorException::class:
+                $this->createBadRequest($throwable, "Query syntax error");
+                break;
             case UniqueConstraintViolationException::class:
+            case ForeignKeyConstraintViolationException::class:
                 $this->createConflict($throwable);
                 break;
             case DBALException::class:
