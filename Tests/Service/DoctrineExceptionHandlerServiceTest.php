@@ -178,6 +178,10 @@ class DoctrineExceptionHandlerServiceTest extends TestCase
         $doctrineExceptionHandler->toHttpException($dbal);
     }
 
+    /**
+     * @expectedException Exception
+     * @expectedExceptionMessage message
+     */
     public function testToHttpExceptionWithException()
     {
         $dbal = new \Exception("message", 0, null);
