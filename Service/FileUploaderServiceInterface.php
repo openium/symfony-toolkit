@@ -39,12 +39,12 @@ interface FileUploaderServiceInterface
     /**
      * Return the path to save file
      *
-     * @param UploadedFile $file
+     * @param File|UploadedFile $file
      * @param string $dirName
      *
      * @return string
      */
-    public function getPath(UploadedFile $file, string $dirName): string;
+    public function getPath(File $file, string $dirName): string;
 
     /**
      * Upload File of the Entity

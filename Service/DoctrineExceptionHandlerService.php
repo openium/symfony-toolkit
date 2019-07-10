@@ -69,6 +69,7 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
      *
      * @throws BadRequestHttpException
      * @throws ConflictHttpException
+     * @throws \Throwable if not a doctrine exception
      */
     public function toHttpException(\Throwable $throwable)
     {
@@ -94,7 +95,7 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
                 $this->createBadRequest($throwable);
                 break;
             default:
-                break;
+                throw $throwable;
         }
     }
 

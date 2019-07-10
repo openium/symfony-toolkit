@@ -83,7 +83,7 @@ class FileUploaderService implements FileUploaderServiceInterface
     /**
      * getPath
      *
-     * @param UploadedFile $file
+     * @param File $file
      * @param string $dirName
      * @param null $imageName
      *
@@ -91,7 +91,7 @@ class FileUploaderService implements FileUploaderServiceInterface
      *
      * @return string
      */
-    public function getPath(UploadedFile $file, string $dirName, $imageName = null): string
+    public function getPath(File $file, string $dirName, $imageName = null): string
     {
         if (is_null($imageName)) {
             $randString = sha1(uniqid(mt_rand(), true));
@@ -99,7 +99,15 @@ class FileUploaderService implements FileUploaderServiceInterface
         } else {
             $fileName = $imageName;
         }
-        $fileExtension = strtolower($file->guessClientExtension());
+        $fileExtension = null;
+        if ($file instanceof UploadedFile) {
+            $fileExtension = strtolower($file->guessClientExtension());
+        } else {
+            $fileNameParts = explode('.', $file->getFilename());
+            if (sizeof($fileNameParts) > 0) {
+                $fileExtension = $fileNameParts[sizeof($fileNameParts) - 1];
+            }
+        }
         if (empty($fileExtension)) {
             throw new BadRequestHttpException(
                 'The file extension is empty.',
@@ -107,7 +115,11 @@ class FileUploaderService implements FileUploaderServiceInterface
                 Response::HTTP_UNSUPPORTED_MEDIA_TYPE
             );
         }
-        $filePath = sprintf("%s/%s/%s.%s", $this->uploadDirName, $dirName, $fileName, $fileExtension);
+        if ($fileExtension !== null) {
+            $filePath = sprintf("%s/%s/%s.%s", $this->uploadDirName, $dirName, $fileName, $fileExtension);
+        } else {
+            $filePath = sprintf("%s/%s/%s", $this->uploadDirName, $dirName, $fileName);
+        }
         return $filePath;
     }
 
@@ -133,20 +145,6 @@ class FileUploaderService implements FileUploaderServiceInterface
             $uploadEntity->setFile(null);
         }
         return $uploadEntity;
-    }
-
-    /**
-     * removeEntity
-     *
-     * @param WithUploadInterface $uploadEntity
-     *
-     * @return void
-     * @deprecated use removeUpload
-     */
-    public function removeEntity(WithUploadInterface $uploadEntity)
-    {
-        $path = $uploadEntity->getImagePath();
-        $this->remove($path);
     }
 
     /**
@@ -183,22 +181,6 @@ class FileUploaderService implements FileUploaderServiceInterface
             $file->move($folder, $fileName);
         } catch (FileException $e) {
             throw new ConflictHttpException($e->getMessage(), $e, $e->getCode());
-        }
-    }
-
-    /**
-     * remove
-     *
-     * @param null|string $path
-     *
-     * @return void
-     * @deprecated use removeFile
-     */
-    public function remove(?string $path)
-    {
-        $file = $this->publicDirPath . DIRECTORY_SEPARATOR  . $path;
-        if (!is_null($path) && file_exists($file)) {
-            unlink($file);
         }
     }
 

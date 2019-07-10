@@ -26,14 +26,14 @@ class Configuration implements ConfigurationInterface
     /**
      * Generates the configuration tree builder.
      *
-     * @throws \RuntimeException
-     *
      * @return TreeBuilder The tree builder
      */
     public function getConfigTreeBuilder()
     {
         $treeBuilder = new TreeBuilder('openium_symfony_toolkit');
-        $rootNode = method_exists(TreeBuilder::class, 'getRootNode') ? $treeBuilder->getRootNode() : $treeBuilder->root('monolog');
+        //$rootNode = method_exists(TreeBuilder::class, 'getRootNode') ?
+        // $treeBuilder->getRootNode() :
+        // $treeBuilder->root('openium_symfony_toolkit');
         return $treeBuilder;
     }
 }

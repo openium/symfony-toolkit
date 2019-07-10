@@ -23,5 +23,4 @@ interface AtHelperInterface
     public function createAtCommand(string $cmd, int $timestamp, &$result);
 
     public function formatTimestampForAt(int $timestamp): string;
-
 }

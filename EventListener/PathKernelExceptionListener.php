@@ -87,7 +87,11 @@ class PathKernelExceptionListener implements PathKernelExceptionListenerInterfac
                 $exception = $event->getException();
                 $response = $this->exceptionFormat->formatExceptionResponse($exception);
                 $this->logger->debug(
-                    sprintf('SymfonyToolKitBundle onKernelException : % %', $response->getStatusCode(), $exception->getMessage())
+                    sprintf(
+                        'SymfonyToolKitBundle onKernelException : % %',
+                        $response->getStatusCode(),
+                        $exception->getMessage()
+                    )
                 );
                 $event->setResponse($response);
             }

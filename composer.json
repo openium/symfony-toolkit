@@ -31,6 +31,7 @@
     "require": {
         "php": "^7.1",
         "ext-json": "*",
+        "ext-pdo": "*",
         "symfony/http-foundation": "^4.1",
         "doctrine/orm": "^2.6",
         "symfony/validator": "^4.1",

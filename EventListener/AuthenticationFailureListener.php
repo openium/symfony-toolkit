@@ -11,12 +11,10 @@
 
 namespace Openium\SymfonyToolKitBundle\EventListener;
 
-use Openium\SymfonyToolKitBundle\Service\ExceptionFormatServiceInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Security\Core\Event\AuthenticationFailureEvent;
-use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 
 /**
  * Class AuthenticationFailureListener
@@ -41,10 +39,8 @@ class AuthenticationFailureListener implements AuthenticationFailureListenerInte
      * @param bool $enable
      * @param LoggerInterface $logger
      */
-    public function __construct(
-        bool $enable,
-        LoggerInterface $logger
-    ) {
+    public function __construct(bool $enable, LoggerInterface $logger)
+    {
         $this->enable = $enable;
         $this->logger = $logger;
     }
