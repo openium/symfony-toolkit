@@ -36,6 +36,15 @@ use \UnexpectedValueException;
  */
 class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerServiceInterface
 {
+    private $missingDatabaseTableMessage = "Missing database table";
+    private $databaseSchemaErrorMessage = "Database schema error";
+    private $querySyntaxErrorMessage = "Query syntax error";
+    private $entityManagementErrorMessage = "Entity's management error";
+    private $conflictMessage = "Conflict error";
+    private $databaseErrorMessage = "Database error";
+    private $databaseRequestErrorMessage = "Database request error";
+    private $missingPropertyErrorMessage = "Database schema error (Missing property)";
+
     /**
      * @var LoggerInterface
      */
@@ -82,19 +91,19 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
         // Select the process
         switch (get_class($throwable)) {
             case TableNotFoundException::class:
-                $this->createBadRequest($throwable, "Missing database table");
+                $this->createBadRequest($throwable, $this->missingDatabaseTableMessage);
                 break;
             case DriverException::class:
             case TableExistsException::class:
             case NonUniqueFieldNameException::class:
-                $this->createBadRequest($throwable, "Database schema error");
+                $this->createBadRequest($throwable, $this->databaseSchemaErrorMessage);
                 break;
             case SyntaxErrorException::class:
-                $this->createBadRequest($throwable, "Query syntax error");
+                $this->createBadRequest($throwable, $this->querySyntaxErrorMessage);
                 break;
             case UniqueConstraintViolationException::class:
             case ForeignKeyConstraintViolationException::class:
-                $this->createConflict($throwable);
+                $this->createConflict($throwable, $this->conflictMessage);
                 break;
             case DBALException::class:
                 $this->dbalManagement($throwable);
@@ -115,13 +124,13 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
      * @param \Throwable $throwable
      * @param string|null $message
      *
+     * @return void
      * @throws BadRequestHttpException
      *
-     * @return void
      */
     protected function createBadRequest(\Throwable $throwable, string $message = null)
     {
-        throw new BadRequestHttpException($message ?? "Entity's management error", $throwable);
+        throw new BadRequestHttpException($message ?? $this->entityManagementErrorMessage, $throwable);
     }
 
     /**
@@ -130,16 +139,16 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
      * @param \Throwable $throwable
      * @param null $message
      *
+     * @return void
      * @throws ConflictHttpException
      *
-     * @return void
      */
     protected function createConflict(\Throwable $throwable, $message = null)
     {
         if ($throwable->getPrevious()) {
             $this->logger->error($throwable->getPrevious()->getCode());
         }
-        throw new ConflictHttpException($message ?? "Conflict error", $throwable);
+        throw new ConflictHttpException($message ?? $this->conflictMessage, $throwable);
     }
 
     /**
@@ -147,10 +156,10 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
      *
      * @param DBALException $DBALException
      *
-     * @throws BadRequestHttpException
+     * @return void
      * @throws ConflictHttpException
      *
-     * @return void
+     * @throws BadRequestHttpException
      */
     protected function dbalManagement(DBALException $DBALException)
     {
@@ -166,20 +175,204 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
                 $this->createConflict($DBALException);
                 break;
             case '42000':
-                $this->createBadRequest($DBALException, "Database error");
+                $this->createBadRequest($DBALException, $this->databaseErrorMessage);
                 break;
             case '21000':
-                $this->createBadRequest($DBALException, "Database request error");
+                $this->createBadRequest($DBALException, $this->databaseRequestErrorMessage);
                 break;
             case '21S01':
-                $this->createBadRequest($DBALException, "Database schema error (Missing property)");
+                $this->createBadRequest($DBALException, $this->missingPropertyErrorMessage);
                 break;
             case '42S02':
-                $this->createBadRequest($DBALException, "Missing database table");
+                $this->createBadRequest($DBALException, $this->missingDatabaseTableMessage);
                 break;
             default:
                 break;
         }
         $this->createBadRequest($DBALException);
+    }
+
+    /**
+     * Getter for missingDatabaseTableMessage
+     *
+     * @return string
+     */
+    public function getMissingDatabaseTableMessage(): string
+    {
+        return $this->missingDatabaseTableMessage;
+    }
+
+    /**
+     * Setter for missingDatabaseTableMessage
+     *
+     * @param string $missingDatabaseTableMessage
+     *
+     * @return DoctrineExceptionHandlerServiceInterface
+     */
+    public function setMissingDatabaseTableMessage(string $missingDatabaseTableMessage): DoctrineExceptionHandlerServiceInterface
+    {
+        $this->missingDatabaseTableMessage = $missingDatabaseTableMessage;
+        return $this;
+    }
+
+    /**
+     * Getter for databaseSchemaErrorMessage
+     *
+     * @return string
+     */
+    public function getDatabaseSchemaErrorMessage(): string
+    {
+        return $this->databaseSchemaErrorMessage;
+    }
+
+    /**
+     * Setter for databaseSchemaErrorMessage
+     *
+     * @param string $databaseSchemaErrorMessage
+     *
+     * @return DoctrineExceptionHandlerServiceInterface
+     */
+    public function setDatabaseSchemaErrorMessage(string $databaseSchemaErrorMessage): DoctrineExceptionHandlerServiceInterface
+    {
+        $this->databaseSchemaErrorMessage = $databaseSchemaErrorMessage;
+        return $this;
+    }
+
+    /**
+     * Getter for querySyntaxErrorMessage
+     *
+     * @return string
+     */
+    public function getQuerySyntaxErrorMessage(): string
+    {
+        return $this->querySyntaxErrorMessage;
+    }
+
+    /**
+     * Setter for querySyntaxErrorMessage
+     *
+     * @param string $querySyntaxErrorMessage
+     *
+     * @return DoctrineExceptionHandlerServiceInterface
+     */
+    public function setQuerySyntaxErrorMessage(string $querySyntaxErrorMessage): DoctrineExceptionHandlerServiceInterface
+    {
+        $this->querySyntaxErrorMessage = $querySyntaxErrorMessage;
+        return $this;
+    }
+
+    /**
+     * Getter for entityManagementErrorMessage
+     *
+     * @return string
+     */
+    public function getEntityManagementErrorMessage(): string
+    {
+        return $this->entityManagementErrorMessage;
+    }
+
+    /**
+     * Setter for entityManagementErrorMessage
+     *
+     * @param string $entityManagementErrorMessage
+     *
+     * @return DoctrineExceptionHandlerServiceInterface
+     */
+    public function setEntityManagementErrorMessage(string $entityManagementErrorMessage): DoctrineExceptionHandlerServiceInterface
+    {
+        $this->entityManagementErrorMessage = $entityManagementErrorMessage;
+        return $this;
+    }
+
+    /**
+     * Getter for conflictMessage
+     *
+     * @return string
+     */
+    public function getConflictMessage(): string
+    {
+        return $this->conflictMessage;
+    }
+
+    /**
+     * Setter for conflictMessage
+     *
+     * @param string $conflictMessage
+     *
+     * @return DoctrineExceptionHandlerServiceInterface
+     */
+    public function setConflictMessage(string $conflictMessage): DoctrineExceptionHandlerServiceInterface
+    {
+        $this->conflictMessage = $conflictMessage;
+        return $this;
+    }
+
+    /**
+     * Getter for databaseErrorMessage
+     *
+     * @return string
+     */
+    public function getDatabaseErrorMessage(): string
+    {
+        return $this->databaseErrorMessage;
+    }
+
+    /**
+     * Setter for databaseErrorMessage
+     *
+     * @param string $databaseErrorMessage
+     *
+     * @return DoctrineExceptionHandlerServiceInterface
+     */
+    public function setDatabaseErrorMessage(string $databaseErrorMessage): DoctrineExceptionHandlerServiceInterface
+    {
+        $this->databaseErrorMessage = $databaseErrorMessage;
+        return $this;
+    }
+
+    /**
+     * Getter for databaseRequestErrorMessage
+     *
+     * @return string
+     */
+    public function getDatabaseRequestErrorMessage(): string
+    {
+        return $this->databaseRequestErrorMessage;
+    }
+
+    /**
+     * Setter for databaseRequestErrorMessage
+     *
+     * @param string $databaseRequestErrorMessage
+     *
+     * @return DoctrineExceptionHandlerServiceInterface
+     */
+    public function setDatabaseRequestErrorMessage(string $databaseRequestErrorMessage): DoctrineExceptionHandlerServiceInterface
+    {
+        $this->databaseRequestErrorMessage = $databaseRequestErrorMessage;
+        return $this;
+    }
+
+    /**
+     * Getter for missingPropertyErrorMessage
+     *
+     * @return string
+     */
+    public function getMissingPropertyErrorMessage(): string
+    {
+        return $this->missingPropertyErrorMessage;
+    }
+
+    /**
+     * Setter for missingPropertyErrorMessage
+     *
+     * @param string $missingPropertyErrorMessage
+     *
+     * @return DoctrineExceptionHandlerServiceInterface
+     */
+    public function setMissingPropertyErrorMessage(string $missingPropertyErrorMessage): DoctrineExceptionHandlerServiceInterface
+    {
+        $this->missingPropertyErrorMessage = $missingPropertyErrorMessage;
+        return $this;
     }
 }
