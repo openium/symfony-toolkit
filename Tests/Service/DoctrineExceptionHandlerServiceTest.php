@@ -190,4 +190,108 @@ class DoctrineExceptionHandlerServiceTest extends TestCase
         $this->assertTrue($doctrineExceptionHandler instanceof DoctrineExceptionHandlerService);
         $doctrineExceptionHandler->toHttpException($dbal);
     }
+
+    public function testMissingDatabaseTableMessage()
+    {
+        // given
+        $message = "new error message";
+        $doctrineExceptionHandler = new DoctrineExceptionHandlerService($this->logger);
+        // then
+        static::assertEquals("Missing database table", $doctrineExceptionHandler->getMissingDatabaseTableMessage());
+        // when
+        $doctrineExceptionHandler->setMissingDatabaseTableMessage($message);
+        // then
+        static::assertEquals($message, $doctrineExceptionHandler->getMissingDatabaseTableMessage());
+    }
+
+    public function testDatabaseSchemaErrorMessage()
+    {
+        // given
+        $message = "new error message";
+        $doctrineExceptionHandler = new DoctrineExceptionHandlerService($this->logger);
+        // then
+        static::assertEquals("Database schema error", $doctrineExceptionHandler->getDatabaseSchemaErrorMessage());
+        // when
+        $doctrineExceptionHandler->setDatabaseSchemaErrorMessage($message);
+        // then
+        static::assertEquals($message, $doctrineExceptionHandler->getDatabaseSchemaErrorMessage());
+    }
+
+    public function testQuerySyntaxErrorMessage()
+    {
+        // given
+        $message = "new error message";
+        $doctrineExceptionHandler = new DoctrineExceptionHandlerService($this->logger);
+        // then
+        static::assertEquals("Query syntax error", $doctrineExceptionHandler->getQuerySyntaxErrorMessage());
+        // when
+        $doctrineExceptionHandler->setQuerySyntaxErrorMessage($message);
+        // then
+        static::assertEquals($message, $doctrineExceptionHandler->getQuerySyntaxErrorMessage());
+    }
+
+    public function testEntityManagementErrorMessage()
+    {
+        // given
+        $message = "new error message";
+        $doctrineExceptionHandler = new DoctrineExceptionHandlerService($this->logger);
+        // then
+        static::assertEquals("Entity's management error", $doctrineExceptionHandler->getEntityManagementErrorMessage());
+        // when
+        $doctrineExceptionHandler->setEntityManagementErrorMessage($message);
+        // then
+        static::assertEquals($message, $doctrineExceptionHandler->getEntityManagementErrorMessage());
+    }
+
+    public function testConflictMessage()
+    {
+        // given
+        $message = "new error message";
+        $doctrineExceptionHandler = new DoctrineExceptionHandlerService($this->logger);
+        // then
+        static::assertEquals("Conflict error", $doctrineExceptionHandler->getConflictMessage());
+        // when
+        $doctrineExceptionHandler->setConflictMessage($message);
+        // then
+        static::assertEquals($message, $doctrineExceptionHandler->getConflictMessage());
+    }
+
+    public function testDatabaseErrorMessage()
+    {
+        // given
+        $message = "new error message";
+        $doctrineExceptionHandler = new DoctrineExceptionHandlerService($this->logger);
+        // then
+        static::assertEquals("Database error", $doctrineExceptionHandler->getDatabaseErrorMessage());
+        // when
+        $doctrineExceptionHandler->setDatabaseErrorMessage($message);
+        // then
+        static::assertEquals($message, $doctrineExceptionHandler->getDatabaseErrorMessage());
+    }
+
+    public function testDatabaseRequestErrorMessage()
+    {
+        // given
+        $message = "new error message";
+        $doctrineExceptionHandler = new DoctrineExceptionHandlerService($this->logger);
+        // then
+        static::assertEquals("Database request error", $doctrineExceptionHandler->getDatabaseRequestErrorMessage());
+        // when
+        $doctrineExceptionHandler->setDatabaseRequestErrorMessage($message);
+        // then
+        static::assertEquals($message, $doctrineExceptionHandler->getDatabaseRequestErrorMessage());
+    }
+
+    public function testMissingPropertyErrorMessage()
+    {
+        // given
+        $message = "new error message";
+        $doctrineExceptionHandler = new DoctrineExceptionHandlerService($this->logger);
+        // then
+        static::assertEquals("Database schema error (Missing property)", $doctrineExceptionHandler->getMissingPropertyErrorMessage());
+        // when
+        $doctrineExceptionHandler->setMissingPropertyErrorMessage($message);
+        // then
+        static::assertEquals($message, $doctrineExceptionHandler->getMissingPropertyErrorMessage());
+    }
 }

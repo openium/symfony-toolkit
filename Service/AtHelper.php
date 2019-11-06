@@ -81,6 +81,36 @@ class AtHelper implements AtHelperInterface
     }
 
     /**
+     * extractJobNumberFromAtOutput
+     *
+     * @param $output
+     *
+     * @return string|null
+     */
+    public function extractJobNumberFromAtOutput($output): ?string
+    {
+        $explodedOutput = explode(' ', $output);
+        if (sizeof($explodedOutput) >= 2) {
+            return $explodedOutput[1];
+        }
+        return null;
+    }
+
+    /**
+     * removeAtCommand
+     *
+     * @param string $atJobNumber
+     *
+     * @return bool
+     */
+    public function removeAtCommand(string $atJobNumber): bool
+    {
+        $fullCmd = sprintf("atrm %s", $atJobNumber);
+        $output = $this->executeAndCaptureOutput($fullCmd, $result);
+        return empty($output);
+    }
+
+    /**
      * formatDateForAt
      * transform timestamp to format 'g:i A F j Y'
      * example :
@@ -97,8 +127,7 @@ class AtHelper implements AtHelperInterface
         if ($timestamp < 0) {
             throw new \InvalidArgumentException('timestamp < 0');
         }
-        $date = new \DateTime();
-        $date->setTimestamp($timestamp);
+        $date = new \DateTime("@$timestamp", new \DateTimeZone("Europe/Paris"));
         return $date->format('g:i A F j Y');
     }
 }

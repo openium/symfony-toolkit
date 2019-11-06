@@ -20,9 +20,16 @@ class AtHelperTest extends TestCase
 
     public function setUp()
     {
-        $this->logger = $this->getMockBuilder(LoggerInterface::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $this->logger = $this->createMock(LoggerInterface::class);
+        $this->logger->expects(static::any())
+            ->method("debug")
+            ->will(
+                static::returnCallback(
+                    function ($subject) {
+                        error_log($subject);
+                    }
+                )
+            );
         parent::setUp();
     }
 
@@ -43,5 +50,21 @@ class AtHelperTest extends TestCase
         $atHelper = new AtHelper($this->logger);
         $this->assertTrue($atHelper instanceof AtHelperInterface);
         $atHelper->formatTimestampForAt(-654987);
+    }
+
+    public function testCreateAtCommand()
+    {
+        // given
+        $atHelper = new AtHelper($this->logger);
+        $result = "";
+        // when
+        $output = $atHelper->createAtCommand("echo coucou", time() + 33600, $result);
+        $atNumber = $atHelper->extractJobNumberFromAtOutput($output);
+        // then
+        static::assertEquals(3, strlen($atNumber));
+        static::assertEquals("0", $result);
+        // when
+        $removeResult = $atHelper->removeAtCommand($atNumber);
+        static::assertTrue($removeResult);
     }
 }

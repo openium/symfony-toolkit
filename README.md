@@ -46,10 +46,17 @@ Allow you to execute some commande with Unix At command
 ~~~php
     $result = '';
     $cmb = 'bin/console app:some:thing';
-    $output = createAtCommand($cmd, time(), $result);
+    
+    // Create at
+    $output = $atHelper->createAtCommand($cmd, time(), $result);
+    
+    // get at job number
+    $jobNumber = $atHelper->extractJobNumberFromAtOutput($output);
+    
+    // remove at job
+    $removeSuccess = $atHelper->removeAtCommand($jobNumber);
 ~~~
 
-TODO : save at id to edit and delete task
 
 ---
 
