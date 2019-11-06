@@ -127,7 +127,8 @@ class AtHelper implements AtHelperInterface
         if ($timestamp < 0) {
             throw new \InvalidArgumentException('timestamp < 0');
         }
-        $date = new \DateTime("@$timestamp", new \DateTimeZone("Europe/Paris"));
-        return $date->format('g:i A F j Y');
+        $timeZone = new \DateTimeZone("Europe/Paris");
+        $date = new \DateTime(null, $timeZone);
+        return $date->setTimestamp($timestamp)->format('g:i A F j Y');
     }
 }
