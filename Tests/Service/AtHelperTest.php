@@ -67,4 +67,49 @@ class AtHelperTest extends TestCase
         $removeResult = $atHelper->removeAtCommand($atNumber);
         static::assertTrue($removeResult);
     }
+
+    public function testExtractJobNumberFromAtOutputWithRightOutput()
+    {
+        // given
+        $atHelper = new AtHelper($this->logger);
+        $output = 'commands will be executed using /bin/sh job 130 at Wed Nov  6 15:06:00 2019';
+        // when
+        $jobNumber = $atHelper->extractJobNumberFromAtOutput($output);
+        // then
+        static::assertEquals("130", $jobNumber);
+    }
+
+    public function testExtractJobNumberFromAtOutputWithSmallRightOutput()
+    {
+        // given
+        $atHelper = new AtHelper($this->logger);
+        $output = 'job 130 at Wed Nov  6 15:06:00 2019';
+        // when
+        $jobNumber = $atHelper->extractJobNumberFromAtOutput($output);
+        // then
+        static::assertEquals("130", $jobNumber);
+    }
+
+    public function testExtractJobNumberFromAtOutputWithWrongOutput()
+    {
+        // given
+        $atHelper = new AtHelper($this->logger);
+        $output = ' at Wed Nov  6 15:06:00 2019';
+        // when
+        $jobNumber = $atHelper->extractJobNumberFromAtOutput($output);
+        // then
+        static::assertNull($jobNumber);
+    }
+
+    public function testExtractJobNumberFromAtOutputWithEmptyOutput()
+    {
+        // given
+        $atHelper = new AtHelper($this->logger);
+        $output = '';
+        // when
+        $jobNumber = $atHelper->extractJobNumberFromAtOutput($output);
+        // then
+        static::assertNull($jobNumber);
+    }
+
 }

@@ -91,7 +91,10 @@ class AtHelper implements AtHelperInterface
     {
         $explodedOutput = explode(' ', $output);
         if (sizeof($explodedOutput) >= 2) {
-            return $explodedOutput[1];
+            $jobIndex = array_search('job', $explodedOutput);
+            if ($jobIndex !== false) {
+                return $explodedOutput[$jobIndex + 1];
+            }
         }
         return null;
     }
