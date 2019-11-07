@@ -89,6 +89,7 @@ class AtHelper implements AtHelperInterface
      */
     public function extractJobNumberFromAtOutput($output): ?string
     {
+        $output = trim(preg_replace('/\s+/', ' ', $output));
         $explodedOutput = explode(' ', $output);
         if (sizeof($explodedOutput) >= 2) {
             $jobIndex = array_search('job', $explodedOutput);

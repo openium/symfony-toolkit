@@ -89,6 +89,16 @@ class AtHelperTest extends TestCase
         // then
         static::assertEquals("130", $jobNumber);
     }
+    public function testExtractJobNumberFromAtOutputWithOutputSpecialChar()
+    {
+        // given
+        $atHelper = new AtHelper($this->logger);
+        $output = "commands will be executed using /bin/sh\njob 130 at Wed Nov  6 15:06:00 2019";
+        // when
+        $jobNumber = $atHelper->extractJobNumberFromAtOutput($output);
+        // then
+        static::assertEquals("130", $jobNumber);
+    }
 
     public function testExtractJobNumberFromAtOutputWithWrongOutput()
     {
