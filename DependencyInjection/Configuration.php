@@ -30,10 +30,8 @@ class Configuration implements ConfigurationInterface
      */
     public function getConfigTreeBuilder()
     {
-        $treeBuilder = new TreeBuilder();
+        return new TreeBuilder('openium_symfony_toolkit');
         //$rootNode = method_exists(TreeBuilder::class, 'getRootNode') ?
         // $treeBuilder->getRootNode() :
-         $treeBuilder->root('openium_symfony_toolkit');
-        return $treeBuilder;
     }
 }

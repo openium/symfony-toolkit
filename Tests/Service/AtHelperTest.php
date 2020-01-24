@@ -4,7 +4,7 @@ namespace Openium\SymfonyToolKitBundle\Test\Service;
 
 use Openium\SymfonyToolKitBundle\Service\AtHelper;
 use Openium\SymfonyToolKitBundle\Service\AtHelperInterface;
-use Symfony\Bundle\FrameworkBundle\Tests\TestCase;
+use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -18,7 +18,7 @@ class AtHelperTest extends TestCase
 {
     private $logger;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->logger = $this->createMock(LoggerInterface::class);
         $this->logger->expects(static::any())
@@ -41,12 +41,10 @@ class AtHelperTest extends TestCase
         $this->assertEquals('12:00 AM January 1 2018', $result);
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage timestamp < 0
-     */
     public function testFormatTimestampForAtWhitNegativeTimestamp()
     {
+        static::expectException("InvalidArgumentException");
+        static::expectExceptionMessage("timestamp < 0");
         $atHelper = new AtHelper($this->logger);
         $this->assertTrue($atHelper instanceof AtHelperInterface);
         $atHelper->formatTimestampForAt(-654987);

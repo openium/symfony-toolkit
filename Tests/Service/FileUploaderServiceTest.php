@@ -4,7 +4,7 @@ namespace Openium\SymfonyToolKitBundle\Tests\Service;
 
 use Openium\SymfonyToolKitBundle\Service\FileUploaderService;
 use Openium\SymfonyToolKitBundle\Tests\Fixtures\Entity\EntityWithUpload;
-use Symfony\Bundle\FrameworkBundle\Tests\TestCase;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 /**
@@ -18,7 +18,7 @@ class FileUploaderServiceTest extends TestCase
 {
     protected $file;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->file = $this->getMockBuilder(UploadedFile::class)
             ->disableOriginalConstructor()
@@ -56,12 +56,11 @@ class FileUploaderServiceTest extends TestCase
 
     /**
      * Test prepareUploadPath method with file without extension. Prepare image path in the entity
-     *
-     * @expectedException Symfony\Component\HttpKernel\Exception\BadRequestHttpException
-     * @expectedExceptionMessage The file extension is empty.
      */
     public function testPrepareUploadPathWithFileWithoutExtension()
     {
+        static::expectException("Symfony\Component\HttpKernel\Exception\BadRequestHttpException");
+        static::expectExceptionMessage("The file extension is empty.");
         $this->file->expects($this->once())
             ->method('guessClientExtension')
             ->will($this->returnValue(null));
@@ -102,12 +101,11 @@ class FileUploaderServiceTest extends TestCase
 
     /**
      * Test uploadEntity method with file without having configured the upload path (prepareUploadPath method).
-     *
-     * @expectedException \UnexpectedValueException
-     * @expectedExceptionMessage Call prepareUploadPath method on the entity before upload.
      */
     public function testUploadEntityWithFileButNotPreUploaded()
     {
+        static::expectException("UnexpectedValueException");
+        static::expectExceptionMessage("Call prepareUploadPath method on the entity before upload.");
         $entity = new EntityWithUpload();
         $entity->setFile($this->file);
         $fileUploaderService = new FileUploaderService('/tmp', 'test');

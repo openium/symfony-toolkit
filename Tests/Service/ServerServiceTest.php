@@ -3,7 +3,7 @@
 namespace Openium\SymfonyToolKitBundle\Test\Service;
 
 use Openium\SymfonyToolKitBundle\Service\ServerService;
-use Symfony\Bundle\FrameworkBundle\Tests\TestCase;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 
@@ -18,7 +18,7 @@ class ServerServiceTest extends TestCase
 {
     private $requestStack;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->requestStack = $this->getMockBuilder(RequestStack::class)
             ->disableOriginalConstructor()

@@ -84,7 +84,11 @@ class PathKernelExceptionListener implements PathKernelExceptionListenerInterfac
     {
         if ($this->isEnable()) {
             if (strpos($event->getRequest()->getRequestUri(), $this->path) !== false) {
-                $exception = $event->getException();
+                if (method_exists($event, 'getThrowable')) {
+                    $exception = $event->getThrowable();
+                } else {
+                    $exception = $event->getException();
+                }
                 $response = $this->exceptionFormat->formatExceptionResponse($exception);
                 $this->logger->debug(
                     sprintf(

@@ -3,7 +3,7 @@
 namespace Openium\SymfonyToolKitBundle\Test\Service;
 
 use Openium\SymfonyToolKitBundle\Service\ExceptionFormatService;
-use Symfony\Bundle\FrameworkBundle\Tests\TestCase;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\KernelInterface;
@@ -19,7 +19,7 @@ class ExceptionFormatServiceTest extends TestCase
 {
     private $testKernel;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->testKernel = $this->getMockBuilder(KernelInterface::class)
             ->disableOriginalConstructor()

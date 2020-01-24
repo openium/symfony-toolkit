@@ -14,7 +14,7 @@ namespace Openium\SymfonyToolKitBundle\Tests\Command;
 use Openium\SymfonyToolKitBundle\Command\AbstractCommand;
 use Openium\SymfonyToolKitBundle\Tests\Fixtures\Command\TestCommand;
 use Psr\Log\LoggerInterface;
-use Symfony\Bundle\FrameworkBundle\Tests\TestCase;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputOption;

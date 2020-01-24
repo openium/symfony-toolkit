@@ -13,7 +13,7 @@
 
 namespace Openium\SymfonyToolKitBundle\Service;
 
-use \Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Interface ExceptionFormatServiceInterface

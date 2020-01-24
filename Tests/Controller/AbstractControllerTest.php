@@ -13,7 +13,7 @@ namespace Openium\SymfonyToolKitBundle\Tests\Controller;
 
 use Openium\SymfonyToolKitBundle\Controller\AbstractController;
 use Openium\SymfonyToolKitBundle\Tests\Fixtures\Controller\TestController;
-use Symfony\Bundle\FrameworkBundle\Tests\TestCase;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -35,23 +35,20 @@ class AbstractControllerTest extends TestCase
         $this->assertEquals($contentArray, $result);
     }
 
-    /**
-     * @expectedException  Openium\SymfonyToolKitBundle\Exception\MissingContentException
-     * @expectedExceptionMessage Missing content
-     */
     public function testAbstractControllerWithEmptyContent()
     {
+        static::expectException("Openium\SymfonyToolKitBundle\Exception\MissingContentException");
+        static::expectExceptionMessage("Missing content");
         $controller = new TestController();
         $this->assertTrue($controller instanceof AbstractController);
         $request =  new Request(['query' => "5"], ['request' => 6], [], [], [], ["server" => 7]);
         $controller->test($request);
     }
-    /**
-     * @expectedException  Openium\SymfonyToolKitBundle\Exception\InvalidContentFormatException
-     * @expectedExceptionMessage Incorrect content format
-     */
+
     public function testAbstractControllerWithNonArrayContent()
     {
+        static::expectException("Openium\SymfonyToolKitBundle\Exception\InvalidContentFormatException");
+        static::expectExceptionMessage("Incorrect content format");
         $controller = new TestController();
         $this->assertTrue($controller instanceof AbstractController);
         $request =  new Request(['query' => "5"], ['request' => 6], [], [], [], ["server" => 7], 8);

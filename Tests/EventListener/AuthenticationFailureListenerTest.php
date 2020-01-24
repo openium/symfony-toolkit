@@ -13,7 +13,7 @@ namespace Openium\SymfonyToolKitBundle\Tests\EventListener;
 
 use Openium\SymfonyToolKitBundle\Tests\Fixtures\EventListener\TestAuthenticationFailureListener;
 use Psr\Log\LoggerInterface;
-use Symfony\Bundle\FrameworkBundle\Tests\TestCase;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Security\Core\Authentication\Token\AnonymousToken;
@@ -29,7 +29,7 @@ class AuthenticationFailureListenerTest extends TestCase
 {
     private $logger;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->logger = $this->getMockBuilder(LoggerInterface::class)
             ->disableOriginalConstructor()
