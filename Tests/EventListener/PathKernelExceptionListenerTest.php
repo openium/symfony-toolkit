@@ -17,7 +17,7 @@ use Psr\Log\LoggerInterface;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
+use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 
 /**
@@ -57,7 +57,7 @@ class PathKernelExceptionListenerTest extends TestCase
         $kernel = $this->createMock(HttpKernelInterface::class);
         $request = Request::create('/api');
         $exc = new \Exception("testError", 123);
-        $event = new GetResponseForExceptionEvent($kernel, $request, HttpKernelInterface::MASTER_REQUEST, $exc);
+        $event = new ExceptionEvent($kernel, $request, HttpKernelInterface::MASTER_REQUEST, $exc);
         $listener->onKernelException($event);
         $this->assertEquals($response, $event->getResponse());
     }

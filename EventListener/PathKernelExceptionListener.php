@@ -13,7 +13,7 @@ namespace Openium\SymfonyToolKitBundle\EventListener;
 
 use Openium\SymfonyToolKitBundle\Service\ExceptionFormatServiceInterface;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
+use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 
 /**
  * Class PathExceptionListener
@@ -73,14 +73,14 @@ class PathKernelExceptionListener implements PathKernelExceptionListenerInterfac
     }
 
     /**
-     * @param GetResponseForExceptionEvent $event
+     * @param ExceptionEvent $event
      *
      * @return void
      * @throws \UnexpectedValueException
      *
      * @throws \InvalidArgumentException
      */
-    public function onKernelException(GetResponseForExceptionEvent $event)
+    public function onKernelException(ExceptionEvent $event)
     {
         if ($this->isEnable()) {
             if (strpos($event->getRequest()->getRequestUri(), $this->path) !== false) {

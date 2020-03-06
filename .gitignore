@@ -11,3 +11,4 @@
 # Composer Files
 vendor/
 composer.lock
+/.phpunit.result.cache

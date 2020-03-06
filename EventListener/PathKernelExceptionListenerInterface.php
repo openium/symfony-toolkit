@@ -11,7 +11,7 @@
 
 namespace Openium\SymfonyToolKitBundle\EventListener;
 
-use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
+use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 
 /**
  * Interface ExceptionListenerInterface
@@ -20,5 +20,5 @@ use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
  */
 interface PathKernelExceptionListenerInterface
 {
-    public function onKernelException(GetResponseForExceptionEvent $event);
+    public function onKernelException(ExceptionEvent $event);
 }
