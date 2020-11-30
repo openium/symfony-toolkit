@@ -1,7 +1,7 @@
 <?php
 
 /**
- * PHP Version 7.1, 7.2
+ * PHP Version >=7.1
  *
  * @package  Openium\SymfonyToolKitBundle\Tests\EventListener
  * @author   Openium <contact@openium.fr>
@@ -46,17 +46,52 @@ class PathKernelExceptionListenerTest extends TestCase
         $this->assertFalse($listener->getEnable());
     }
 
-    public function testOnKernelException()
+    public function testOnKernelExceptionWithRandowError()
     {
         $exceptionFormat = $this->createMock(ExceptionFormatServiceInterface::class);
         $response = new Response('test');
         $exceptionFormat->expects($this->once())->method('formatExceptionResponse')->will(
             $this->returnValue($response)
         );
+        $this->logger->expects($this->once())->method('error');
         $listener = new TestPathKernelExceptionListener($exceptionFormat, '/api', true, $this->logger);
         $kernel = $this->createMock(HttpKernelInterface::class);
         $request = Request::create('/api');
         $exc = new \Exception("testError", 123);
+        $event = new ExceptionEvent($kernel, $request, HttpKernelInterface::MASTER_REQUEST, $exc);
+        $listener->onKernelException($event);
+        $this->assertEquals($response, $event->getResponse());
+    }
+
+    public function testOnKernelExceptionWithCritError()
+    {
+        $exceptionFormat = $this->createMock(ExceptionFormatServiceInterface::class);
+        $response = new Response('test', 500);
+        $exceptionFormat->expects($this->once())->method('formatExceptionResponse')->will(
+            $this->returnValue($response)
+        );
+        $this->logger->expects($this->once())->method('critical');
+        $listener = new TestPathKernelExceptionListener($exceptionFormat, '/api', true, $this->logger);
+        $kernel = $this->createMock(HttpKernelInterface::class);
+        $request = Request::create('/api');
+        $exc = new \Exception("testError", 500);
+        $event = new ExceptionEvent($kernel, $request, HttpKernelInterface::MASTER_REQUEST, $exc);
+        $listener->onKernelException($event);
+        $this->assertEquals($response, $event->getResponse());
+    }
+
+    public function testOnKernelExceptionWithAuthError()
+    {
+        $exceptionFormat = $this->createMock(ExceptionFormatServiceInterface::class);
+        $response = new Response('test', 401);
+        $exceptionFormat->expects($this->once())->method('formatExceptionResponse')->will(
+            $this->returnValue($response)
+        );
+        $this->logger->expects($this->once())->method('info');
+        $listener = new TestPathKernelExceptionListener($exceptionFormat, '/api', true, $this->logger);
+        $kernel = $this->createMock(HttpKernelInterface::class);
+        $request = Request::create('/api');
+        $exc = new \Exception("testError", 401);
         $event = new ExceptionEvent($kernel, $request, HttpKernelInterface::MASTER_REQUEST, $exc);
         $listener->onKernelException($event);
         $this->assertEquals($response, $event->getResponse());

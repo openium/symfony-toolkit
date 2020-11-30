@@ -3,7 +3,7 @@
 /**
  * Bundle Extension class
  *
- * PHP Version 7.1, 7.2
+ * PHP Version >=7.1
  *
  * @package  Openium\SymfonyToolKitBundle\DependencyInjection
  * @author   Openium <contact@openium.fr>

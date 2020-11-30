@@ -1,7 +1,7 @@
 <?php
 
 /**
- * PHP Version 7.1, 7.2
+ * PHP Version >=7.1
  *
  * @package  Openium\SymfonyToolKitBundle\EventListener
  * @author   Openium <contact@openium.fr>
@@ -13,6 +13,7 @@ namespace Openium\SymfonyToolKitBundle\EventListener;
 
 use Openium\SymfonyToolKitBundle\Service\ExceptionFormatServiceInterface;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 
 /**
@@ -90,13 +91,21 @@ class PathKernelExceptionListener implements PathKernelExceptionListenerInterfac
                     $exception = $event->getException();
                 }
                 $response = $this->exceptionFormat->formatExceptionResponse($exception);
+                $code = $response->getStatusCode();
                 $this->logger->debug(
                     sprintf(
-                        'SymfonyToolKitBundle onKernelException : % %',
-                        $response->getStatusCode(),
+                        'SymfonyToolKitBundle onKernelException : %s %s',
+                        $code,
                         $exception->getMessage()
                     )
                 );
+                if ($code === Response::HTTP_INTERNAL_SERVER_ERROR) {
+                    $this->logger->critical($exception);
+                } elseif ($code !== Response::HTTP_UNAUTHORIZED && $code !== Response::HTTP_NOT_FOUND) {
+                    $this->logger->error($exception);
+                } else {
+                    $this->logger->info($exception);
+                }
                 $event->setResponse($response);
             }
         }

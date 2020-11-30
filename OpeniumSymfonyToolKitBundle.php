@@ -3,7 +3,7 @@
 /**
  * OpeniumSymfonyToolKit bundle
  *
- * PHP Version 7.1, 7.2
+ * PHP Version >=7.1
  *
  * @package  Openium\SymfonyToolKitBundle
  * @author   Openium <contact@openium.fr>

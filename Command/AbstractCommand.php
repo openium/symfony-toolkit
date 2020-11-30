@@ -1,7 +1,7 @@
 <?php
 
 /**
- * PHP Version 7.1, 7.2
+ * PHP Version >=7.1
  *
  * @package  Openium\SymfonyToolKitBundle\Command
  * @author   Openium <contact@openium.fr>
@@ -12,7 +12,6 @@
 namespace Openium\SymfonyToolKitBundle\Command;
 
 use Psr\Log\LoggerInterface;
-
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Exception\InvalidArgumentException;
 use Symfony\Component\Console\Exception\LogicException;

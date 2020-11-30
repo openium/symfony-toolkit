@@ -3,7 +3,7 @@
 /**
  * DoctrineExceptionHandlerService
  *
- * PHP Version 7.1, 7.2
+ * PHP Version >=7.1
  *
  * @package  Openium\SymfonyToolKitBundle\Service
  * @author   Openium <contact@openium.fr>
@@ -67,7 +67,7 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
      */
     public function log(\Throwable $throwable)
     {
-        $this->logger->error('-------------------------------------');
+        $this->logger->error('------------------------------------- Log from Symfony ToolKit DoctrineExceptionHandlerService');
         $this->logger->error(get_class($throwable));
         $this->logger->error($throwable->getMessage());
         $this->logger->error($throwable->getTraceAsString());

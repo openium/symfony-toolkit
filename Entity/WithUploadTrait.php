@@ -3,7 +3,7 @@
 /**
  * WithUpload trait
  *
- * PHP Version 7.1, 7.2
+ * PHP Version >=7.1
  *
  * @package  Openium\SymfonyToolKitBundle\Entity
  * @author   Openium <contact@openium.fr>

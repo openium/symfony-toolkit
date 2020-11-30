@@ -1,11 +1,9 @@
 parameters:
-
     openium_symfony_toolkit.public_dir: '%kernel.project_dir%/public'
     openium_symfony_toolkit.uploads_dir_name: 'uploads'
     openium_symfony_toolkit.kernel_exception_listener_enable: true
     openium_symfony_toolkit.kernel_exception_listener_path: '/api'
     openium_symfony_toolkit.kernel_exception_listener_class: 'Openium\SymfonyToolKitBundle\EventListener\PathKernelExceptionListener'
-
     openium_symfony_toolkit.authentication_failure_listener_enable: true
     openium_symfony_toolkit.authentication_failure_listener_class: 'Openium\SymfonyToolKitBundle\EventListener\AuthenticationFailureListener'
 
