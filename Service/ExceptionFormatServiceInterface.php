@@ -25,14 +25,14 @@ interface ExceptionFormatServiceInterface
     /**
      * formatExceptionResponse
      *
-     * @param \Exception $exception
+     * @param \Throwable $exception
      *
      * @throws \InvalidArgumentException
      * @throws \UnexpectedValueException
      *
      * @return Response
      */
-    public function formatExceptionResponse(\Exception $exception): Response;
+    public function formatExceptionResponse(\Throwable $exception): Response;
 
     /**
      * getArray

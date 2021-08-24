@@ -131,4 +131,17 @@ class ExceptionFormatServiceTest extends TestCase
         $this->assertTrue($response instanceof Response);
         $this->assertEquals($response->getStatusCode(), Response::HTTP_NOT_FOUND);
     }
+
+
+    public function testFormatExceptionResponseWithTypeError()
+    {
+        $errorMsg = 'Type error';
+        $exception = new \TypeError($errorMsg);
+        $exceptionFormatService = new ExceptionFormatService($this->testKernel);
+        $this->assertTrue($exceptionFormatService instanceof ExceptionFormatService);
+        $response = $exceptionFormatService->formatExceptionResponse($exception);
+        $this->assertTrue($response instanceof Response);
+        $this->assertEquals(Response::HTTP_INTERNAL_SERVER_ERROR, $response->getStatusCode());
+        $this->assertEquals($errorMsg, $response->getContent());
+    }
 }

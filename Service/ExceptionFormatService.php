@@ -1,8 +1,6 @@
 <?php
-
 /**
  * ExceptionFormatService
- *
  * PHP Version >=7.1
  *
  * @package  Openium\SymfonyToolKitBundle\Service
@@ -43,35 +41,39 @@ class ExceptionFormatService implements ExceptionFormatServiceInterface
     /**
      * formatExceptionResponse
      *
-     * @param \Exception $exception
+     * @param \Throwable $exception
      *
-     * @return Response
      * @throws \UnexpectedValueException
-     *
      * @throws \InvalidArgumentException
+     * @return Response
      */
-    public function formatExceptionResponse(\Exception $exception): Response
+    public function formatExceptionResponse(\Throwable $exception): Response
     {
-        if (is_a($exception, "Symfony\Component\Security\Core\Exception\AuthenticationException")) {
-            $code = Response::HTTP_UNAUTHORIZED;
-            $text = Response::$statusTexts[$code];
-            $message = $text;
-        } elseif (is_a($exception, "Firebase\Auth\Token\Exception\ExpiredToken")
-            || is_a($exception, "Firebase\Auth\Token\Exception\IssuedInTheFuture")
-            || is_a($exception, "Firebase\Auth\Token\Exception\InvalidToken")) {
-            // Firebase part
-            $code = Response::HTTP_UNAUTHORIZED;
-            $text = $exception->getMessage();
-            $message = $text;
-        } else {
-            $code = $this->getStatusCode($exception);
-            $text = $this->getStatusText($exception);
-            $message = null;
-        }
-        $error = $this->getArray($exception, $code, $text, $message);
         $response = new JsonResponse();
-        $response->setStatusCode($code ?: $this->getStatusCode($exception));
-        $response->setContent((json_encode($error)) ?: '');
+        if ($exception instanceof \Exception) {
+            if (is_a($exception, "Symfony\Component\Security\Core\Exception\AuthenticationException")) {
+                $code = Response::HTTP_UNAUTHORIZED;
+                $text = Response::$statusTexts[$code];
+                $message = $text;
+            } elseif (is_a($exception, "Firebase\Auth\Token\Exception\ExpiredToken")
+                || is_a($exception, "Firebase\Auth\Token\Exception\IssuedInTheFuture")
+                || is_a($exception, "Firebase\Auth\Token\Exception\InvalidToken")) {
+                // Firebase part
+                $code = Response::HTTP_UNAUTHORIZED;
+                $text = $exception->getMessage();
+                $message = $text;
+            } else {
+                $code = $this->getStatusCode($exception);
+                $text = $this->getStatusText($exception);
+                $message = null;
+            }
+            $error = $this->getArray($exception, $code, $text, $message);
+            $response->setStatusCode($code ?: $this->getStatusCode($exception));
+            $response->setContent((json_encode($error)) ?: '');
+        } else {
+            $response->setStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR);
+            $response->setContent($exception->getMessage());
+        }
         return $response;
     }
 
