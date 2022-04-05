@@ -41,59 +41,59 @@ class PathKernelExceptionListenerTest extends TestCase
     {
         $exceptionFormat = $this->createMock(ExceptionFormatServiceInterface::class);
         $listener = new TestPathKernelExceptionListener($exceptionFormat, '/api', true, $this->logger);
-        $this->assertTrue($listener->getEnable());
+        self::assertTrue($listener->getEnable());
         $listener = new TestPathKernelExceptionListener($exceptionFormat, '/api', false, $this->logger);
-        $this->assertFalse($listener->getEnable());
+        self::assertFalse($listener->getEnable());
     }
 
     public function testOnKernelExceptionWithRandowError()
     {
         $exceptionFormat = $this->createMock(ExceptionFormatServiceInterface::class);
         $response = new Response('test');
-        $exceptionFormat->expects($this->once())->method('formatExceptionResponse')->will(
+        $exceptionFormat->expects(self::once())->method('formatExceptionResponse')->will(
             $this->returnValue($response)
         );
-        $this->logger->expects($this->once())->method('error');
+        $this->logger->expects(self::once())->method('error');
         $listener = new TestPathKernelExceptionListener($exceptionFormat, '/api', true, $this->logger);
         $kernel = $this->createMock(HttpKernelInterface::class);
         $request = Request::create('/api');
         $exc = new \Exception("testError", 123);
         $event = new ExceptionEvent($kernel, $request, HttpKernelInterface::MASTER_REQUEST, $exc);
         $listener->onKernelException($event);
-        $this->assertEquals($response, $event->getResponse());
+        self::assertEquals($response, $event->getResponse());
     }
 
     public function testOnKernelExceptionWithCritError()
     {
         $exceptionFormat = $this->createMock(ExceptionFormatServiceInterface::class);
         $response = new Response('test', 500);
-        $exceptionFormat->expects($this->once())->method('formatExceptionResponse')->will(
+        $exceptionFormat->expects(self::once())->method('formatExceptionResponse')->will(
             $this->returnValue($response)
         );
-        $this->logger->expects($this->once())->method('critical');
+        $this->logger->expects(self::once())->method('critical');
         $listener = new TestPathKernelExceptionListener($exceptionFormat, '/api', true, $this->logger);
         $kernel = $this->createMock(HttpKernelInterface::class);
         $request = Request::create('/api');
         $exc = new \Exception("testError", 500);
         $event = new ExceptionEvent($kernel, $request, HttpKernelInterface::MASTER_REQUEST, $exc);
         $listener->onKernelException($event);
-        $this->assertEquals($response, $event->getResponse());
+        self::assertEquals($response, $event->getResponse());
     }
 
     public function testOnKernelExceptionWithAuthError()
     {
         $exceptionFormat = $this->createMock(ExceptionFormatServiceInterface::class);
         $response = new Response('test', 401);
-        $exceptionFormat->expects($this->once())->method('formatExceptionResponse')->will(
+        $exceptionFormat->expects(self::once())->method('formatExceptionResponse')->will(
             $this->returnValue($response)
         );
-        $this->logger->expects($this->once())->method('info');
+        $this->logger->expects(self::once())->method('info');
         $listener = new TestPathKernelExceptionListener($exceptionFormat, '/api', true, $this->logger);
         $kernel = $this->createMock(HttpKernelInterface::class);
         $request = Request::create('/api');
         $exc = new \Exception("testError", 401);
         $event = new ExceptionEvent($kernel, $request, HttpKernelInterface::MASTER_REQUEST, $exc);
         $listener->onKernelException($event);
-        $this->assertEquals($response, $event->getResponse());
+        self::assertEquals($response, $event->getResponse());
     }
 }

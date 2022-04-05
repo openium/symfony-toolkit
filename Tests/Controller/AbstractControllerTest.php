@@ -26,13 +26,13 @@ class AbstractControllerTest extends TestCase
     public function testAbstractController()
     {
         $controller = new TestController();
-        $this->assertTrue($controller instanceof AbstractController);
+        self::assertTrue($controller instanceof AbstractController);
         $contentArray = ["content" => 8];
         $content = json_encode(["content" => 8]);
         $request =  new Request(['query' => "5"], ['request' => 6], [], [], [], ["server" => 7], $content);
         $result = $controller->test($request);
-        $this->assertTrue(is_array($result));
-        $this->assertEquals($contentArray, $result);
+        self::assertTrue(is_array($result));
+        self::assertEquals($contentArray, $result);
     }
 
     public function testAbstractControllerWithEmptyContent()
@@ -40,7 +40,7 @@ class AbstractControllerTest extends TestCase
         static::expectException("Openium\SymfonyToolKitBundle\Exception\MissingContentException");
         static::expectExceptionMessage("Missing content");
         $controller = new TestController();
-        $this->assertTrue($controller instanceof AbstractController);
+        self::assertTrue($controller instanceof AbstractController);
         $request =  new Request(['query' => "5"], ['request' => 6], [], [], [], ["server" => 7]);
         $controller->test($request);
     }
@@ -50,7 +50,7 @@ class AbstractControllerTest extends TestCase
         static::expectException("Openium\SymfonyToolKitBundle\Exception\InvalidContentFormatException");
         static::expectExceptionMessage("Incorrect content format");
         $controller = new TestController();
-        $this->assertTrue($controller instanceof AbstractController);
+        self::assertTrue($controller instanceof AbstractController);
         $request =  new Request(['query' => "5"], ['request' => 6], [], [], [], ["server" => 7], 8);
         $controller->test($request);
     }

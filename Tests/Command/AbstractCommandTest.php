@@ -38,8 +38,8 @@ class AbstractCommandTest extends TestCase
         $command = new TestCommand($logger);
         $command->configure();
         $command->execute($input, $output);
-        $this->assertTrue($command instanceof AbstractCommand);
-        $this->assertFalse($command->getHasLog());
+        self::assertTrue($command instanceof AbstractCommand);
+        self::assertFalse($command->getHasLog());
         $command->writeMessage('test');
     }
 
@@ -53,7 +53,7 @@ class AbstractCommandTest extends TestCase
         $command = new TestCommand($logger);
         $command->configure();
         $command->execute($input, $output);
-        $this->assertTrue($command instanceof AbstractCommand);
-        $this->assertTrue($command->getHasLog());
+        self::assertTrue($command instanceof AbstractCommand);
+        self::assertTrue($command->getHasLog());
     }
 }

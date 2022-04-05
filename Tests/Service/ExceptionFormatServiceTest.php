@@ -1,6 +1,6 @@
 <?php
 
-namespace Openium\SymfonyToolKitBundle\Test\Service;
+namespace Openium\SymfonyToolKitBundle\Tests\Service;
 
 use Openium\SymfonyToolKitBundle\Service\ExceptionFormatService;
 use PHPUnit\Framework\TestCase;
@@ -31,105 +31,105 @@ class ExceptionFormatServiceTest extends TestCase
     {
         $exception = new HttpException(Response::HTTP_FORBIDDEN);
         $exceptionFormatService = new ExceptionFormatService($this->testKernel);
-        $this->assertTrue($exceptionFormatService instanceof ExceptionFormatService);
+        self::assertTrue($exceptionFormatService instanceof ExceptionFormatService);
         $statusCode = $exceptionFormatService->getStatusCode($exception);
-        $this->assertTrue(is_int($statusCode));
-        $this->assertEquals($statusCode, Response::HTTP_FORBIDDEN);
+        self::assertTrue(is_int($statusCode));
+        self::assertEquals($statusCode, Response::HTTP_FORBIDDEN);
     }
 
     public function testGetStatusCodeWithAccessDeniedException()
     {
         $exception = new \Exception();
         $exceptionFormatService = new ExceptionFormatService($this->testKernel);
-        $this->assertTrue($exceptionFormatService instanceof ExceptionFormatService);
+        self::assertTrue($exceptionFormatService instanceof ExceptionFormatService);
         $statusCode = $exceptionFormatService->getStatusCode($exception);
-        $this->assertTrue(is_int($statusCode));
-        $this->assertEquals($statusCode, Response::HTTP_INTERNAL_SERVER_ERROR);
+        self::assertTrue(is_int($statusCode));
+        self::assertEquals($statusCode, Response::HTTP_INTERNAL_SERVER_ERROR);
     }
 
     public function testGetStatusTextWith402HttpException()
     {
         $exception = new HttpException(Response::HTTP_PAYMENT_REQUIRED);
         $exceptionFormatService = new ExceptionFormatService($this->testKernel);
-        $this->assertTrue($exceptionFormatService instanceof ExceptionFormatService);
+        self::assertTrue($exceptionFormatService instanceof ExceptionFormatService);
         $text = $exceptionFormatService->getStatusText($exception);
-        $this->assertTrue(is_string($text));
-        $this->assertEquals($text, 'Request Failed');
+        self::assertTrue(is_string($text));
+        self::assertEquals($text, 'Request Failed');
     }
 
     public function testGetStatusTextWith404HttpException()
     {
         $exception = new HttpException(Response::HTTP_NOT_FOUND);
         $exceptionFormatService = new ExceptionFormatService($this->testKernel);
-        $this->assertTrue($exceptionFormatService instanceof ExceptionFormatService);
+        self::assertTrue($exceptionFormatService instanceof ExceptionFormatService);
         $text = $exceptionFormatService->getStatusText($exception);
-        $this->assertTrue(is_string($text));
-        $this->assertEquals($text, Response::$statusTexts[Response::HTTP_NOT_FOUND]);
+        self::assertTrue(is_string($text));
+        self::assertEquals($text, Response::$statusTexts[Response::HTTP_NOT_FOUND]);
     }
 
     public function testGetStatusTextWithUnknowHttpException()
     {
         $exception = new HttpException(456987);
         $exceptionFormatService = new ExceptionFormatService($this->testKernel);
-        $this->assertTrue($exceptionFormatService instanceof ExceptionFormatService);
+        self::assertTrue($exceptionFormatService instanceof ExceptionFormatService);
         $text = $exceptionFormatService->getStatusText($exception);
-        $this->assertTrue(is_string($text));
-        $this->assertEquals($text, Response::$statusTexts[Response::HTTP_INTERNAL_SERVER_ERROR]);
+        self::assertTrue(is_string($text));
+        self::assertEquals($text, Response::$statusTexts[Response::HTTP_INTERNAL_SERVER_ERROR]);
     }
 
     public function testGetArrayWith404HttpException()
     {
         $exception = new HttpException(Response::HTTP_NOT_FOUND);
-        $this->testKernel->expects($this->once())
+        $this->testKernel->expects(self::once())
             ->method('getEnvironment')
             ->will($this->returnValue("prod"));
         $exceptionFormatService = new ExceptionFormatService($this->testKernel);
-        $this->assertTrue($exceptionFormatService instanceof ExceptionFormatService);
+        self::assertTrue($exceptionFormatService instanceof ExceptionFormatService);
         $result = $exceptionFormatService->getArray($exception);
-        $this->assertTrue(is_array($result));
-        $this->assertTrue(array_key_exists('status_code', $result));
-        $this->assertEquals($result['status_code'], 404);
-        $this->assertTrue(array_key_exists('status_text', $result));
-        $this->assertEquals($result['status_text'], Response::$statusTexts[Response::HTTP_NOT_FOUND]);
-        $this->assertTrue(array_key_exists('message', $result));
-        $this->assertFalse(array_key_exists('trace', $result));
-        $this->assertFalse(array_key_exists('previous', $result));
+        self::assertTrue(is_array($result));
+        self::assertTrue(array_key_exists('status_code', $result));
+        self::assertEquals($result['status_code'], 404);
+        self::assertTrue(array_key_exists('status_text', $result));
+        self::assertEquals($result['status_text'], Response::$statusTexts[Response::HTTP_NOT_FOUND]);
+        self::assertTrue(array_key_exists('message', $result));
+        self::assertFalse(array_key_exists('trace', $result));
+        self::assertFalse(array_key_exists('previous', $result));
     }
 
     public function testGetArrayWith404HttpExceptionAndDevEnd()
     {
         $previous = new \Exception('previous exception', 123456, null);
-        $this->testKernel->expects($this->once())
+        $this->testKernel->expects(self::once())
             ->method('getEnvironment')
             ->will($this->returnValue("dev"));
         $exception = new HttpException(Response::HTTP_NOT_FOUND, 'message exception', $previous);
         $exceptionFormatService = new ExceptionFormatService($this->testKernel);
-        $this->assertTrue($exceptionFormatService instanceof ExceptionFormatService);
+        self::assertTrue($exceptionFormatService instanceof ExceptionFormatService);
         $result = $exceptionFormatService->getArray($exception);
-        $this->assertTrue(is_array($result));
-        $this->assertTrue(array_key_exists('status_code', $result));
-        $this->assertEquals($result['status_code'], 404);
-        $this->assertTrue(array_key_exists('status_text', $result));
-        $this->assertEquals($result['status_text'], Response::$statusTexts[Response::HTTP_NOT_FOUND]);
-        $this->assertTrue(array_key_exists('message', $result));
-        $this->assertEquals('message exception', $result['message']);
-        $this->assertTrue(array_key_exists('trace', $result));
-        $this->assertTrue(array_key_exists('previous', $result));
-        $this->assertEquals('previous exception', $result['previous']['message']);
-        $this->assertEquals(123456, $result['previous']['code']);
+        self::assertTrue(is_array($result));
+        self::assertTrue(array_key_exists('status_code', $result));
+        self::assertEquals($result['status_code'], 404);
+        self::assertTrue(array_key_exists('status_text', $result));
+        self::assertEquals($result['status_text'], Response::$statusTexts[Response::HTTP_NOT_FOUND]);
+        self::assertTrue(array_key_exists('message', $result));
+        self::assertEquals('message exception', $result['message']);
+        self::assertTrue(array_key_exists('trace', $result));
+        self::assertTrue(array_key_exists('previous', $result));
+        self::assertEquals('previous exception', $result['previous']['message']);
+        self::assertEquals(123456, $result['previous']['code']);
     }
 
     public function testFormatExceptionResponse()
     {
         $exception = new HttpException(Response::HTTP_NOT_FOUND);
-        $this->testKernel->expects($this->once())
+        $this->testKernel->expects(self::once())
             ->method('getEnvironment')
             ->will($this->returnValue("prod"));
         $exceptionFormatService = new ExceptionFormatService($this->testKernel);
-        $this->assertTrue($exceptionFormatService instanceof ExceptionFormatService);
+        self::assertTrue($exceptionFormatService instanceof ExceptionFormatService);
         $response = $exceptionFormatService->formatExceptionResponse($exception);
-        $this->assertTrue($response instanceof Response);
-        $this->assertEquals($response->getStatusCode(), Response::HTTP_NOT_FOUND);
+        self::assertTrue($response instanceof Response);
+        self::assertEquals($response->getStatusCode(), Response::HTTP_NOT_FOUND);
     }
 
 
@@ -138,10 +138,10 @@ class ExceptionFormatServiceTest extends TestCase
         $errorMsg = 'Type error';
         $exception = new \TypeError($errorMsg);
         $exceptionFormatService = new ExceptionFormatService($this->testKernel);
-        $this->assertTrue($exceptionFormatService instanceof ExceptionFormatService);
+        self::assertTrue($exceptionFormatService instanceof ExceptionFormatService);
         $response = $exceptionFormatService->formatExceptionResponse($exception);
-        $this->assertTrue($response instanceof Response);
-        $this->assertEquals(Response::HTTP_INTERNAL_SERVER_ERROR, $response->getStatusCode());
-        $this->assertEquals($errorMsg, $response->getContent());
+        self::assertTrue($response instanceof Response);
+        self::assertEquals(Response::HTTP_INTERNAL_SERVER_ERROR, $response->getStatusCode());
+        self::assertEquals($errorMsg, $response->getContent());
     }
 }

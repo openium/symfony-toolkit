@@ -123,3 +123,15 @@ it use the ExceptionFormatService to format automatically the kernel exceptions
 only for the routes defined in exception_listener_path parameter
 
 ---
+
+### MemoryUtils
+
+Use to display memory usage or juste bytes into human readable string
+
+~~~php
+$str = MemoryUtils::convert(1024);
+// $str = '1 kb';
+
+$phpMemory = MemoryUtils::getMemoryUsage();
+// use convert() with actual php memory usage
+~~~

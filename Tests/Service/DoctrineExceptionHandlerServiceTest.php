@@ -1,6 +1,6 @@
 <?php
 
-namespace Openium\SymfonyToolKitBundle\Test\Service;
+namespace Openium\SymfonyToolKitBundle\Tests\Service;
 
 use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\Driver\PDOException;
@@ -39,10 +39,10 @@ class DoctrineExceptionHandlerServiceTest extends TestCase
             ->getMock();
         $this->logger->expects($this->exactly(5))->method('error');
         // TODO correct test
-        //$throwable->expects($this->once())->method('getMessage')->will($this->returnValue("test"));
-        //$throwable->expects($this->once())->method('getTraceAsString')->will($this->returnValue("test"));
+        //$throwable->expects(self::once())->method('getMessage')->will($this->returnValue("test"));
+        //$throwable->expects(self::once())->method('getTraceAsString')->will($this->returnValue("test"));
         $doctrineExceptionHandler = new DoctrineExceptionHandlerService($this->logger);
-        $this->assertTrue($doctrineExceptionHandler instanceof DoctrineExceptionHandlerService);
+        self::assertTrue($doctrineExceptionHandler instanceof DoctrineExceptionHandlerService);
         $doctrineExceptionHandler->log($throwable);
     }
 
@@ -56,7 +56,7 @@ class DoctrineExceptionHandlerServiceTest extends TestCase
         $ucve = new UniqueConstraintViolationException("message", $exceptionDE);
         $this->logger->expects($this->exactly(6))->method('error');
         $doctrineExceptionHandler = new DoctrineExceptionHandlerService($this->logger);
-        $this->assertTrue($doctrineExceptionHandler instanceof DoctrineExceptionHandlerService);
+        self::assertTrue($doctrineExceptionHandler instanceof DoctrineExceptionHandlerService);
         $doctrineExceptionHandler->toHttpException($ucve);
     }
 
@@ -70,7 +70,7 @@ class DoctrineExceptionHandlerServiceTest extends TestCase
         $nncve = new NotNullConstraintViolationException("message", $exceptionDE);
         $this->logger->expects($this->exactly(5))->method('error');
         $doctrineExceptionHandler = new DoctrineExceptionHandlerService($this->logger);
-        $this->assertTrue($doctrineExceptionHandler instanceof DoctrineExceptionHandlerService);
+        self::assertTrue($doctrineExceptionHandler instanceof DoctrineExceptionHandlerService);
         $doctrineExceptionHandler->toHttpException($nncve);
     }
 
@@ -84,7 +84,7 @@ class DoctrineExceptionHandlerServiceTest extends TestCase
         $ormiae = new ORMInvalidArgumentException("message", 0, $exceptionDE);
         $this->logger->expects($this->exactly(5))->method('error');
         $doctrineExceptionHandler = new DoctrineExceptionHandlerService($this->logger);
-        $this->assertTrue($doctrineExceptionHandler instanceof DoctrineExceptionHandlerService);
+        self::assertTrue($doctrineExceptionHandler instanceof DoctrineExceptionHandlerService);
         $doctrineExceptionHandler->toHttpException($ormiae);
     }
 
@@ -98,7 +98,7 @@ class DoctrineExceptionHandlerServiceTest extends TestCase
         $uve = new \UnexpectedValueException("message", 0, $exceptionDE);
         $this->logger->expects($this->exactly(5))->method('error');
         $doctrineExceptionHandler = new DoctrineExceptionHandlerService($this->logger);
-        $this->assertTrue($doctrineExceptionHandler instanceof DoctrineExceptionHandlerService);
+        self::assertTrue($doctrineExceptionHandler instanceof DoctrineExceptionHandlerService);
         $doctrineExceptionHandler->toHttpException($uve);
     }
 
@@ -110,7 +110,7 @@ class DoctrineExceptionHandlerServiceTest extends TestCase
         $dbal = new DBALException("message", 0, $exception);
         $this->logger->expects($this->exactly(6))->method('error');
         $doctrineExceptionHandler = new DoctrineExceptionHandlerService($this->logger);
-        $this->assertTrue($doctrineExceptionHandler instanceof DoctrineExceptionHandlerService);
+        self::assertTrue($doctrineExceptionHandler instanceof DoctrineExceptionHandlerService);
         $doctrineExceptionHandler->toHttpException($dbal);
     }
 
@@ -122,7 +122,7 @@ class DoctrineExceptionHandlerServiceTest extends TestCase
         $dbal = new DBALException("message", 0, $exception);
         $this->logger->expects($this->exactly(5))->method('error');
         $doctrineExceptionHandler = new DoctrineExceptionHandlerService($this->logger);
-        $this->assertTrue($doctrineExceptionHandler instanceof DoctrineExceptionHandlerService);
+        self::assertTrue($doctrineExceptionHandler instanceof DoctrineExceptionHandlerService);
         $doctrineExceptionHandler->toHttpException($dbal);
     }
 
@@ -134,7 +134,7 @@ class DoctrineExceptionHandlerServiceTest extends TestCase
         $dbal = new DBALException("message", 0, $exception);
         $this->logger->expects($this->exactly(5))->method('error');
         $doctrineExceptionHandler = new DoctrineExceptionHandlerService($this->logger);
-        $this->assertTrue($doctrineExceptionHandler instanceof DoctrineExceptionHandlerService);
+        self::assertTrue($doctrineExceptionHandler instanceof DoctrineExceptionHandlerService);
         $doctrineExceptionHandler->toHttpException($dbal);
     }
 
@@ -145,7 +145,7 @@ class DoctrineExceptionHandlerServiceTest extends TestCase
         $dbal = new DBALException("message", 21000, null);
         $this->logger->expects($this->exactly(5))->method('error');
         $doctrineExceptionHandler = new DoctrineExceptionHandlerService($this->logger);
-        $this->assertTrue($doctrineExceptionHandler instanceof DoctrineExceptionHandlerService);
+        self::assertTrue($doctrineExceptionHandler instanceof DoctrineExceptionHandlerService);
         $doctrineExceptionHandler->toHttpException($dbal);
     }
 
@@ -156,7 +156,7 @@ class DoctrineExceptionHandlerServiceTest extends TestCase
         $dbal = new DBALException("message", 0, null);
         $this->logger->expects($this->exactly(5))->method('error');
         $doctrineExceptionHandler = new DoctrineExceptionHandlerService($this->logger);
-        $this->assertTrue($doctrineExceptionHandler instanceof DoctrineExceptionHandlerService);
+        self::assertTrue($doctrineExceptionHandler instanceof DoctrineExceptionHandlerService);
         $doctrineExceptionHandler->toHttpException($dbal);
     }
 
@@ -167,7 +167,7 @@ class DoctrineExceptionHandlerServiceTest extends TestCase
         $dbal = new \Exception("message", 0, null);
         $this->logger->expects($this->exactly(5))->method('error');
         $doctrineExceptionHandler = new DoctrineExceptionHandlerService($this->logger);
-        $this->assertTrue($doctrineExceptionHandler instanceof DoctrineExceptionHandlerService);
+        self::assertTrue($doctrineExceptionHandler instanceof DoctrineExceptionHandlerService);
         $doctrineExceptionHandler->toHttpException($dbal);
     }
 

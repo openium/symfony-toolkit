@@ -1,6 +1,6 @@
 <?php
 
-namespace Openium\SymfonyToolKitBundle\Test\Service;
+namespace Openium\SymfonyToolKitBundle\Tests\Service;
 
 use Openium\SymfonyToolKitBundle\Service\AtHelper;
 use Openium\SymfonyToolKitBundle\Service\AtHelperInterface;
@@ -36,9 +36,9 @@ class AtHelperTest extends TestCase
     public function testFormatTimestampForAt()
     {
         $atHelper = new AtHelper($this->logger);
-        $this->assertTrue($atHelper instanceof AtHelperInterface);
+        self::assertTrue($atHelper instanceof AtHelperInterface);
         $result = $atHelper->formatTimestampForAt(1514761200);
-        $this->assertEquals('12:00 AM January 1 2018', $result);
+        self::assertEquals('12:00 AM January 1 2018', $result);
     }
 
     public function testFormatTimestampForAtWhitNegativeTimestamp()
@@ -46,7 +46,7 @@ class AtHelperTest extends TestCase
         static::expectException("InvalidArgumentException");
         static::expectExceptionMessage("timestamp < 0");
         $atHelper = new AtHelper($this->logger);
-        $this->assertTrue($atHelper instanceof AtHelperInterface);
+        self::assertTrue($atHelper instanceof AtHelperInterface);
         $atHelper->formatTimestampForAt(-654987);
     }
 
@@ -119,5 +119,4 @@ class AtHelperTest extends TestCase
         // then
         static::assertNull($jobNumber);
     }
-
 }

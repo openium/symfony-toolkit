@@ -40,9 +40,9 @@ class AuthenticationFailureListenerTest extends TestCase
     public function testIsEnable()
     {
         $listener = new TestAuthenticationFailureListener(true, $this->logger);
-        $this->assertTrue($listener->getEnable());
+        self::assertTrue($listener->getEnable());
         $listener = new TestAuthenticationFailureListener(false, $this->logger);
-        $this->assertFalse($listener->getEnable());
+        self::assertFalse($listener->getEnable());
     }
 
     public function testOnSymfonyAuthenticationFailure()
@@ -55,8 +55,8 @@ class AuthenticationFailureListenerTest extends TestCase
             $listener->onSymfonyAuthenticationFailure($event);
             $this->fail('Method must throw an exception');
         } catch (HttpException $e) {
-            $this->assertEquals(Response::HTTP_UNAUTHORIZED, $e->getStatusCode());
-            $this->assertEquals('TestMessage', $e->getMessage());
+            self::assertEquals(Response::HTTP_UNAUTHORIZED, $e->getStatusCode());
+            self::assertEquals('TestMessage', $e->getMessage());
         }
     }
 }
