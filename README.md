@@ -91,22 +91,6 @@ Transform exceptions to json Response
 
 ---
 
-### AuthenticationFailureListener
-
-The listener catch authentication failure.
-It is enabled by default and have this configuration :
-
-~~~yaml
-parameters:
-    openium_symfony_toolkit.authentication_failure_listener_enable: true
-    openium_symfony_toolkit.authentication_failure_listener_class: 'Openium\SymfonyToolKitBundle\EventListener\AuthenticationFailureListener'
-~~~
-
-Throw HttpException 401 when an AuthenticationFailureEvent is throw.
-Except for 'Symfony/Component/Security/Core/Authentication/Provider/UserAuthenticationProvider.php'
-
----
-
 ### PathExceptionListener
 
 The listener catch kernel exceptions.

@@ -1,7 +1,6 @@
 <?php
-
 /**
- * PHP Version >=7.1
+ * PHP Version >=8.0
  *
  * @package  Openium\SymfonyToolKitBundle\Exception
  * @author   Openium <contact@openium.fr>
@@ -11,6 +10,7 @@
 
 namespace Openium\SymfonyToolKitBundle\Exception;
 
+use Exception;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 /**
@@ -26,10 +26,10 @@ class MissingContentException extends BadRequestHttpException
     /**
      * MissingContentException constructor.
      *
-     * @param \Exception|null $previous
+     * @param Exception|null $previous
      * @param array $headers
      */
-    public function __construct(\Exception $previous = null, array $headers = array())
+    public function __construct(Exception $previous = null, array $headers = [])
     {
         parent::__construct(self::MESSAGE, $previous, self::CODE, $headers);
     }

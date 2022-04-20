@@ -1,7 +1,7 @@
 <?php
 
 /**
- * PHP Version >=7.1
+ * PHP Version >=8.0
  *
  * @package  Openium\SymfonyToolKitBundle\Service
  * @author   Openium <contact@openium.fr>
@@ -11,6 +11,9 @@
 
 namespace Openium\SymfonyToolKitBundle\Service;
 
+use DateTime;
+use DateTimeZone;
+use InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -62,7 +65,7 @@ class AtHelper implements AtHelperInterface
      * @param int $timestamp when execute command
      * @param &$result result of at
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      *
      * @return string : the output of at command
      */
@@ -122,17 +125,17 @@ class AtHelper implements AtHelperInterface
      *
      * @param int $timestamp
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      *
      * @return string
      */
     public function formatTimestampForAt(int $timestamp): string
     {
         if ($timestamp < 0) {
-            throw new \InvalidArgumentException('timestamp < 0');
+            throw new InvalidArgumentException('timestamp < 0');
         }
-        $timeZone = new \DateTimeZone("Europe/Paris");
-        $date = new \DateTime(null, $timeZone);
+        $timeZone = new DateTimeZone("Europe/Paris");
+        $date = new DateTime('now', $timeZone);
         return $date->setTimestamp($timestamp)->format('g:i A F j Y');
     }
 }

@@ -1,7 +1,7 @@
 <?php
 /**
  * ExceptionFormatService
- * PHP Version >=7.1
+ * PHP Version >=8.0
  *
  * @package  Openium\SymfonyToolKitBundle\Service
  * @author   Openium <contact@openium.fr>
@@ -11,10 +11,13 @@
 
 namespace Openium\SymfonyToolKitBundle\Service;
 
+use Exception;
+use InvalidArgumentException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\HttpKernel\KernelInterface;
+use Throwable;
 
 /**
  * Class ExceptionFormatService
@@ -23,10 +26,7 @@ use Symfony\Component\HttpKernel\KernelInterface;
  */
 class ExceptionFormatService implements ExceptionFormatServiceInterface
 {
-    /**
-     * @var KernelInterface
-     */
-    protected $kernel;
+    protected KernelInterface $kernel;
 
     /**
      * ExceptionFormatService constructor.
@@ -41,16 +41,15 @@ class ExceptionFormatService implements ExceptionFormatServiceInterface
     /**
      * formatExceptionResponse
      *
-     * @param \Throwable $exception
+     * @param Throwable $exception
      *
-     * @throws \UnexpectedValueException
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      * @return Response
      */
-    public function formatExceptionResponse(\Throwable $exception): Response
+    public function formatExceptionResponse(Throwable $exception): Response
     {
         $response = new JsonResponse();
-        if ($exception instanceof \Exception) {
+        if ($exception instanceof Exception) {
             if (is_a($exception, "Symfony\Component\Security\Core\Exception\AuthenticationException")) {
                 $code = Response::HTTP_UNAUTHORIZED;
                 $text = Response::$statusTexts[$code];
@@ -80,14 +79,14 @@ class ExceptionFormatService implements ExceptionFormatServiceInterface
     /**
      * getArray
      *
-     * @param \Exception $exception
+     * @param Exception $exception
      * @param null $code
      * @param null $text
      * @param null $message
      *
      * @return array
      */
-    public function getArray(\Exception $exception, $code = null, $text = null, $message = null): array
+    public function getArray(Exception $exception, $code = null, $text = null, $message = null): array
     {
         $error = [];
         $error['status_code'] = $code ?? $this->getStatusCode($exception);
@@ -115,11 +114,11 @@ class ExceptionFormatService implements ExceptionFormatServiceInterface
     /**
      * getStatusCode
      *
-     * @param \Exception $exception
+     * @param Exception $exception
      *
      * @return int
      */
-    public function getStatusCode(\Exception $exception)
+    public function getStatusCode(Exception $exception)
     {
         if ($exception instanceof HttpExceptionInterface) {
             return $exception->getStatusCode();
@@ -133,11 +132,11 @@ class ExceptionFormatService implements ExceptionFormatServiceInterface
     /**
      * getStatusText
      *
-     * @param \Exception $exception
+     * @param Exception $exception
      *
      * @return string
      */
-    public function getStatusText(\Exception $exception)
+    public function getStatusText(Exception $exception)
     {
         $code = $this->getStatusCode($exception);
         if ($code == Response::HTTP_PAYMENT_REQUIRED) {

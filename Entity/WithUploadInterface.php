@@ -1,9 +1,7 @@
 <?php
-
 /**
  * WithUpload interface
- *
- * PHP Version >=7.1
+ * PHP Version >=8.0
  *
  * @package  Openium\SymfonyToolKitBundle\Entity
  * @author   Openium <contact@openium.fr>
@@ -32,11 +30,11 @@ interface WithUploadInterface
     /**
      * Set the file
      *
-     * @param $file
+     * @param $file|null
      *
      * @return WithUploadInterface
      */
-    public function setFile($file): WithUploadInterface;
+    public function setFile(?File $file): WithUploadInterface;
 
     /**
      * Set the file local path
@@ -52,7 +50,7 @@ interface WithUploadInterface
      *
      * @return WithUploadInterface
      */
-    public function setImagePath($path): WithUploadInterface;
+    public function setImagePath(?string $path): WithUploadInterface;
 
     /**
      * Get the uploads sub-dir name

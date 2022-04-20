@@ -1,7 +1,7 @@
 <?php
 
 /**
- * PHP Version >=7.1
+ * PHP Version >=8.0
  *
  * @package  Openium\SymfonyToolKitBundle\Controller
  * @author   Openium <contact@openium.fr>
@@ -29,7 +29,6 @@ class AbstractController extends BaseController
      *
      * @param Request $request
      *
-     * @throws \LogicException
      * @throws BadRequestHttpException
      *
      * @return array

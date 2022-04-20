@@ -1,7 +1,7 @@
 <?php
 
 /**
- * PHP Version >=7.1
+ * PHP Version >=8.0
  *
  * @package  Openium\SymfonyToolKitBundle\Tests
  * @author   Openium <contact@openium.fr>

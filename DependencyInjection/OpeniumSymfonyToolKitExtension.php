@@ -1,9 +1,7 @@
 <?php
-
 /**
  * Bundle Extension class
- *
- * PHP Version >=7.1
+ * PHP Version >=8.0
  *
  * @package  Openium\SymfonyToolKitBundle\DependencyInjection
  * @author   Openium <contact@openium.fr>
@@ -13,6 +11,7 @@
 
 namespace Openium\SymfonyToolKitBundle\DependencyInjection;
 
+use Exception;
 use Openium\SymfonyToolKitBundle\Service\AtHelperInterface;
 use Openium\SymfonyToolKitBundle\Service\DoctrineExceptionHandlerServiceInterface;
 use Openium\SymfonyToolKitBundle\Service\ExceptionFormatServiceInterface;
@@ -37,8 +36,7 @@ class OpeniumSymfonyToolKitExtension extends Extension
      * @param array $configs
      * @param ContainerBuilder $container
      *
-     * @throws \Exception
-     *
+     * @throws Exception
      * @return void
      */
     public function load(array $configs, ContainerBuilder $container)

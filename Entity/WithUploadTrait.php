@@ -3,7 +3,7 @@
 /**
  * WithUpload trait
  *
- * PHP Version >=7.1
+ * PHP Version >=8.0
  *
  * @package  Openium\SymfonyToolKitBundle\Entity
  * @author   Openium <contact@openium.fr>
@@ -22,20 +22,14 @@ use Symfony\Component\HttpFoundation\File\File;
  */
 trait WithUploadTrait
 {
-    /**
-     * @var File
-     */
-    protected $file;
+    protected ?File $file = null;
 
-    /**
-     * @var string
-     */
-    protected $imagePath;
+    protected ?string $imagePath = null;
 
     /**
      * Getter for file
      *
-     * @return mixed
+     * @return File|null
      */
     public function getFile(): ?File
     {
@@ -47,9 +41,9 @@ trait WithUploadTrait
      *
      * @param File|null $file
      *
-     * @return self
+     * @return WithUploadInterface
      */
-    public function setFile($file): WithUploadInterface
+    public function setFile(?File $file): WithUploadInterface
     {
         $this->file = $file;
         return $this;
@@ -58,7 +52,7 @@ trait WithUploadTrait
     /**
      * Getter for imagePath
      *
-     * @return string
+     * @return string|null
      */
     public function getImagePath(): ?string
     {
@@ -70,9 +64,9 @@ trait WithUploadTrait
      *
      * @param string|null $path
      *
-     * @return self
+     * @return WithUploadInterface
      */
-    public function setImagePath($path): WithUploadInterface
+    public function setImagePath(?string $path): WithUploadInterface
     {
         $this->imagePath = $path;
         return $this;

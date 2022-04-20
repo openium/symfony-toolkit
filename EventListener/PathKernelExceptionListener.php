@@ -1,7 +1,7 @@
 <?php
 
 /**
- * PHP Version >=7.1
+ * PHP Version >=8.0
  *
  * @package  Openium\SymfonyToolKitBundle\EventListener
  * @author   Openium <contact@openium.fr>
@@ -11,10 +11,12 @@
 
 namespace Openium\SymfonyToolKitBundle\EventListener;
 
+use InvalidArgumentException;
 use Openium\SymfonyToolKitBundle\Service\ExceptionFormatServiceInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
+use UnexpectedValueException;
 
 /**
  * Class PathExceptionListener
@@ -23,25 +25,13 @@ use Symfony\Component\HttpKernel\Event\ExceptionEvent;
  */
 class PathKernelExceptionListener implements PathKernelExceptionListenerInterface
 {
-    /**
-     * @var ExceptionFormatServiceInterface
-     */
-    protected $exceptionFormat;
+    protected ExceptionFormatServiceInterface $exceptionFormat;
 
-    /**
-     * @var string
-     */
-    protected $path;
+    protected string $path;
 
-    /**
-     * @var bool
-     */
-    private $enable;
+    private bool $enable;
 
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
+    private LoggerInterface $logger;
 
     /**
      * ExceptionListener constructor.
@@ -77,19 +67,15 @@ class PathKernelExceptionListener implements PathKernelExceptionListenerInterfac
      * @param ExceptionEvent $event
      *
      * @return void
-     * @throws \UnexpectedValueException
+     * @throws UnexpectedValueException
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
-    public function onKernelException(ExceptionEvent $event)
+    public function onKernelException(ExceptionEvent $event): void
     {
         if ($this->isEnable()) {
-            if (strpos($event->getRequest()->getRequestUri(), $this->path) !== false) {
-                if (method_exists($event, 'getThrowable')) {
-                    $exception = $event->getThrowable();
-                } else {
-                    $exception = $event->getException();
-                }
+            if (str_contains($event->getRequest()->getRequestUri(), $this->path)) {
+                $exception = $event->getThrowable();
                 $response = $this->exceptionFormat->formatExceptionResponse($exception);
                 $code = $response->getStatusCode();
                 $this->logger->debug(

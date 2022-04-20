@@ -1,7 +1,6 @@
 <?php
-
 /**
- * PHP Version >=7.1
+ * PHP Version >=8.0
  *
  * @package  Openium\SymfonyToolKitBundle\Tests\Fixtures\Command
  * @author   Openium <contact@openium.fr>
@@ -14,6 +13,7 @@ namespace Openium\SymfonyToolKitBundle\Tests\Fixtures\Command;
 use Openium\SymfonyToolKitBundle\Command\AbstractCommand;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Exception\InvalidArgumentException;
+use Symfony\Component\Console\Exception\LogicException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -29,7 +29,7 @@ class TestCommand extends AbstractCommand
      *
      * @param LoggerInterface $logger
      *
-     * @throws \Symfony\Component\Console\Exception\LogicException
+     * @throws LogicException
      */
     public function __construct(LoggerInterface $logger)
     {
@@ -40,10 +40,9 @@ class TestCommand extends AbstractCommand
      * configure
      *
      * @throws InvalidArgumentException
-     *
      * @return void
      */
-    public function configure()
+    public function configure(): void
     {
         parent::configure();
     }
@@ -55,10 +54,9 @@ class TestCommand extends AbstractCommand
      * @param OutputInterface $output
      *
      * @throws InvalidArgumentException
-     *
-     * @return int|void|null
+     * @return void
      */
-    public function execute(InputInterface $input, OutputInterface $output)
+    public function execute(InputInterface $input, OutputInterface $output): void
     {
         parent::execute($input, $output);
     }
@@ -70,7 +68,7 @@ class TestCommand extends AbstractCommand
      *
      * @return void
      */
-    public function writeMessage(string $message)
+    public function writeMessage(string $message): void
     {
         parent::writeMessage($message);
     }

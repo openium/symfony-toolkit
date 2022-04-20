@@ -3,7 +3,7 @@
 /**
  * FileUploaderService
  *
- * PHP Version >=7.1
+ * PHP Version >=8.0
  *
  * @package  Openium\SymfonyToolKitBundle\Service
  * @author   Openium <contact@openium.fr>
@@ -101,7 +101,7 @@ class FileUploaderService implements FileUploaderServiceInterface
         }
         $fileExtension = null;
         if ($file instanceof UploadedFile) {
-            $fileExtension = strtolower($file->guessClientExtension());
+            $fileExtension = strtolower($file->guessClientExtension() ?? '');
         } else {
             $fileNameParts = explode('.', $file->getFilename());
             if (sizeof($fileNameParts) > 0) {

@@ -3,7 +3,7 @@
 /**
  * DoctrineExceptionHandlerService
  *
- * PHP Version >=7.1
+ * PHP Version >=8.0
  *
  * @package  Openium\SymfonyToolKitBundle\Service
  * @author   Openium <contact@openium.fr>
@@ -13,7 +13,7 @@
 
 namespace Openium\SymfonyToolKitBundle\Service;
 
-use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\Exception\DriverException;
 use Doctrine\DBAL\Exception\ForeignKeyConstraintViolationException;
 use Doctrine\DBAL\Exception\NonUniqueFieldNameException;
@@ -26,8 +26,8 @@ use Doctrine\ORM\ORMInvalidArgumentException;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-
-use \UnexpectedValueException;
+use Throwable;
+use UnexpectedValueException;
 
 /**
  * Class DoctrineExceptionHandlerService
@@ -36,19 +36,16 @@ use \UnexpectedValueException;
  */
 class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerServiceInterface
 {
-    private $missingDatabaseTableMessage = "Missing database table";
-    private $databaseSchemaErrorMessage = "Database schema error";
-    private $querySyntaxErrorMessage = "Query syntax error";
-    private $entityManagementErrorMessage = "Entity's management error";
-    private $conflictMessage = "Conflict error";
-    private $databaseErrorMessage = "Database error";
-    private $databaseRequestErrorMessage = "Database request error";
-    private $missingPropertyErrorMessage = "Database schema error (Missing property)";
+    private string $missingDatabaseTableMessage = "Missing database table";
+    private string $databaseSchemaErrorMessage = "Database schema error";
+    private string $querySyntaxErrorMessage = "Query syntax error";
+    private string $entityManagementErrorMessage = "Entity's management error";
+    private string $conflictMessage = "Conflict error";
+    private string $databaseErrorMessage = "Database error";
+    private string $databaseRequestErrorMessage = "Database request error";
+    private string $missingPropertyErrorMessage = "Database schema error (Missing property)";
 
-    /**
-     * @var LoggerInterface
-     */
-    protected $logger;
+    protected LoggerInterface $logger;
 
     /**
      * ExceptionHandlerService constructor.
@@ -63,9 +60,9 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
     /**
      * Log an exception information for debug
      *
-     * @param \Throwable $throwable
+     * @param Throwable $throwable
      */
-    public function log(\Throwable $throwable)
+    public function log(Throwable $throwable)
     {
         $this->logger->error('------------------------------------- Log from Symfony ToolKit DoctrineExceptionHandlerService');
         $this->logger->error(get_class($throwable));
@@ -78,13 +75,13 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
      * toHttpException
      * Catch & Process the throwable
      *
-     * @param \Throwable $throwable
+     * @param Throwable $throwable
      *
      * @throws BadRequestHttpException
      * @throws ConflictHttpException
-     * @throws \Throwable if not a doctrine exception
+     * @throws Throwable if not a doctrine exception
      */
-    public function toHttpException(\Throwable $throwable)
+    public function toHttpException(Throwable $throwable)
     {
         // Call the logger
         $this->log($throwable);
@@ -105,13 +102,13 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
             case ForeignKeyConstraintViolationException::class:
                 $this->createConflict($throwable, $this->conflictMessage);
                 break;
-            case DBALException::class:
-                $this->dbalManagement($throwable);
-                break;
             case NotNullConstraintViolationException::class:
             case ORMInvalidArgumentException::class:
             case UnexpectedValueException::class:
                 $this->createBadRequest($throwable);
+                break;
+            case Exception::class:
+                $this->dbalExceptionManagement($throwable);
                 break;
             default:
                 throw $throwable;
@@ -121,14 +118,13 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
     /**
      * createBadRequest
      *
-     * @param \Throwable $throwable
+     * @param Throwable $throwable
      * @param string|null $message
      *
      * @return void
      * @throws BadRequestHttpException
-     *
      */
-    protected function createBadRequest(\Throwable $throwable, string $message = null)
+    protected function createBadRequest(Throwable $throwable, string $message = null)
     {
         throw new BadRequestHttpException($message ?? $this->entityManagementErrorMessage, $throwable);
     }
@@ -136,14 +132,14 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
     /**
      * createConflict
      *
-     * @param \Throwable $throwable
+     * @param Throwable $throwable
      * @param null $message
      *
      * @return void
      * @throws ConflictHttpException
      *
      */
-    protected function createConflict(\Throwable $throwable, $message = null)
+    protected function createConflict(Throwable $throwable, $message = null)
     {
         if ($throwable->getPrevious()) {
             $this->logger->error($throwable->getPrevious()->getCode());
@@ -152,16 +148,16 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
     }
 
     /**
-     * dbalManagement
+     * dbalExceptionManagement
      *
-     * @param DBALException $DBALException
+     * @param Exception $DBALException
      *
      * @return void
      * @throws ConflictHttpException
      *
      * @throws BadRequestHttpException
      */
-    protected function dbalManagement(DBALException $DBALException)
+    protected function dbalExceptionManagement(Exception $DBALException)
     {
         $code = 0;
         $previous = $DBALException->getPrevious();

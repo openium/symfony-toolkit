@@ -1,7 +1,7 @@
 <?php
 
 /**
- * PHP Version >=7.1
+ * PHP Version >=8.0
  *
  * @package  Openium\SymfonyToolKitBundle\Tests\Fixtures\EventListener
  * @author   Openium <contact@openium.fr>
@@ -11,14 +11,14 @@
 
 namespace Openium\SymfonyToolKitBundle\Tests\Fixtures\EventListener;
 
-use Openium\SymfonyToolKitBundle\EventListener\AuthenticationFailureListener;
+use Openium\SymfonyToolKitBundle\EventListener\AuthenticationFailureSubscriber;
 
 /**
  * Class TestAuthenticationFailureListener
  *
  * @package Openium\SymfonyToolKitBundle\Tests\Fixtures\EventListener
  */
-class TestAuthenticationFailureListener extends AuthenticationFailureListener
+class TestAuthenticationFailureSubscriber extends AuthenticationFailureSubscriber
 {
     /**
      * getEnable

@@ -3,7 +3,7 @@
 /**
  * DoctrineExceptionHandlerServiceInterface
  *
- * PHP Version >=7.1
+ * PHP Version >=8.0
  *
  * @package  Openium\SymfonyToolKitBundle\Service
  * @author   Openium <contact@openium.fr>
@@ -15,6 +15,7 @@ namespace Openium\SymfonyToolKitBundle\Service;
 
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
+use Throwable;
 
 /**
  * Interface DoctrineExceptionHandlerServiceInterface
@@ -27,20 +28,20 @@ interface DoctrineExceptionHandlerServiceInterface
     /**
      * Log an exception information for debug
      *
-     * @param \Throwable $throwable
+     * @param Throwable $throwable
      */
-    public function log(\Throwable $throwable);
+    public function log(Throwable $throwable);
 
     /**
      * toHttpException
      * Catch & Process the throwable
      *
-     * @param \Throwable $throwable
+     * @param Throwable $throwable
      *
      * @throws BadRequestHttpException
      * @throws ConflictHttpException
      */
-    public function toHttpException(\Throwable $throwable);
+    public function toHttpException(Throwable $throwable);
 
     public function getMissingDatabaseTableMessage(): string;
 

@@ -3,7 +3,7 @@
 /**
  * Configuration class
  *
- * PHP Version >=7.1
+ * PHP Version >=8.0
  *
  * @package  Openium\SymfonyToolKitBundle\DependencyInjection
  * @author   Openium <contact@openium.fr>

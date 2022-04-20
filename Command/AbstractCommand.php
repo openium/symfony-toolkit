@@ -1,7 +1,7 @@
 <?php
 
 /**
- * PHP Version >=7.1
+ * PHP Version >=8.0
  *
  * @package  Openium\SymfonyToolKitBundle\Command
  * @author   Openium <contact@openium.fr>
@@ -27,20 +27,11 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  */
 abstract class AbstractCommand extends Command
 {
-    /**
-     * @var SymfonyStyle
-     */
-    protected $io;
+    protected SymfonyStyle $io;
 
-    /**
-     * @var LoggerInterface
-     */
-    protected $logger;
+    protected LoggerInterface $logger;
 
-    /**
-     * @var bool
-     */
-    protected $hasLog;
+    protected bool $hasLog;
 
     /**
      * AbstractCommand constructor.
@@ -63,7 +54,7 @@ abstract class AbstractCommand extends Command
      *
      * @return void
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this->addOption('nl', null, InputOption::VALUE_NONE, 'Disable log');
     }
@@ -76,9 +67,9 @@ abstract class AbstractCommand extends Command
      *
      * @throws InvalidArgumentException
      *
-     * @return int|void|null
+     * @return void
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): void
     {
         $this->io = new SymfonyStyle($input, $output);
         $this->hasLog = $input->getOption('nl') === false;
@@ -91,7 +82,7 @@ abstract class AbstractCommand extends Command
      *
      * @return void
      */
-    protected function writeMessage(string $message)
+    protected function writeMessage(string $message): void
     {
         if ($this->hasLog) {
             $this->io->writeln($message);

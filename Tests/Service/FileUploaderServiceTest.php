@@ -84,7 +84,7 @@ class FileUploaderServiceTest extends TestCase
         $fileUploaderService = new FileUploaderService('/tmp', 'test');
         self::assertTrue($fileUploaderService instanceof FileUploaderService);
         $result = $fileUploaderService->prepareUploadPath($entity);
-        self::assertRegExp('/(test\/withUpload\/).{32}\.png/', $result->getImagePath());
+        self::assertMatchesRegularExpression('/(test\/withUpload\/).{32}\.png/', $result->getImagePath());
     }
 
     /**
