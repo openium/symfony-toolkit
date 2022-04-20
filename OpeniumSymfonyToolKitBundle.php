@@ -14,6 +14,7 @@
 namespace Openium\SymfonyToolKitBundle;
 
 use Openium\SymfonyToolKitBundle\DependencyInjection\OpeniumSymfonyToolKitExtension;
+use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 /**
@@ -24,9 +25,11 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
 class OpeniumSymfonyToolKitBundle extends Bundle
 {
     /**
-     * @return OpeniumSymfonyToolKitExtension
+     * getContainerExtension
+     *
+     * @return ExtensionInterface|null
      */
-    public function getContainerExtension()
+    public function getContainerExtension(): ?ExtensionInterface
     {
         return new OpeniumSymfonyToolKitExtension();
     }
