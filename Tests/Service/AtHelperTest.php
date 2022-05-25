@@ -11,7 +11,6 @@ use Psr\Log\LoggerInterface;
  * Class AtHelperTest
  *
  * @package Openium\SymfonyToolKitBundle\Test\Service
- *
  * @codeCoverageIgnore
  */
 class AtHelperTest extends TestCase
@@ -87,6 +86,7 @@ class AtHelperTest extends TestCase
         // then
         static::assertEquals("130", $jobNumber);
     }
+
     public function testExtractJobNumberFromAtOutputWithOutputSpecialChar()
     {
         // given
@@ -114,6 +114,17 @@ class AtHelperTest extends TestCase
         // given
         $atHelper = new AtHelper($this->logger);
         $output = '';
+        // when
+        $jobNumber = $atHelper->extractJobNumberFromAtOutput($output);
+        // then
+        static::assertNull($jobNumber);
+    }
+
+    public function testExtractJobNumberFromAtOutputPastMessageOutput()
+    {
+        // given
+        $atHelper = new AtHelper($this->logger);
+        $output = 'at: refusing to create job destined in the past';
         // when
         $jobNumber = $atHelper->extractJobNumberFromAtOutput($output);
         // then

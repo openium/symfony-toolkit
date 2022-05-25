@@ -1,5 +1,4 @@
 <?php
-
 /**
  * PHP Version >=8.0
  *
@@ -66,7 +65,6 @@ class AtHelper implements AtHelperInterface
      * @param &$result result of at
      *
      * @throws InvalidArgumentException
-     *
      * @return string : the output of at command
      */
     public function createAtCommand(string $cmd, int $timestamp, &$result)
@@ -97,7 +95,10 @@ class AtHelper implements AtHelperInterface
         if (sizeof($explodedOutput) >= 2) {
             $jobIndex = array_search('job', $explodedOutput);
             if ($jobIndex !== false) {
-                return $explodedOutput[$jobIndex + 1];
+                $jobNumber = $explodedOutput[$jobIndex + 1];
+                if (is_numeric($jobNumber)) {
+                    return $jobNumber;
+                }
             }
         }
         return null;
@@ -126,7 +127,6 @@ class AtHelper implements AtHelperInterface
      * @param int $timestamp
      *
      * @throws InvalidArgumentException
-     *
      * @return string
      */
     public function formatTimestampForAt(int $timestamp): string
