@@ -65,6 +65,22 @@ class AtHelperTest extends TestCase
         static::assertTrue($removeResult);
     }
 
+    public function testCreateAtCommandFromPath()
+    {
+        // given
+        $atHelper = new AtHelper($this->logger);
+        $result = "";
+        // when
+        $output = $atHelper->createAtCommandFromPath("echo coucou", time() + 33600, __DIR__, $result);
+        $atNumber = $atHelper->extractJobNumberFromAtOutput($output);
+        // then
+        static::assertEquals(3, strlen($atNumber));
+        static::assertEquals("0", $result);
+        // when
+        $removeResult = $atHelper->removeAtCommand($atNumber);
+        static::assertTrue($removeResult);
+    }
+
     public function testExtractJobNumberFromAtOutputWithRightOutput()
     {
         // given

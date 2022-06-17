@@ -20,6 +20,9 @@ interface AtHelperInterface
 {
     public function executeAndCaptureOutput($cmd, &$result);
 
+    public function createAtCommandFromPath(string $cmd, int $timestamp, string $path, &$result);
+
+    /** @deprecated use createAtCommandFromPath instead */
     public function createAtCommand(string $cmd, int $timestamp, &$result);
 
     public function formatTimestampForAt(int $timestamp): string;
