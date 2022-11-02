@@ -94,7 +94,10 @@ class AtHelper implements AtHelperInterface
         if (sizeof($explodedOutput) >= 2) {
             $jobIndex = array_search('job', $explodedOutput);
             if ($jobIndex !== false) {
-                return $explodedOutput[$jobIndex + 1];
+                $jobNumber = $explodedOutput[$jobIndex + 1];
+                if (is_numeric($jobNumber)) {
+                    return $jobNumber;
+                }
             }
         }
         return null;

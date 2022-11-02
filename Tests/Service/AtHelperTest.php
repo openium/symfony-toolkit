@@ -119,4 +119,15 @@ class AtHelperTest extends TestCase
         // then
         static::assertNull($jobNumber);
     }
+
+    public function testExtractJobNumberFromAtOutputPastMessageOutput()
+    {
+        // given
+        $atHelper = new AtHelper($this->logger);
+        $output = 'at: refusing to create job destined in the past';
+        // when
+        $jobNumber = $atHelper->extractJobNumberFromAtOutput($output);
+        // then
+        static::assertNull($jobNumber);
+    }
 }
