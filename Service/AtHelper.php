@@ -1,5 +1,4 @@
 <?php
-
 /**
  * PHP Version >=7.1
  *
@@ -55,21 +54,53 @@ class AtHelper implements AtHelperInterface
     }
 
     /**
+     * createAtCommandFromPath
+     * Execute a command with at.
+     *
+     * @param string $cmd command to execute
+     * @param int $timestamp when the command will be executed
+     * @param string $path path where the at creation command will be executed
+     * @param &$result result of at
+     *
+     * @throws InvalidArgumentException
+     * @return string the output of at command
+     */
+    public function createAtCommandFromPath(string $cmd, int $timestamp, string $path, &$result)
+    {
+        $date = $this->formatTimestampForAt($timestamp);
+        $fullCmd = sprintf('cd %s; echo "%s" | at %s 2>&1 ; let \!PIPESTATUS', $path, $cmd, $date);
+        return $this->atCommand($fullCmd, $result);
+    }
+
+    /**
      * createAtCommand
      * Execute a command with at.
      *
      * @param string $cmd command to execute
-     * @param int $timestamp when execute command
+     * @param int $timestamp when the command will be executed
      * @param &$result result of at
      *
      * @throws \InvalidArgumentException
-     *
-     * @return string : the output of at command
+     * @return string the output of at command
+     * @deprecated use createAtCommandFromPath instead
      */
     public function createAtCommand(string $cmd, int $timestamp, &$result)
     {
         $date = $this->formatTimestampForAt($timestamp);
         $fullCmd = sprintf('echo "%s" | at %s 2>&1 ; let \!PIPESTATUS', $cmd, $date);
+        return $this->atCommand($fullCmd, $result);
+    }
+
+    /**
+     * atCommand
+     *
+     * @param string $fullCmd
+     * @param $result
+     *
+     * @return string
+     */
+    private function atCommand(string $fullCmd, &$result)
+    {
         $this->logger->debug("Create AT command (${fullCmd})");
         $output = $this->executeAndCaptureOutput($fullCmd, $result);
         $this->logger->debug("AT Output : ${output}");
@@ -126,7 +157,6 @@ class AtHelper implements AtHelperInterface
      * @param int $timestamp
      *
      * @throws \InvalidArgumentException
-     *
      * @return string
      */
     public function formatTimestampForAt(int $timestamp): string

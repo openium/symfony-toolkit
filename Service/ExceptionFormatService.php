@@ -55,9 +55,11 @@ class ExceptionFormatService implements ExceptionFormatServiceInterface
                 $code = Response::HTTP_UNAUTHORIZED;
                 $text = Response::$statusTexts[$code];
                 $message = $text;
-            } elseif (is_a($exception, "Firebase\Auth\Token\Exception\ExpiredToken")
+            } elseif (
+                is_a($exception, "Firebase\Auth\Token\Exception\ExpiredToken")
                 || is_a($exception, "Firebase\Auth\Token\Exception\IssuedInTheFuture")
-                || is_a($exception, "Firebase\Auth\Token\Exception\InvalidToken")) {
+                || is_a($exception, "Firebase\Auth\Token\Exception\InvalidToken")
+            ) {
                 // Firebase part
                 $code = Response::HTTP_UNAUTHORIZED;
                 $text = $exception->getMessage();
@@ -94,8 +96,10 @@ class ExceptionFormatService implements ExceptionFormatServiceInterface
         $error['status_text'] = $text ?? $this->getStatusText($exception);
         $error['message'] = $message ?? $exception->getMessage();
         // Stripe part
-        if ($error['status_code'] == Response::HTTP_PAYMENT_REQUIRED
-            && is_a($exception->getPrevious(), "Stripe\Error\Card")) {
+        if (
+            $error['status_code'] == Response::HTTP_PAYMENT_REQUIRED
+            && is_a($exception->getPrevious(), "Stripe\Error\Card")
+        ) {
             $body = $exception->getPrevious()->getJsonBody();
             $err = $body['error'];
             $error['type'] = $err['type'];

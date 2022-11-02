@@ -1,8 +1,6 @@
 <?php
-
 /**
  * DoctrineExceptionHandlerServiceInterface
- *
  * PHP Version >=7.1
  *
  * @package  Openium\SymfonyToolKitBundle\Service
@@ -23,7 +21,6 @@ use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
  */
 interface DoctrineExceptionHandlerServiceInterface
 {
-
     /**
      * Log an exception information for debug
      *
@@ -44,19 +41,27 @@ interface DoctrineExceptionHandlerServiceInterface
 
     public function getMissingDatabaseTableMessage(): string;
 
-    public function setMissingDatabaseTableMessage(string $missingDatabaseTableMessage): DoctrineExceptionHandlerServiceInterface;
+    public function setMissingDatabaseTableMessage(
+        string $missingDatabaseTableMessage
+    ): DoctrineExceptionHandlerServiceInterface;
 
     public function getDatabaseSchemaErrorMessage(): string;
 
-    public function setDatabaseSchemaErrorMessage(string $databaseSchemaErrorMessage): DoctrineExceptionHandlerServiceInterface;
+    public function setDatabaseSchemaErrorMessage(
+        string $databaseSchemaErrorMessage
+    ): DoctrineExceptionHandlerServiceInterface;
 
     public function getQuerySyntaxErrorMessage(): string;
 
-    public function setQuerySyntaxErrorMessage(string $querySyntaxErrorMessage): DoctrineExceptionHandlerServiceInterface;
+    public function setQuerySyntaxErrorMessage(
+        string $querySyntaxErrorMessage
+    ): DoctrineExceptionHandlerServiceInterface;
 
     public function getEntityManagementErrorMessage(): string;
 
-    public function setEntityManagementErrorMessage(string $entityManagementErrorMessage): DoctrineExceptionHandlerServiceInterface;
+    public function setEntityManagementErrorMessage(
+        string $entityManagementErrorMessage
+    ): DoctrineExceptionHandlerServiceInterface;
 
     public function getConflictMessage(): string;
 
@@ -68,9 +73,13 @@ interface DoctrineExceptionHandlerServiceInterface
 
     public function getDatabaseRequestErrorMessage(): string;
 
-    public function setDatabaseRequestErrorMessage(string $databaseRequestErrorMessage): DoctrineExceptionHandlerServiceInterface;
+    public function setDatabaseRequestErrorMessage(
+        string $databaseRequestErrorMessage
+    ): DoctrineExceptionHandlerServiceInterface;
 
     public function getMissingPropertyErrorMessage(): string;
 
-    public function setMissingPropertyErrorMessage(string $missingPropertyErrorMessage): DoctrineExceptionHandlerServiceInterface;
+    public function setMissingPropertyErrorMessage(
+        string $missingPropertyErrorMessage
+    ): DoctrineExceptionHandlerServiceInterface;
 }
