@@ -48,3 +48,9 @@ services:
         public: false
         tags:
             - { name: kernel.event_listener, event: kernel.exception, method: onKernelException }
+
+    openium_symfony_toolkit.content_extractor:
+        class: Openium\SymfonyToolKitBundle\Service\ContentExtractorService
+        arguments:
+            - '@translator'
+        public: true

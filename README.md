@@ -119,3 +119,44 @@ $str = MemoryUtils::convert(1024);
 $phpMemory = MemoryUtils::getMemoryUsage();
 // use convert() with actual php memory usage
 ~~~
+
+
+### ContentExtractorService
+
+Use to extract types data from array with specific key
+
+~~~php
+    $myString = $this->contentExtractor->getString($content, $key);
+~~~
+
+With option to allow null value, set a default value and set if value is required.
+
+List of methods : 
+- getString
+- getBool
+- getInt
+- getFloat
+- getDateTimeInterface
+- getArray
+
+All methods throws 400 HTTP error with correct message if the value is missing or is not with the right type (depends of parameters)
+
+
+### DateStringUtils
+
+Provide a static method to get date from string :
+
+~~~php
+public static function getDateTimeFromString(
+    string $dateString,
+    ?string $format = null,
+    ?DateTimeZone $timeZone = null
+): DateTime | false
+~~~
+
+Date format can be :
+- ATOM `'Y-m-d\TH:i:sP'`
+- ISO8601 `'Y-m-d\TH:i:sO'`
+- `'Y-m-d'`
+
+return false if the string can't be parse as DateTime.

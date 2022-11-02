@@ -13,6 +13,7 @@ namespace Openium\SymfonyToolKitBundle\DependencyInjection;
 
 use Exception;
 use Openium\SymfonyToolKitBundle\Service\AtHelperInterface;
+use Openium\SymfonyToolKitBundle\Service\ContentExtractorServiceInterface;
 use Openium\SymfonyToolKitBundle\Service\DoctrineExceptionHandlerServiceInterface;
 use Openium\SymfonyToolKitBundle\Service\ExceptionFormatServiceInterface;
 use Openium\SymfonyToolKitBundle\Service\FileUploaderServiceInterface;
@@ -67,6 +68,10 @@ class OpeniumSymfonyToolKitExtension extends Extension
         $container->setAlias(
             AtHelperInterface::class,
             new Alias('openium_symfony_toolkit.at_helper')
+        );
+        $container->setAlias(
+            ContentExtractorServiceInterface::class,
+            new Alias('openium_symfony_toolkit.content_extractor')
         );
     }
 }

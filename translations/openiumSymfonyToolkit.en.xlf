@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="fr" target-language="fr" datatype="plaintext" original="global">
+        <body>
+            <trans-unit id="openium_symfony_toolkit.wrong_parameters">
+                <source>openium_symfony_toolkit.wrong_parameters</source>
+                <target>Wrong parameters</target>
+            </trans-unit>
+            <trans-unit id="openium_symfony_toolkit.missing_parameters">
+                <source>openium_symfony_toolkit.missing_parameters</source>
+                <target>Wrong parameters, missing parameter(s) '_parameter'</target>
+            </trans-unit>
+            <trans-unit id="openium_symfony_toolkit.incorrect_parameters">
+                <source>openium_symfony_toolkit.incorrect_parameters</source>
+                <target>Incorrect '_parameter' parameter(s)</target>
+            </trans-unit>
+            <trans-unit id="openium_symfony_toolkit.boolean_property">
+                <source>openium_symfony_toolkit.boolean_property</source>
+                <target>Property '_parameter' must be a boolean</target>
+            </trans-unit>
+            <trans-unit id="openium_symfony_toolkit.integer_property">
+                <source>openium_symfony_toolkit.integer_property</source>
+                <target>Property '_parameter' must be an integer</target>
+            </trans-unit>
+            <trans-unit id="openium_symfony_toolkit.float_property">
+                <source>openium_symfony_toolkit.float_property</source>
+                <target>Property '_parameter' must be a float</target>
+            </trans-unit>
+            <trans-unit id="openium_symfony_toolkit.array_property">
+                <source>openium_symfony_toolkit.array_property</source>
+                <target>Property '_parameter' must be an array</target>
+            </trans-unit>
+            <trans-unit id="openium_symfony_toolkit.date_format">
+                <source>openium_symfony_toolkit.date_format</source>
+                <target>Wrong date format</target>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>
