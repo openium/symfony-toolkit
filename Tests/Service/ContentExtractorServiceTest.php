@@ -3,6 +3,12 @@
 namespace Openium\SymfonyToolKitBundle\Tests\Service;
 
 use DateTimeImmutable;
+use Openium\SymfonyToolKitBundle\Exception\ContentExtractorArrayPropertyException;
+use Openium\SymfonyToolKitBundle\Exception\ContentExtractorBooleanPropertyException;
+use Openium\SymfonyToolKitBundle\Exception\ContentExtractorDateFormatException;
+use Openium\SymfonyToolKitBundle\Exception\ContentExtractorFloatPropertyException;
+use Openium\SymfonyToolKitBundle\Exception\ContentExtractorIntegerPropertyException;
+use Openium\SymfonyToolKitBundle\Exception\ContentExtractorMissingParameterException;
 use Openium\SymfonyToolKitBundle\Service\ContentExtractorService;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -38,7 +44,7 @@ class ContentExtractorServiceTest extends TestCase
     // checkKeyIsBoolean
     public function testCheckKeyNotEmptyWithoutKey()
     {
-        self::expectException(BadRequestHttpException::class);
+        self::expectException(ContentExtractorMissingParameterException::class);
         // given
         $content = [];
         $key = 'key';
@@ -49,7 +55,7 @@ class ContentExtractorServiceTest extends TestCase
 
     public function testCheckKeyNotEmptyWithNullKey()
     {
-        self::expectException(BadRequestHttpException::class);
+        self::expectException(ContentExtractorMissingParameterException::class);
         // given
         $content = ['key' => null];
         $key = 'key';
@@ -76,7 +82,7 @@ class ContentExtractorServiceTest extends TestCase
 
     public function testCheckKeyNotEmptyWithEmptyStringKey()
     {
-        self::expectException(BadRequestHttpException::class);
+        self::expectException(ContentExtractorMissingParameterException::class);
         // given
         $content = ['key' => ''];
         $key = 'key';
@@ -94,8 +100,8 @@ class ContentExtractorServiceTest extends TestCase
         // when
         try {
             $this->getUtils()->checkKeyNotEmpty($content, $key, $nullable);
-        } catch (BadRequestHttpException $e) {
-            self::fail('BadRequestHttpException');
+        } catch (ContentExtractorMissingParameterException $e) {
+            self::fail('ContentExtractorMissingParameterException');
         }
         // then
         self::assertTrue(true);
@@ -103,7 +109,7 @@ class ContentExtractorServiceTest extends TestCase
 
     public function testCheckKeyIsBooleanWithoutKey()
     {
-        self::expectException(BadRequestHttpException::class);
+        self::expectException(ContentExtractorBooleanPropertyException::class);
         // given
         $content = [];
         $key = 'key';
@@ -114,7 +120,7 @@ class ContentExtractorServiceTest extends TestCase
     // checkKeyIsBoolean
     public function testCheckKeyIsBooleanWithEmptyStringKey()
     {
-        self::expectException(BadRequestHttpException::class);
+        self::expectException(ContentExtractorBooleanPropertyException::class);
         // given
         $content = ['key' => ''];
         $key = 'key';
@@ -124,7 +130,7 @@ class ContentExtractorServiceTest extends TestCase
 
     public function testCheckKeyIsBooleanWithNumberKey()
     {
-        self::expectException(BadRequestHttpException::class);
+        self::expectException(ContentExtractorBooleanPropertyException::class);
         // given
         $content = ['key' => 5];
         $key = 'key';
@@ -140,8 +146,8 @@ class ContentExtractorServiceTest extends TestCase
         // when
         try {
             $this->getUtils()->checkKeyIsBoolean($content, $key);
-        } catch (BadRequestHttpException $e) {
-            self::fail('BadRequestHttpException');
+        } catch (ContentExtractorBooleanPropertyException $e) {
+            self::fail('ContentExtractorBooleanPropertyException');
         }
         // then
         self::assertTrue(true);
@@ -150,7 +156,7 @@ class ContentExtractorServiceTest extends TestCase
     // checkKeyIsInt
     public function testCheckKeyIsIntWithoutKey()
     {
-        self::expectException(BadRequestHttpException::class);
+        self::expectException(ContentExtractorIntegerPropertyException::class);
         // given
         $content = [];
         $key = 'key';
@@ -161,7 +167,7 @@ class ContentExtractorServiceTest extends TestCase
 
     public function testCheckKeyIsIntWithNullKey()
     {
-        self::expectException(BadRequestHttpException::class);
+        self::expectException(ContentExtractorIntegerPropertyException::class);
         // given
         $content = ['key' => null];
         $key = 'key';
@@ -179,8 +185,8 @@ class ContentExtractorServiceTest extends TestCase
         // when
         try {
             $this->getUtils()->checkKeyIsInt($content, $key, $nullable);
-        } catch (BadRequestHttpException $e) {
-            self::fail('BadRequestHttpException');
+        } catch (ContentExtractorIntegerPropertyException $e) {
+            self::fail('ContentExtractorIntegerPropertyException');
         }
         // then
         self::assertTrue(true);
@@ -195,8 +201,8 @@ class ContentExtractorServiceTest extends TestCase
         // when
         try {
             $this->getUtils()->checkKeyIsInt($content, $key, $nullable);
-        } catch (BadRequestHttpException $e) {
-            self::fail('BadRequestHttpException');
+        } catch (ContentExtractorIntegerPropertyException $e) {
+            self::fail('ContentExtractorIntegerPropertyException');
         }
         // then
         self::assertTrue(true);
@@ -204,7 +210,7 @@ class ContentExtractorServiceTest extends TestCase
 
     public function testCheckKeyIsIntWithFloat()
     {
-        self::expectException(BadRequestHttpException::class);
+        self::expectException(ContentExtractorIntegerPropertyException::class);
         // given
         $content = ['key' => 5.5];
         $key = 'key';
@@ -216,7 +222,7 @@ class ContentExtractorServiceTest extends TestCase
     // checkKeyIsFloat
     public function testCheckKeyIsFloatWithoutKey()
     {
-        self::expectException(BadRequestHttpException::class);
+        self::expectException(ContentExtractorFloatPropertyException::class);
         // given
         $content = [];
         $key = 'key';
@@ -227,7 +233,7 @@ class ContentExtractorServiceTest extends TestCase
 
     public function testCheckKeyIsFloatWithNullKey()
     {
-        self::expectException(BadRequestHttpException::class);
+        self::expectException(ContentExtractorFloatPropertyException::class);
         // given
         $content = ['key' => null];
         $key = 'key';
@@ -245,8 +251,8 @@ class ContentExtractorServiceTest extends TestCase
         // when
         try {
             $this->getUtils()->checkKeyIsFloat($content, $key, $nullable);
-        } catch (BadRequestHttpException $e) {
-            self::fail('BadRequestHttpException');
+        } catch (ContentExtractorFloatPropertyException $e) {
+            self::fail('ContentExtractorFloatPropertyException');
         }
         // then
         self::assertTrue(true);
@@ -254,7 +260,7 @@ class ContentExtractorServiceTest extends TestCase
 
     public function testCheckKeyIsFloatWithInt()
     {
-        self::expectException(BadRequestHttpException::class);
+        self::expectException(ContentExtractorFloatPropertyException::class);
         // given
         $content = ['key' => 5];
         $key = 'key';
@@ -272,8 +278,8 @@ class ContentExtractorServiceTest extends TestCase
         // when
         try {
             $this->getUtils()->checkKeyIsFloat($content, $key, $nullable);
-        } catch (BadRequestHttpException $e) {
-            self::fail('BadRequestHttpException');
+        } catch (ContentExtractorFloatPropertyException $e) {
+            self::fail('ContentExtractorFloatPropertyException');
         }
         // then
         self::assertTrue(true);
@@ -282,7 +288,7 @@ class ContentExtractorServiceTest extends TestCase
     // checkKeyIsArray
     public function testcheckKeyIsArrayWithString()
     {
-        self::expectException(BadRequestHttpException::class);
+        self::expectException(ContentExtractorArrayPropertyException::class);
         // given
         $content = ['key' => 'not an array'];
         $key = 'key';
@@ -300,8 +306,8 @@ class ContentExtractorServiceTest extends TestCase
         // when
         try {
             $this->getUtils()->checkKeyIsArray($content, $key, $allowEmpty);
-        } catch (BadRequestHttpException $e) {
-            self::fail('BadRequestHttpException');
+        } catch (ContentExtractorArrayPropertyException $e) {
+            self::fail('ContentExtractorArrayPropertyException');
         }
         // then
         self::assertTrue(true);
@@ -324,7 +330,7 @@ class ContentExtractorServiceTest extends TestCase
 
     public function testGetStringWithMissingButRequiredNotNullString()
     {
-        self::expectException(BadRequestHttpException::class);
+        self::expectException(ContentExtractorMissingParameterException::class);
         // given
         $content = [];
         $key = 'key';
@@ -337,7 +343,7 @@ class ContentExtractorServiceTest extends TestCase
 
     public function testGetStringWithNullButRequiredNotNullString()
     {
-        self::expectException(BadRequestHttpException::class);
+        self::expectException(ContentExtractorMissingParameterException::class);
         // given
         $content = ['key' => null];
         $key = 'key';
@@ -420,7 +426,7 @@ class ContentExtractorServiceTest extends TestCase
 
     public function testGetIntWithStringRequiredNotNullInt()
     {
-        self::expectException(BadRequestHttpException::class);
+        self::expectException(ContentExtractorIntegerPropertyException::class);
         // given
         $content = ['key' => '5'];
         $key = 'key';
@@ -476,7 +482,7 @@ class ContentExtractorServiceTest extends TestCase
 
     public function testGetFloatWithStringRequiredNotNullInt()
     {
-        self::expectException(BadRequestHttpException::class);
+        self::expectException(ContentExtractorFloatPropertyException::class);
         // given
         $content = ['key' => '5'];
         $key = 'key';
@@ -546,7 +552,7 @@ class ContentExtractorServiceTest extends TestCase
 
     public function testGetDateTimeInterfaceBadFormatWithStringRequiredNotNull()
     {
-        self::expectException(BadRequestHttpException::class);
+        self::expectException(ContentExtractorDateFormatException::class);
         // given
         $content = ['key' => "06-12T14:41:26+02:00"];
         $key = 'key';
@@ -559,7 +565,7 @@ class ContentExtractorServiceTest extends TestCase
 
     public function testGetDateTimeInterfaceNullWithStringRequiredNotNull()
     {
-        self::expectException(BadRequestHttpException::class);
+        self::expectException(ContentExtractorMissingParameterException::class);
         // given
         $content = ['key' => null];
         $key = 'key';
@@ -615,7 +621,7 @@ class ContentExtractorServiceTest extends TestCase
 
     public function testGetArrayWithRequiredArrayButEmptyArray()
     {
-        self::expectException(BadRequestHttpException::class);
+        self::expectException(ContentExtractorArrayPropertyException::class);
         // given
         $content = ['key' => []];
         $key = 'key';
@@ -628,7 +634,7 @@ class ContentExtractorServiceTest extends TestCase
 
     public function testGetArrayWithNullButRequiredNotNullArray()
     {
-        self::expectException(BadRequestHttpException::class);
+        self::expectException(ContentExtractorArrayPropertyException::class);
         // given
         $content = ['key' => null];
         $key = 'key';

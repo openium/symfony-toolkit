@@ -3,10 +3,13 @@
 namespace Openium\SymfonyToolKitBundle\Service;
 
 use DateTimeInterface;
-use InvalidArgumentException;
+use Openium\SymfonyToolKitBundle\Exception\ContentExtractorArrayPropertyException;
+use Openium\SymfonyToolKitBundle\Exception\ContentExtractorBooleanPropertyException;
+use Openium\SymfonyToolKitBundle\Exception\ContentExtractorDateFormatException;
+use Openium\SymfonyToolKitBundle\Exception\ContentExtractorFloatPropertyException;
+use Openium\SymfonyToolKitBundle\Exception\ContentExtractorIntegerPropertyException;
+use Openium\SymfonyToolKitBundle\Exception\ContentExtractorMissingParameterException;
 use Openium\SymfonyToolKitBundle\Utils\DateStringUtils;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * Class ContentExtractorService
@@ -15,18 +18,6 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  */
 class ContentExtractorService implements ContentExtractorServiceInterface
 {
-    protected TranslatorInterface $translator;
-
-    /**
-     * ContentUtils constructor.
-     *
-     * @param TranslatorInterface $TranslatorInterface
-     */
-    public function __construct(TranslatorInterface $TranslatorInterface)
-    {
-        $this->translator = $TranslatorInterface;
-    }
-
     /**
      * checkKeyNotEmpty
      *
@@ -34,20 +25,13 @@ class ContentExtractorService implements ContentExtractorServiceInterface
      * @param string $key
      * @param bool|null $nullable
      *
-     * @throws BadRequestHttpException
-     * @throws InvalidArgumentException
+     * @throws ContentExtractorMissingParameterException
      * @return void
      */
     public function checkKeyNotEmpty(array $content, string $key, ?bool $nullable = false): void
     {
         if (!array_key_exists($key, $content) || (!$nullable && empty($content[$key]))) {
-            throw new BadRequestHttpException(
-                $this->translator->trans(
-                    'openium_symfony_toolkit.missing_parameters',
-                    ['_parameter' => $key],
-                    'openium_symfony_toolkit'
-                )
-            );
+            throw new ContentExtractorMissingParameterException($key);
         }
     }
 
@@ -57,20 +41,13 @@ class ContentExtractorService implements ContentExtractorServiceInterface
      * @param array $content
      * @param string $key
      *
-     * @throws BadRequestHttpException
-     * @throws InvalidArgumentException
+     * @throws ContentExtractorBooleanPropertyException
      * @return void
      */
     public function checkKeyIsBoolean(array $content, string $key): void
     {
         if (!array_key_exists($key, $content) || !is_bool($content[$key])) {
-            throw new BadRequestHttpException(
-                $this->translator->trans(
-                    'openium_symfony_toolkit.boolean_property',
-                    ['_parameter' => $key],
-                    'openium_symfony_toolkit'
-                )
-            );
+            throw new ContentExtractorBooleanPropertyException($key);
         }
     }
 
@@ -81,8 +58,7 @@ class ContentExtractorService implements ContentExtractorServiceInterface
      * @param string $key
      * @param bool $nullable
      *
-     * @throws BadRequestHttpException
-     * @throws InvalidArgumentException
+     * @throws ContentExtractorIntegerPropertyException
      * @return void
      */
     public function checkKeyIsInt(array $content, string $key, bool $nullable = false): void
@@ -92,13 +68,7 @@ class ContentExtractorService implements ContentExtractorServiceInterface
             || (!$nullable && !is_int($content[$key]))
             || ($nullable && !is_null($content[$key]) && !is_int($content[$key]))
         ) {
-            throw new BadRequestHttpException(
-                $this->translator->trans(
-                    'openium_symfony_toolkit.integer_property',
-                    ['_parameter' => $key],
-                    'openium_symfony_toolkit'
-                )
-            );
+            throw new ContentExtractorIntegerPropertyException($key);
         }
     }
 
@@ -109,8 +79,7 @@ class ContentExtractorService implements ContentExtractorServiceInterface
      * @param string $key
      * @param bool $nullable
      *
-     * @throws BadRequestHttpException
-     * @throws InvalidArgumentException
+     * @throws ContentExtractorFloatPropertyException
      * @return void
      */
     public function checkKeyIsFloat(array $content, string $key, bool $nullable = false): void
@@ -120,13 +89,7 @@ class ContentExtractorService implements ContentExtractorServiceInterface
             || (!$nullable && !is_float($content[$key]))
             || ($nullable && !is_null($content[$key]) && !is_float($content['key']))
         ) {
-            throw new BadRequestHttpException(
-                $this->translator->trans(
-                    'openium_symfony_toolkit.float_property',
-                    ['_parameter' => $key],
-                    'openium_symfony_toolkit'
-                )
-            );
+            throw new ContentExtractorFloatPropertyException($key);
         }
     }
 
@@ -137,8 +100,7 @@ class ContentExtractorService implements ContentExtractorServiceInterface
      * @param string $key
      * @param bool $allowEmpty
      *
-     * @throws BadRequestHttpException
-     * @throws InvalidArgumentException
+     * @throws ContentExtractorArrayPropertyException
      * @return void
      */
     public function checkKeyIsArray(array $content, string $key, bool $allowEmpty = false): void
@@ -148,13 +110,7 @@ class ContentExtractorService implements ContentExtractorServiceInterface
             || (!$allowEmpty && empty($content[$key]))
             || (!empty($content[$key]) && !is_array($content[$key]))
         ) {
-            throw new BadRequestHttpException(
-                $this->translator->trans(
-                    'openium_symfony_toolkit.array_property',
-                    ['_parameter' => $key],
-                    'openium_symfony_toolkit'
-                )
-            );
+            throw new ContentExtractorArrayPropertyException();
         }
     }
 
@@ -167,8 +123,7 @@ class ContentExtractorService implements ContentExtractorServiceInterface
      * @param string|null $default
      * @param bool $nullable
      *
-     * @throws BadRequestHttpException
-     * @throws InvalidArgumentException
+     * @throws ContentExtractorMissingParameterException
      * @return string|null
      */
     public function getString(
@@ -180,7 +135,7 @@ class ContentExtractorService implements ContentExtractorServiceInterface
     ): ?string {
         try {
             $this->checkKeyNotEmpty($content, $key, $nullable);
-        } catch (BadRequestHttpException $exception) {
+        } catch (ContentExtractorMissingParameterException $exception) {
             if ($required) {
                 throw $exception;
             } else {
@@ -202,15 +157,14 @@ class ContentExtractorService implements ContentExtractorServiceInterface
      * @param bool $required
      * @param bool|null $default
      *
-     * @throws BadRequestHttpException
-     * @throws InvalidArgumentException
+     * @throws ContentExtractorBooleanPropertyException
      * @return bool|null
      */
     public function getBool(array $content, string $key, bool $required = true, ?bool $default = true): ?bool
     {
         try {
             $this->checkKeyIsBoolean($content, $key);
-        } catch (BadRequestHttpException $exception) {
+        } catch (ContentExtractorBooleanPropertyException $exception) {
             if ($required) {
                 throw $exception;
             } else {
@@ -229,7 +183,7 @@ class ContentExtractorService implements ContentExtractorServiceInterface
      * @param int|null $default
      * @param bool $nullable
      *
-     * @throws BadRequestHttpException
+     * @throws ContentExtractorIntegerPropertyException
      * @return int|null
      */
     public function getInt(
@@ -241,7 +195,7 @@ class ContentExtractorService implements ContentExtractorServiceInterface
     ): ?int {
         try {
             $this->checkKeyIsInt($content, $key, $nullable);
-        } catch (BadRequestHttpException $exception) {
+        } catch (ContentExtractorIntegerPropertyException $exception) {
             if ($required) {
                 throw $exception;
             } else {
@@ -260,8 +214,7 @@ class ContentExtractorService implements ContentExtractorServiceInterface
      * @param float|null $default
      * @param bool $nullable
      *
-     * @throws BadRequestHttpException
-     * @throws InvalidArgumentException
+     * @throws ContentExtractorFloatPropertyException
      * @return float|null
      */
     public function getFloat(
@@ -273,7 +226,7 @@ class ContentExtractorService implements ContentExtractorServiceInterface
     ): ?float {
         try {
             $this->checkKeyIsFloat($content, $key, $nullable);
-        } catch (BadRequestHttpException $exception) {
+        } catch (ContentExtractorFloatPropertyException $exception) {
             if ($required) {
                 throw $exception;
             } else {
@@ -292,8 +245,8 @@ class ContentExtractorService implements ContentExtractorServiceInterface
      * @param DateTimeInterface|null $default
      * @param bool $nullable
      *
-     * @throws BadRequestHttpException
-     * @throws InvalidArgumentException
+     * @throws ContentExtractorMissingParameterException
+     * @throws ContentExtractorDateFormatException
      * @return DateTimeInterface|null
      */
     public function getDateTimeInterface(
@@ -305,7 +258,7 @@ class ContentExtractorService implements ContentExtractorServiceInterface
     ): ?DateTimeInterface {
         try {
             $this->checkKeyNotEmpty($content, $key, $nullable);
-        } catch (BadRequestHttpException $exception) {
+        } catch (ContentExtractorMissingParameterException $exception) {
             if ($required) {
                 throw $exception;
             } else {
@@ -318,9 +271,7 @@ class ContentExtractorService implements ContentExtractorServiceInterface
         $dateTimeResult = DateStringUtils::getDateTimeFromString($content[$key]);
         // => false if wrong date format
         if ($dateTimeResult === false) {
-            throw new BadRequestHttpException(
-                $this->translator->trans('openium_symfony_toolkit.date_format', [], 'openium_symfony_toolkit')
-            );
+            throw new ContentExtractorDateFormatException($key);
         }
         return $dateTimeResult;
     }
@@ -334,8 +285,7 @@ class ContentExtractorService implements ContentExtractorServiceInterface
      * @param array|null $default
      * @param bool $allowEmpty
      *
-     * @throws BadRequestHttpException
-     * @throws InvalidArgumentException
+     * @throws ContentExtractorArrayPropertyException
      * @return array|null
      */
     public function getArray(
@@ -347,7 +297,7 @@ class ContentExtractorService implements ContentExtractorServiceInterface
     ): ?array {
         try {
             $this->checkKeyIsArray($content, $key, $allowEmpty);
-        } catch (BadRequestHttpException $exception) {
+        } catch (ContentExtractorArrayPropertyException $exception) {
             if ($required) {
                 throw $exception;
             } else {
