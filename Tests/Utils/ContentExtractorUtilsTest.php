@@ -1,6 +1,6 @@
 <?php
 
-namespace Openium\SymfonyToolKitBundle\Tests\Service;
+namespace Openium\SymfonyToolKitBundle\Tests\Utils;
 
 use DateTimeImmutable;
 use Openium\SymfonyToolKitBundle\Exception\ContentExtractorArrayPropertyException;
@@ -9,38 +9,17 @@ use Openium\SymfonyToolKitBundle\Exception\ContentExtractorDateFormatException;
 use Openium\SymfonyToolKitBundle\Exception\ContentExtractorFloatPropertyException;
 use Openium\SymfonyToolKitBundle\Exception\ContentExtractorIntegerPropertyException;
 use Openium\SymfonyToolKitBundle\Exception\ContentExtractorMissingParameterException;
-use Openium\SymfonyToolKitBundle\Service\ContentExtractorService;
+use Openium\SymfonyToolKitBundle\Utils\ContentExtractorUtils;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
- * Class ContentExtractorServiceTest
+ * Class ContentExtractorUtilsTest
  *
- * @package App\Tests\Utils
+ * @package Openium\SymfonyToolKitBundle\Tests\Utils
  */
-class ContentExtractorServiceTest extends TestCase
+class ContentExtractorUtilsTest extends TestCase
 {
-    private TranslatorInterface $translator;
-
-    public function setUp(): void
-    {
-        $this->translator = $this->getMockBuilder(TranslatorInterface::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $this->translator->expects(self::any())
-            ->method('trans')
-            ->willReturn('');
-        parent::setUp();
-    }
-
-    private function getUtils(): ContentExtractorService
-    {
-        return new ContentExtractorService(
-            $this->translator
-        );
-    }
-
     // checkKeyIsBoolean
     public function testCheckKeyNotEmptyWithoutKey()
     {
@@ -50,7 +29,7 @@ class ContentExtractorServiceTest extends TestCase
         $key = 'key';
         $nullable = false;
         // when
-        $this->getUtils()->checkKeyNotEmpty($content, $key, $nullable);
+        ContentExtractorUtils::checkKeyNotEmpty($content, $key, $nullable);
     }
 
     public function testCheckKeyNotEmptyWithNullKey()
@@ -61,7 +40,7 @@ class ContentExtractorServiceTest extends TestCase
         $key = 'key';
         $nullable = false;
         // when
-        $this->getUtils()->checkKeyNotEmpty($content, $key, $nullable);
+        ContentExtractorUtils::checkKeyNotEmpty($content, $key, $nullable);
     }
 
     public function testCheckKeyNotEmptyWithNullKeyAndNullable()
@@ -72,7 +51,7 @@ class ContentExtractorServiceTest extends TestCase
         $nullable = true;
         // when
         try {
-            $this->getUtils()->checkKeyNotEmpty($content, $key, $nullable);
+            ContentExtractorUtils::checkKeyNotEmpty($content, $key, $nullable);
         } catch (BadRequestHttpException $e) {
             self::fail('BadRequestHttpException');
         }
@@ -88,7 +67,7 @@ class ContentExtractorServiceTest extends TestCase
         $key = 'key';
         $nullable = false;
         // when
-        $this->getUtils()->checkKeyNotEmpty($content, $key, $nullable);
+        ContentExtractorUtils::checkKeyNotEmpty($content, $key, $nullable);
     }
 
     public function testCheckKeyNotEmptyWithStringKey()
@@ -99,7 +78,7 @@ class ContentExtractorServiceTest extends TestCase
         $nullable = false;
         // when
         try {
-            $this->getUtils()->checkKeyNotEmpty($content, $key, $nullable);
+            ContentExtractorUtils::checkKeyNotEmpty($content, $key, $nullable);
         } catch (ContentExtractorMissingParameterException $e) {
             self::fail('ContentExtractorMissingParameterException');
         }
@@ -114,7 +93,7 @@ class ContentExtractorServiceTest extends TestCase
         $content = [];
         $key = 'key';
         // when
-        $this->getUtils()->checkKeyIsBoolean($content, $key);
+        ContentExtractorUtils::checkKeyIsBoolean($content, $key);
     }
 
     // checkKeyIsBoolean
@@ -125,7 +104,7 @@ class ContentExtractorServiceTest extends TestCase
         $content = ['key' => ''];
         $key = 'key';
         // when
-        $this->getUtils()->checkKeyIsBoolean($content, $key);
+        ContentExtractorUtils::checkKeyIsBoolean($content, $key);
     }
 
     public function testCheckKeyIsBooleanWithNumberKey()
@@ -135,7 +114,7 @@ class ContentExtractorServiceTest extends TestCase
         $content = ['key' => 5];
         $key = 'key';
         // when
-        $this->getUtils()->checkKeyIsBoolean($content, $key);
+        ContentExtractorUtils::checkKeyIsBoolean($content, $key);
     }
 
     public function testCheckKeyIsBooleanWithBoolKey()
@@ -145,7 +124,7 @@ class ContentExtractorServiceTest extends TestCase
         $key = 'key';
         // when
         try {
-            $this->getUtils()->checkKeyIsBoolean($content, $key);
+            ContentExtractorUtils::checkKeyIsBoolean($content, $key);
         } catch (ContentExtractorBooleanPropertyException $e) {
             self::fail('ContentExtractorBooleanPropertyException');
         }
@@ -162,7 +141,7 @@ class ContentExtractorServiceTest extends TestCase
         $key = 'key';
         $nullable = false;
         // when
-        $this->getUtils()->checkKeyIsInt($content, $key, $nullable);
+        ContentExtractorUtils::checkKeyIsInt($content, $key, $nullable);
     }
 
     public function testCheckKeyIsIntWithNullKey()
@@ -173,7 +152,7 @@ class ContentExtractorServiceTest extends TestCase
         $key = 'key';
         $nullable = false;
         // when
-        $this->getUtils()->checkKeyIsInt($content, $key, $nullable);
+        ContentExtractorUtils::checkKeyIsInt($content, $key, $nullable);
     }
 
     public function testCheckKeyIsIntWithNullKeyAndNullbale()
@@ -184,7 +163,7 @@ class ContentExtractorServiceTest extends TestCase
         $nullable = true;
         // when
         try {
-            $this->getUtils()->checkKeyIsInt($content, $key, $nullable);
+            ContentExtractorUtils::checkKeyIsInt($content, $key, $nullable);
         } catch (ContentExtractorIntegerPropertyException $e) {
             self::fail('ContentExtractorIntegerPropertyException');
         }
@@ -200,7 +179,7 @@ class ContentExtractorServiceTest extends TestCase
         $nullable = true;
         // when
         try {
-            $this->getUtils()->checkKeyIsInt($content, $key, $nullable);
+            ContentExtractorUtils::checkKeyIsInt($content, $key, $nullable);
         } catch (ContentExtractorIntegerPropertyException $e) {
             self::fail('ContentExtractorIntegerPropertyException');
         }
@@ -216,7 +195,7 @@ class ContentExtractorServiceTest extends TestCase
         $key = 'key';
         $nullable = true;
         // when
-        $this->getUtils()->checkKeyIsInt($content, $key, $nullable);
+        ContentExtractorUtils::checkKeyIsInt($content, $key, $nullable);
     }
 
     // checkKeyIsFloat
@@ -228,7 +207,7 @@ class ContentExtractorServiceTest extends TestCase
         $key = 'key';
         $nullable = false;
         // when
-        $this->getUtils()->checkKeyIsFloat($content, $key, $nullable);
+        ContentExtractorUtils::checkKeyIsFloat($content, $key, $nullable);
     }
 
     public function testCheckKeyIsFloatWithNullKey()
@@ -239,7 +218,7 @@ class ContentExtractorServiceTest extends TestCase
         $key = 'key';
         $nullable = false;
         // when
-        $this->getUtils()->checkKeyIsFloat($content, $key, $nullable);
+        ContentExtractorUtils::checkKeyIsFloat($content, $key, $nullable);
     }
 
     public function testCheckKeyIsFloatWithNullKeyAndNullbale()
@@ -250,7 +229,7 @@ class ContentExtractorServiceTest extends TestCase
         $nullable = true;
         // when
         try {
-            $this->getUtils()->checkKeyIsFloat($content, $key, $nullable);
+            ContentExtractorUtils::checkKeyIsFloat($content, $key, $nullable);
         } catch (ContentExtractorFloatPropertyException $e) {
             self::fail('ContentExtractorFloatPropertyException');
         }
@@ -266,7 +245,7 @@ class ContentExtractorServiceTest extends TestCase
         $key = 'key';
         $nullable = true;
         // when
-        $this->getUtils()->checkKeyIsFloat($content, $key, $nullable);
+        ContentExtractorUtils::checkKeyIsFloat($content, $key, $nullable);
     }
 
     public function testCheckKeyIsFloatWithFloat()
@@ -277,7 +256,7 @@ class ContentExtractorServiceTest extends TestCase
         $nullable = true;
         // when
         try {
-            $this->getUtils()->checkKeyIsFloat($content, $key, $nullable);
+            ContentExtractorUtils::checkKeyIsFloat($content, $key, $nullable);
         } catch (ContentExtractorFloatPropertyException $e) {
             self::fail('ContentExtractorFloatPropertyException');
         }
@@ -294,7 +273,7 @@ class ContentExtractorServiceTest extends TestCase
         $key = 'key';
         $allowEmpty = true;
         // when
-        $this->getUtils()->checkKeyIsArray($content, $key, $allowEmpty);
+        ContentExtractorUtils::checkKeyIsArray($content, $key, $allowEmpty);
     }
 
     public function testcheckKeyIsArrayWithArray()
@@ -305,7 +284,7 @@ class ContentExtractorServiceTest extends TestCase
         $allowEmpty = true;
         // when
         try {
-            $this->getUtils()->checkKeyIsArray($content, $key, $allowEmpty);
+            ContentExtractorUtils::checkKeyIsArray($content, $key, $allowEmpty);
         } catch (ContentExtractorArrayPropertyException $e) {
             self::fail('ContentExtractorArrayPropertyException');
         }
@@ -323,7 +302,7 @@ class ContentExtractorServiceTest extends TestCase
         $default = null;
         $nullable = false;
         // when
-        $result = $this->getUtils()->getString($content, $key, $required, $default, $nullable);
+        $result = ContentExtractorUtils::getString($content, $key, $required, $default, $nullable);
         // then
         self::assertEquals('5', $result);
     }
@@ -338,7 +317,7 @@ class ContentExtractorServiceTest extends TestCase
         $default = null;
         $nullable = false;
         // when
-        $this->getUtils()->getString($content, $key, $required, $default, $nullable);
+        ContentExtractorUtils::getString($content, $key, $required, $default, $nullable);
     }
 
     public function testGetStringWithNullButRequiredNotNullString()
@@ -351,7 +330,7 @@ class ContentExtractorServiceTest extends TestCase
         $default = null;
         $nullable = false;
         // when
-        $this->getUtils()->getString($content, $key, $required, $default, $nullable);
+        ContentExtractorUtils::getString($content, $key, $required, $default, $nullable);
     }
 
     public function testGetStringWithNullRequiredString()
@@ -363,7 +342,7 @@ class ContentExtractorServiceTest extends TestCase
         $default = null;
         $nullable = true;
         // when
-        $result = $this->getUtils()->getString($content, $key, $required, $default, $nullable);
+        $result = ContentExtractorUtils::getString($content, $key, $required, $default, $nullable);
         // then
         self::assertNull($result);
     }
@@ -377,7 +356,7 @@ class ContentExtractorServiceTest extends TestCase
         $default = 'default';
         $nullable = true;
         // when
-        $result = $this->getUtils()->getString($content, $key, $required, $default, $nullable);
+        $result = ContentExtractorUtils::getString($content, $key, $required, $default, $nullable);
         // then
         self::assertEquals($default, $result);
     }
@@ -391,7 +370,7 @@ class ContentExtractorServiceTest extends TestCase
         $required = true;
         $default = null;
         // when
-        $result = $this->getUtils()->getBool($content, $key, $required, $default);
+        $result = ContentExtractorUtils::getBool($content, $key, $required, $default);
         // then
         self::assertTrue($result);
     }
@@ -404,7 +383,7 @@ class ContentExtractorServiceTest extends TestCase
         $required = false;
         $default = true;
         // when
-        $result = $this->getUtils()->getBool($content, $key, $required, $default);
+        $result = ContentExtractorUtils::getBool($content, $key, $required, $default);
         // then
         self::assertTrue($result);
     }
@@ -419,7 +398,7 @@ class ContentExtractorServiceTest extends TestCase
         $default = null;
         $nullable = false;
         // when
-        $result = $this->getUtils()->getInt($content, $key, $required, $default, $nullable);
+        $result = ContentExtractorUtils::getInt($content, $key, $required, $default, $nullable);
         // then
         self::assertEquals(5, $result);
     }
@@ -434,7 +413,7 @@ class ContentExtractorServiceTest extends TestCase
         $default = null;
         $nullable = false;
         // when
-        $this->getUtils()->getInt($content, $key, $required, $default, $nullable);
+        ContentExtractorUtils::getInt($content, $key, $required, $default, $nullable);
     }
 
     public function testGetIntWithMissingDefault()
@@ -446,7 +425,7 @@ class ContentExtractorServiceTest extends TestCase
         $default = 5;
         $nullable = false;
         // when
-        $result = $this->getUtils()->getInt($content, $key, $required, $default, $nullable);
+        $result = ContentExtractorUtils::getInt($content, $key, $required, $default, $nullable);
         // then
         self::assertEquals(5, $result);
     }
@@ -460,7 +439,7 @@ class ContentExtractorServiceTest extends TestCase
         $default = null;
         $nullable = true;
         // when
-        $result = $this->getUtils()->getInt($content, $key, $required, $default, $nullable);
+        $result = ContentExtractorUtils::getInt($content, $key, $required, $default, $nullable);
         // then
         self::assertNull($result);
     }
@@ -475,7 +454,7 @@ class ContentExtractorServiceTest extends TestCase
         $default = null;
         $nullable = false;
         // when
-        $result = $this->getUtils()->getFloat($content, $key, $required, $default, $nullable);
+        $result = ContentExtractorUtils::getFloat($content, $key, $required, $default, $nullable);
         // then
         self::assertEquals(5.5, $result);
     }
@@ -490,7 +469,7 @@ class ContentExtractorServiceTest extends TestCase
         $default = null;
         $nullable = false;
         // when
-        $this->getUtils()->getFloat($content, $key, $required, $default, $nullable);
+        ContentExtractorUtils::getFloat($content, $key, $required, $default, $nullable);
     }
 
     public function testGetFloatWithMissingDefault()
@@ -502,7 +481,7 @@ class ContentExtractorServiceTest extends TestCase
         $default = 5.5;
         $nullable = false;
         // when
-        $result = $this->getUtils()->getFloat($content, $key, $required, $default, $nullable);
+        $result = ContentExtractorUtils::getFloat($content, $key, $required, $default, $nullable);
         // then
         self::assertEquals(5.5, $result);
     }
@@ -516,7 +495,7 @@ class ContentExtractorServiceTest extends TestCase
         $default = null;
         $nullable = true;
         // when
-        $result = $this->getUtils()->getFloat($content, $key, $required, $default, $nullable);
+        $result = ContentExtractorUtils::getFloat($content, $key, $required, $default, $nullable);
         // then
         self::assertNull($result);
     }
@@ -531,7 +510,7 @@ class ContentExtractorServiceTest extends TestCase
         $default = null;
         $nullable = false;
         // when
-        $result = $this->getUtils()->getDateTimeInterface($content, $key, $required, $default, $nullable);
+        $result = ContentExtractorUtils::getDateTimeInterface($content, $key, $required, $default, $nullable);
         // then
         self::assertInstanceOf(\DateTime::class, $result);
     }
@@ -545,7 +524,7 @@ class ContentExtractorServiceTest extends TestCase
         $default = null;
         $nullable = false;
         // when
-        $result = $this->getUtils()->getDateTimeInterface($content, $key, $required, $default, $nullable);
+        $result = ContentExtractorUtils::getDateTimeInterface($content, $key, $required, $default, $nullable);
         // then
         self::assertInstanceOf(\DateTime::class, $result);
     }
@@ -560,7 +539,7 @@ class ContentExtractorServiceTest extends TestCase
         $default = null;
         $nullable = false;
         // when
-        $this->getUtils()->getDateTimeInterface($content, $key, $required, $default, $nullable);
+        ContentExtractorUtils::getDateTimeInterface($content, $key, $required, $default, $nullable);
     }
 
     public function testGetDateTimeInterfaceNullWithStringRequiredNotNull()
@@ -573,7 +552,7 @@ class ContentExtractorServiceTest extends TestCase
         $default = null;
         $nullable = false;
         // when
-        $this->getUtils()->getDateTimeInterface($content, $key, $required, $default, $nullable);
+        ContentExtractorUtils::getDateTimeInterface($content, $key, $required, $default, $nullable);
     }
 
     public function testGetDateTimeInterfaceNullWithStringNotRequiredNullable()
@@ -585,7 +564,7 @@ class ContentExtractorServiceTest extends TestCase
         $default = null;
         $nullable = true;
         // when
-        $result = $this->getUtils()->getDateTimeInterface($content, $key, $required, $default, $nullable);
+        $result = ContentExtractorUtils::getDateTimeInterface($content, $key, $required, $default, $nullable);
         // then
         self::assertNull($result);
     }
@@ -599,7 +578,7 @@ class ContentExtractorServiceTest extends TestCase
         $default = new DateTimeImmutable();
         $nullable = false;
         // when
-        $result = $this->getUtils()->getDateTimeInterface($content, $key, $required, $default, $nullable);
+        $result = ContentExtractorUtils::getDateTimeInterface($content, $key, $required, $default, $nullable);
         // then
         self::assertEquals($default, $result);
     }
@@ -614,7 +593,7 @@ class ContentExtractorServiceTest extends TestCase
         $default = null;
         $allowEmpty = false;
         // when
-        $result = $this->getUtils()->getArray($content, $key, $required, $default, $allowEmpty);
+        $result = ContentExtractorUtils::getArray($content, $key, $required, $default, $allowEmpty);
         // then
         self::assertEquals(['5'], $result);
     }
@@ -629,7 +608,7 @@ class ContentExtractorServiceTest extends TestCase
         $default = null;
         $allowEmpty = false;
         // when
-        $this->getUtils()->getArray($content, $key, $required, $default, $allowEmpty);
+        ContentExtractorUtils::getArray($content, $key, $required, $default, $allowEmpty);
     }
 
     public function testGetArrayWithNullButRequiredNotNullArray()
@@ -642,7 +621,7 @@ class ContentExtractorServiceTest extends TestCase
         $default = null;
         $allowEmpty = false;
         // when
-        $this->getUtils()->getArray($content, $key, $required, $default, $allowEmpty);
+        ContentExtractorUtils::getArray($content, $key, $required, $default, $allowEmpty);
     }
 
     public function testGetArrayWithNullRequiredString()
@@ -654,7 +633,7 @@ class ContentExtractorServiceTest extends TestCase
         $default = null;
         $allowEmpty = true;
         // when
-        $result = $this->getUtils()->getArray($content, $key, $required, $default, $allowEmpty);
+        $result = ContentExtractorUtils::getArray($content, $key, $required, $default, $allowEmpty);
         // then
         self::assertNull($result);
     }
@@ -668,7 +647,7 @@ class ContentExtractorServiceTest extends TestCase
         $default = ['default'];
         $allowEmpty = true;
         // when
-        $result = $this->getUtils()->getArray($content, $key, $required, $default, $allowEmpty);
+        $result = ContentExtractorUtils::getArray($content, $key, $required, $default, $allowEmpty);
         // then
         self::assertEquals($default, $result);
     }

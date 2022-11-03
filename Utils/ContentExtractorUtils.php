@@ -1,6 +1,6 @@
 <?php
 
-namespace Openium\SymfonyToolKitBundle\Service;
+namespace Openium\SymfonyToolKitBundle\Utils;
 
 use DateTimeInterface;
 use Openium\SymfonyToolKitBundle\Exception\ContentExtractorArrayPropertyException;
@@ -9,14 +9,13 @@ use Openium\SymfonyToolKitBundle\Exception\ContentExtractorDateFormatException;
 use Openium\SymfonyToolKitBundle\Exception\ContentExtractorFloatPropertyException;
 use Openium\SymfonyToolKitBundle\Exception\ContentExtractorIntegerPropertyException;
 use Openium\SymfonyToolKitBundle\Exception\ContentExtractorMissingParameterException;
-use Openium\SymfonyToolKitBundle\Utils\DateStringUtils;
 
 /**
- * Class ContentExtractorService
+ * Class ContentExtractorUtils
  *
- * @package Openium\SymfonyToolKitBundle\Service
+ * @package Openium\SymfonyToolKitBundle\Utils
  */
-class ContentExtractorService implements ContentExtractorServiceInterface
+class ContentExtractorUtils
 {
     /**
      * checkKeyNotEmpty
@@ -28,7 +27,7 @@ class ContentExtractorService implements ContentExtractorServiceInterface
      * @throws ContentExtractorMissingParameterException
      * @return void
      */
-    public function checkKeyNotEmpty(array $content, string $key, ?bool $nullable = false): void
+    public static function checkKeyNotEmpty(array $content, string $key, ?bool $nullable = false): void
     {
         if (!array_key_exists($key, $content) || (!$nullable && empty($content[$key]))) {
             throw new ContentExtractorMissingParameterException($key);
@@ -44,7 +43,7 @@ class ContentExtractorService implements ContentExtractorServiceInterface
      * @throws ContentExtractorBooleanPropertyException
      * @return void
      */
-    public function checkKeyIsBoolean(array $content, string $key): void
+    public static function checkKeyIsBoolean(array $content, string $key): void
     {
         if (!array_key_exists($key, $content) || !is_bool($content[$key])) {
             throw new ContentExtractorBooleanPropertyException($key);
@@ -61,7 +60,7 @@ class ContentExtractorService implements ContentExtractorServiceInterface
      * @throws ContentExtractorIntegerPropertyException
      * @return void
      */
-    public function checkKeyIsInt(array $content, string $key, bool $nullable = false): void
+    public static function checkKeyIsInt(array $content, string $key, bool $nullable = false): void
     {
         if (
             !array_key_exists($key, $content)
@@ -82,7 +81,7 @@ class ContentExtractorService implements ContentExtractorServiceInterface
      * @throws ContentExtractorFloatPropertyException
      * @return void
      */
-    public function checkKeyIsFloat(array $content, string $key, bool $nullable = false): void
+    public static function checkKeyIsFloat(array $content, string $key, bool $nullable = false): void
     {
         if (
             !array_key_exists($key, $content)
@@ -103,7 +102,7 @@ class ContentExtractorService implements ContentExtractorServiceInterface
      * @throws ContentExtractorArrayPropertyException
      * @return void
      */
-    public function checkKeyIsArray(array $content, string $key, bool $allowEmpty = false): void
+    public static function checkKeyIsArray(array $content, string $key, bool $allowEmpty = false): void
     {
         if (
             !array_key_exists($key, $content)
@@ -126,7 +125,7 @@ class ContentExtractorService implements ContentExtractorServiceInterface
      * @throws ContentExtractorMissingParameterException
      * @return string|null
      */
-    public function getString(
+    public static function getString(
         array $content,
         string $key,
         bool $required = true,
@@ -134,7 +133,7 @@ class ContentExtractorService implements ContentExtractorServiceInterface
         bool $nullable = false
     ): ?string {
         try {
-            $this->checkKeyNotEmpty($content, $key, $nullable);
+            self::checkKeyNotEmpty($content, $key, $nullable);
         } catch (ContentExtractorMissingParameterException $exception) {
             if ($required) {
                 throw $exception;
@@ -160,10 +159,10 @@ class ContentExtractorService implements ContentExtractorServiceInterface
      * @throws ContentExtractorBooleanPropertyException
      * @return bool|null
      */
-    public function getBool(array $content, string $key, bool $required = true, ?bool $default = true): ?bool
+    public static function getBool(array $content, string $key, bool $required = true, ?bool $default = true): ?bool
     {
         try {
-            $this->checkKeyIsBoolean($content, $key);
+            self::checkKeyIsBoolean($content, $key);
         } catch (ContentExtractorBooleanPropertyException $exception) {
             if ($required) {
                 throw $exception;
@@ -186,7 +185,7 @@ class ContentExtractorService implements ContentExtractorServiceInterface
      * @throws ContentExtractorIntegerPropertyException
      * @return int|null
      */
-    public function getInt(
+    public static function getInt(
         array $content,
         string $key,
         bool $required = true,
@@ -194,7 +193,7 @@ class ContentExtractorService implements ContentExtractorServiceInterface
         bool $nullable = false
     ): ?int {
         try {
-            $this->checkKeyIsInt($content, $key, $nullable);
+            self::checkKeyIsInt($content, $key, $nullable);
         } catch (ContentExtractorIntegerPropertyException $exception) {
             if ($required) {
                 throw $exception;
@@ -217,7 +216,7 @@ class ContentExtractorService implements ContentExtractorServiceInterface
      * @throws ContentExtractorFloatPropertyException
      * @return float|null
      */
-    public function getFloat(
+    public static function getFloat(
         array $content,
         string $key,
         bool $required = true,
@@ -225,7 +224,7 @@ class ContentExtractorService implements ContentExtractorServiceInterface
         bool $nullable = false
     ): ?float {
         try {
-            $this->checkKeyIsFloat($content, $key, $nullable);
+            self::checkKeyIsFloat($content, $key, $nullable);
         } catch (ContentExtractorFloatPropertyException $exception) {
             if ($required) {
                 throw $exception;
@@ -249,7 +248,7 @@ class ContentExtractorService implements ContentExtractorServiceInterface
      * @throws ContentExtractorDateFormatException
      * @return DateTimeInterface|null
      */
-    public function getDateTimeInterface(
+    public static function getDateTimeInterface(
         array $content,
         string $key,
         bool $required = true,
@@ -257,7 +256,7 @@ class ContentExtractorService implements ContentExtractorServiceInterface
         bool $nullable = false
     ): ?DateTimeInterface {
         try {
-            $this->checkKeyNotEmpty($content, $key, $nullable);
+            self::checkKeyNotEmpty($content, $key, $nullable);
         } catch (ContentExtractorMissingParameterException $exception) {
             if ($required) {
                 throw $exception;
@@ -288,7 +287,7 @@ class ContentExtractorService implements ContentExtractorServiceInterface
      * @throws ContentExtractorArrayPropertyException
      * @return array|null
      */
-    public function getArray(
+    public static function getArray(
         array $content,
         string $key,
         bool $required = true,
@@ -296,7 +295,7 @@ class ContentExtractorService implements ContentExtractorServiceInterface
         bool $allowEmpty = true
     ): ?array {
         try {
-            $this->checkKeyIsArray($content, $key, $allowEmpty);
+            self::checkKeyIsArray($content, $key, $allowEmpty);
         } catch (ContentExtractorArrayPropertyException $exception) {
             if ($required) {
                 throw $exception;
