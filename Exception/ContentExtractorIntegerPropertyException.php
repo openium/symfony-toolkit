@@ -23,10 +23,11 @@ class ContentExtractorIntegerPropertyException extends ContentExtractorException
     public const CODE = 2015151205;
 
     public function __construct(
+        string $key = "",
         string $message = self::MESSAGE,
         int $code = self::CODE,
         Exception $previous = null
     ) {
-        parent::__construct($message, $code, $previous);
+        parent::__construct($key, $message, $code, $previous);
     }
 }

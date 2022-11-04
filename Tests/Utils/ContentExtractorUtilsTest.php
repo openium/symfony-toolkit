@@ -11,7 +11,6 @@ use Openium\SymfonyToolKitBundle\Exception\ContentExtractorIntegerPropertyExcept
 use Openium\SymfonyToolKitBundle\Exception\ContentExtractorMissingParameterException;
 use Openium\SymfonyToolKitBundle\Utils\ContentExtractorUtils;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 /**
  * Class ContentExtractorUtilsTest
@@ -52,8 +51,8 @@ class ContentExtractorUtilsTest extends TestCase
         // when
         try {
             ContentExtractorUtils::checkKeyNotEmpty($content, $key, $nullable);
-        } catch (BadRequestHttpException $e) {
-            self::fail('BadRequestHttpException');
+        } catch (ContentExtractorMissingParameterException $e) {
+            self::fail('ContentExtractorMissingParameterException');
         }
         // then
         self::assertTrue(true);
