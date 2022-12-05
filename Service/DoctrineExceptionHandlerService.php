@@ -62,7 +62,7 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
      *
      * @param Throwable $throwable
      */
-    public function log(Throwable $throwable)
+    public function log(Throwable $throwable): void
     {
         $this->logger->error('------------------------------------- Log from Symfony ToolKit DoctrineExceptionHandlerService');
         $this->logger->error(get_class($throwable));
@@ -80,8 +80,9 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
      * @throws BadRequestHttpException
      * @throws ConflictHttpException
      * @throws Throwable if not a doctrine exception
+     * TODO change return type to never when upgrade to php 8.1
      */
-    public function toHttpException(Throwable $throwable)
+    public function toHttpException(Throwable $throwable): void
     {
         // Call the logger
         $this->log($throwable);
@@ -123,8 +124,9 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
      *
      * @return void
      * @throws BadRequestHttpException
+     * TODO change return type to never when upgrade to php 8.1
      */
-    protected function createBadRequest(Throwable $throwable, string $message = null)
+    protected function createBadRequest(Throwable $throwable, string $message = null): void
     {
         throw new BadRequestHttpException($message ?? $this->entityManagementErrorMessage, $throwable);
     }
@@ -133,15 +135,15 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
      * createConflict
      *
      * @param Throwable $throwable
-     * @param null $message
+     * @param string|null $message
      *
      * @return void
      * @throws ConflictHttpException
-     *
+     * TODO change return type to never when upgrade to php 8.1
      */
-    protected function createConflict(Throwable $throwable, $message = null)
+    protected function createConflict(Throwable $throwable, ?string $message = null): void
     {
-        if ($throwable->getPrevious()) {
+        if ($throwable->getPrevious() !== null) {
             $this->logger->error($throwable->getPrevious()->getCode());
         }
         throw new ConflictHttpException($message ?? $this->conflictMessage, $throwable);
@@ -156,15 +158,16 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
      * @throws ConflictHttpException
      *
      * @throws BadRequestHttpException
+     * TODO change return type to never when upgrade to php 8.1
      */
-    protected function dbalExceptionManagement(Exception $DBALException)
+    protected function dbalExceptionManagement(Exception $DBALException): void
     {
-        $code = 0;
+        $code = '0';
         $previous = $DBALException->getPrevious();
-        if ($previous) {
-            $code = $previous->getCode() ?? 0;
-        } elseif ($DBALException->getCode()) {
-            $code = $DBALException->getCode();
+        if ($previous !== null) {
+            $code = strval($previous->getCode());
+        } else {
+            $code = strval($DBALException->getCode());
         }
         switch ($code) {
             case '23000':

@@ -3,6 +3,8 @@
 namespace Openium\SymfonyToolKitBundle\Tests\Service;
 
 use Openium\SymfonyToolKitBundle\Service\ServerService;
+use PHPUnit\Framework\MockObject\MockClass;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -26,7 +28,7 @@ class ServerServiceTest extends TestCase
         parent::setUp();
     }
 
-    public function testGetBasePathWithRequest()
+    public function testGetBasePathWithRequest(): void
     {
         $request = $this->getMockBuilder(Request::class)
             ->disableOriginalConstructor()
@@ -46,7 +48,7 @@ class ServerServiceTest extends TestCase
         self::assertEquals($result, 'https://127.0.0.2/');
     }
 
-    public function testGetBasePathWithRequestNotSecure()
+    public function testGetBasePathWithRequestNotSecure(): void
     {
         $request = $this->getMockBuilder(Request::class)
             ->disableOriginalConstructor()
@@ -66,7 +68,7 @@ class ServerServiceTest extends TestCase
         self::assertEquals($result, 'http://127.0.0.2/');
     }
 
-    public function testGetBasePathWithoutRequest()
+    public function testGetBasePathWithoutRequest(): void
     {
         $this->requestStack->expects(self::once())
             ->method('getCurrentRequest')

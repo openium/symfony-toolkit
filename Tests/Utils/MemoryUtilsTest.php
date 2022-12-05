@@ -12,7 +12,7 @@ use PHPUnit\Framework\TestCase;
  */
 class MemoryUtilsTest extends TestCase
 {
-    public function testConvert()
+    public function testConvert(): void
     {
         self::assertEquals('1 kb', MemoryUtils::convert(1024));
         self::assertEquals('2 kb', MemoryUtils::convert(2048));

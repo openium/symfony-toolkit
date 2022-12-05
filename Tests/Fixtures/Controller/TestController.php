@@ -13,6 +13,7 @@ namespace Openium\SymfonyToolKitBundle\Tests\Fixtures\Controller;
 
 use Openium\SymfonyToolKitBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 /**
  * Class TestController
@@ -26,9 +27,7 @@ class TestController extends AbstractController
      *
      * @param Request $request
      *
-     * @throws \LogicException
-     * @throws \Symfony\Component\HttpKernel\Exception\BadRequestHttpException
-     *
+     * @throws BadRequestHttpException
      * @return array
      */
     public function test(Request $request): array

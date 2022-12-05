@@ -39,10 +39,13 @@ class OpeniumSymfonyToolKitExtension extends Extension
      * @throws Exception
      * @return void
      */
-    public function load(array $configs, ContainerBuilder $container)
+    /* @phpstan-ignore-next-line */
+    public function load(array $configs, ContainerBuilder $container): void
     {
         $configuration = $this->getConfiguration($configs, $container);
-        $this->processConfiguration($configuration, $configs);
+        if ($configuration !== null) {
+            $this->processConfiguration($configuration, $configs);
+        }
         $loader = new YamlFileLoader(
             $container,
             new FileLocator(__DIR__ . '/../Resources/config')

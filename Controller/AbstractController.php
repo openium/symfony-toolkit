@@ -1,5 +1,4 @@
 <?php
-
 /**
  * PHP Version >=8.0
  *
@@ -30,13 +29,20 @@ class AbstractController extends BaseController
      * @param Request $request
      *
      * @throws BadRequestHttpException
-     *
-     * @return array
+     * @return array<string, mixed>|array<int, mixed>
      */
     protected function getContentFromRequest(Request $request): array
     {
-        $content = json_decode($request->getContent(), true);
-        if (empty($content)) {
+        /** @var string|resource $bodyContent */
+        $bodyContent = $request->getContent();
+        if ($bodyContent === null) {
+            throw new MissingContentException();
+        }
+        if (!is_string($bodyContent)) {
+            $bodyContent = strval($bodyContent);
+        }
+        $content = json_decode($bodyContent, true);
+        if ($content === null) {
             throw new MissingContentException();
         }
         if (!is_array($content)) {

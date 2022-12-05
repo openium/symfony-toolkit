@@ -29,7 +29,7 @@ class FileUploaderServiceTest extends TestCase
     /**
      * Test prepareUploadPath method without file. Prepare image path in the entity
      */
-    public function testPrepareUploadPathWithoutFile()
+    public function testPrepareUploadPathWithoutFile(): void
     {
         $entity = new EntityWithUpload();
         $fileUploaderService = new FileUploaderService('/tmp', 'test');
@@ -41,7 +41,7 @@ class FileUploaderServiceTest extends TestCase
     /**
      * Test prepareUploadPath method with file. Prepare image path in the entity
      */
-    public function testPrepareUploadPathWithFile()
+    public function testPrepareUploadPathWithFile(): void
     {
         $this->file->expects(self::once())
             ->method('guessClientExtension')
@@ -57,7 +57,7 @@ class FileUploaderServiceTest extends TestCase
     /**
      * Test prepareUploadPath method with file without extension. Prepare image path in the entity
      */
-    public function testPrepareUploadPathWithFileWithoutExtension()
+    public function testPrepareUploadPathWithFileWithoutExtension(): void
     {
         static::expectException("Symfony\Component\HttpKernel\Exception\BadRequestHttpException");
         static::expectExceptionMessage("The file extension is empty.");
@@ -74,7 +74,7 @@ class FileUploaderServiceTest extends TestCase
     /**
      * Test prepareUploadPath method with file and without name. Prepare image path in the entity
      */
-    public function testPrepareUploadPathWithFileWithoutName()
+    public function testPrepareUploadPathWithFileWithoutName(): void
     {
         $this->file->expects(self::once())
             ->method('guessClientExtension')
@@ -90,7 +90,7 @@ class FileUploaderServiceTest extends TestCase
     /**
      * Test uploadEntity method without file.
      */
-    public function testUploadEntityWithoutFile()
+    public function testUploadEntityWithoutFile(): void
     {
         $entity = new EntityWithUpload();
         $fileUploaderService = new FileUploaderService('/tmp', 'test');
@@ -102,7 +102,7 @@ class FileUploaderServiceTest extends TestCase
     /**
      * Test uploadEntity method with file without having configured the upload path (prepareUploadPath method).
      */
-    public function testUploadEntityWithFileButNotPreUploaded()
+    public function testUploadEntityWithFileButNotPreUploaded(): void
     {
         static::expectException("UnexpectedValueException");
         static::expectExceptionMessage("Call prepareUploadPath method on the entity before upload.");
@@ -116,7 +116,7 @@ class FileUploaderServiceTest extends TestCase
     /**
      * Test uploadEntity method with file and the upload path configured (prepareUploadPath method).
      */
-    public function testUploadWithFilePreuploaded()
+    public function testUploadWithFilePreuploaded(): void
     {
         // Make File
         $this->file->expects(self::once())

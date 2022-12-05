@@ -1,5 +1,4 @@
 <?php
-
 /**
  * ExceptionFormatService
  * PHP Version >=8.0
@@ -16,6 +15,7 @@ use Exception;
 use InvalidArgumentException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Throwable;
@@ -62,6 +62,7 @@ class ExceptionFormatService implements ExceptionFormatServiceInterface
             ) {
                 // Firebase part
                 $code = Response::HTTP_UNAUTHORIZED;
+                /* @phpstan-ignore-next-line */
                 $text = $exception->getMessage();
                 $message = $text;
             } else {
@@ -70,8 +71,9 @@ class ExceptionFormatService implements ExceptionFormatServiceInterface
                 $message = null;
             }
             $error = $this->getArray($exception, $code, $text, $message);
-            $response->setStatusCode($code ?: $this->getStatusCode($exception));
-            $response->setContent((json_encode($error)) ?: '');
+            $response->setStatusCode($code);
+            $json = json_encode($error);
+            $response->setContent(($json !== false) ? $json : '');
         } else {
             $response->setStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR);
             $response->setContent($exception->getMessage());
@@ -83,14 +85,18 @@ class ExceptionFormatService implements ExceptionFormatServiceInterface
      * getArray
      *
      * @param Exception $exception
-     * @param null $code
-     * @param null $text
-     * @param null $message
+     * @param int|null $code
+     * @param string|null $text
+     * @param string|null $message
      *
-     * @return array
+     * @return array<string, mixed>
      */
-    public function getArray(Exception $exception, $code = null, $text = null, $message = null): array
-    {
+    public function getArray(
+        Exception $exception,
+        ?int $code = null,
+        ?string $text = null,
+        ?string $message = null
+    ): array {
         $error = [];
         $error['status_code'] = $code ?? $this->getStatusCode($exception);
         $error['status_text'] = $text ?? $this->getStatusText($exception);
@@ -98,17 +104,19 @@ class ExceptionFormatService implements ExceptionFormatServiceInterface
         // Stripe part
         if (
             $error['status_code'] == Response::HTTP_PAYMENT_REQUIRED
+            && $exception->getPrevious() !== null
             && is_a($exception->getPrevious(), "Stripe\Error\Card")
         ) {
+            /* @phpstan-ignore-next-line */
             $body = $exception->getPrevious()->getJsonBody();
             $err = $body['error'];
             $error['type'] = $err['type'];
             $error['code'] = $err['code'];
         }
-        if ($this->kernel->getEnvironment() != 'prod') {
+        if ($this->kernel->getEnvironment() !== 'prod') {
             $error['trace'] = $exception->getTrace();
             $error['previous'] = [];
-            if ($exception->getPrevious()) {
+            if (!is_null($exception->getPrevious())) {
                 $error['previous']['message'] = $exception->getPrevious()->getMessage();
                 $error['previous']['code'] = $exception->getPrevious()->getCode();
             }
@@ -123,13 +131,12 @@ class ExceptionFormatService implements ExceptionFormatServiceInterface
      *
      * @return int
      */
-    public function getStatusCode(Exception $exception)
+    public function getStatusCode(Exception $exception): int
     {
-        if ($exception instanceof HttpExceptionInterface) {
-            return $exception->getStatusCode();
-        }
-        if (is_a($exception, "Symfony\Component\Security\Core\Exception\AccessDeniedException")) {
+        if ($exception instanceof AccessDeniedHttpException) {
             return Response::HTTP_UNAUTHORIZED;
+        } elseif ($exception instanceof HttpExceptionInterface) {
+            return $exception->getStatusCode();
         }
         return Response::HTTP_INTERNAL_SERVER_ERROR;
     }
@@ -141,7 +148,7 @@ class ExceptionFormatService implements ExceptionFormatServiceInterface
      *
      * @return string
      */
-    public function getStatusText(Exception $exception)
+    public function getStatusText(Exception $exception): string
     {
         $code = $this->getStatusCode($exception);
         if ($code == Response::HTTP_PAYMENT_REQUIRED) {

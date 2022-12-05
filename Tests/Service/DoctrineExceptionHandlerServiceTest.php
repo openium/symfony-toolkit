@@ -29,7 +29,7 @@ class DoctrineExceptionHandlerServiceTest extends TestCase
         parent::setUp();
     }
 
-    public function testLog()
+    public function testLog(): void
     {
 
         $throwable = $this->getMockBuilder(\Exception::class)
@@ -44,7 +44,7 @@ class DoctrineExceptionHandlerServiceTest extends TestCase
         $doctrineExceptionHandler->log($throwable);
     }
 /*
-    public function testToHttpExceptionWithUniqueConstraintViolationException()
+    public function testToHttpExceptionWithUniqueConstraintViolationException(): void
     {
         static::expectException("Symfony\Component\HttpKernel\Exception\ConflictHttpException");
         static::expectExceptionMessage("Conflict error");
@@ -59,7 +59,7 @@ class DoctrineExceptionHandlerServiceTest extends TestCase
         $doctrineExceptionHandler->toHttpException($ucve);
     }
 
-    public function testToHttpExceptionWithNotNullConstraintViolationException()
+    public function testToHttpExceptionWithNotNullConstraintViolationException(): void
     {
         static::expectException("Symfony\Component\HttpKernel\Exception\BadRequestHttpException");
         static::expectExceptionMessage("Entity's management error");
@@ -74,7 +74,7 @@ class DoctrineExceptionHandlerServiceTest extends TestCase
         $doctrineExceptionHandler->toHttpException($nncve);
     }
 */
-    public function testToHttpExceptionWithORMInvalidArgumentException()
+    public function testToHttpExceptionWithORMInvalidArgumentException(): void
     {
         static::expectException("Symfony\Component\HttpKernel\Exception\BadRequestHttpException");
         static::expectExceptionMessage("Entity's management error");
@@ -88,7 +88,7 @@ class DoctrineExceptionHandlerServiceTest extends TestCase
         $doctrineExceptionHandler->toHttpException($ormiae);
     }
 
-    public function testToHttpExceptionWithUnexpectedValueException()
+    public function testToHttpExceptionWithUnexpectedValueException(): void
     {
         static::expectException("Symfony\Component\HttpKernel\Exception\BadRequestHttpException");
         static::expectExceptionMessage("Entity's management error");
@@ -102,7 +102,7 @@ class DoctrineExceptionHandlerServiceTest extends TestCase
         $doctrineExceptionHandler->toHttpException($uve);
     }
 
-    public function testToHttpExceptionWith23000DBALException()
+    public function testToHttpExceptionWith23000DBALException(): void
     {
         static::expectException("Symfony\Component\HttpKernel\Exception\ConflictHttpException");
         static::expectExceptionMessage("Conflict error");
@@ -114,7 +114,7 @@ class DoctrineExceptionHandlerServiceTest extends TestCase
         $doctrineExceptionHandler->toHttpException($dbal);
     }
 
-    public function testToHttpExceptionWith42000DBALException()
+    public function testToHttpExceptionWith42000DBALException(): void
     {
         static::expectException("Symfony\Component\HttpKernel\Exception\BadRequestHttpException");
         static::expectExceptionMessage("Database error");
@@ -126,7 +126,7 @@ class DoctrineExceptionHandlerServiceTest extends TestCase
         $doctrineExceptionHandler->toHttpException($dbal);
     }
 
-    public function testToHttpExceptionWith21000DBALException()
+    public function testToHttpExceptionWith21000DBALException(): void
     {
         static::expectException("Symfony\Component\HttpKernel\Exception\BadRequestHttpException");
         static::expectExceptionMessage("Database request error");
@@ -138,7 +138,7 @@ class DoctrineExceptionHandlerServiceTest extends TestCase
         $doctrineExceptionHandler->toHttpException($dbal);
     }
 
-    public function testToHttpExceptionWith21000DBALExceptionAndWithoutPreviousException()
+    public function testToHttpExceptionWith21000DBALExceptionAndWithoutPreviousException(): void
     {
         static::expectException("Symfony\Component\HttpKernel\Exception\BadRequestHttpException");
         static::expectExceptionMessage("Database request error");
@@ -149,7 +149,7 @@ class DoctrineExceptionHandlerServiceTest extends TestCase
         $doctrineExceptionHandler->toHttpException($dbal);
     }
 
-    public function testToHttpExceptionWith0DBALExceptionAndWithoutPreviousException()
+    public function testToHttpExceptionWith0DBALExceptionAndWithoutPreviousException(): void
     {
         static::expectException("Symfony\Component\HttpKernel\Exception\BadRequestHttpException");
         static::expectExceptionMessage("Entity's management error");
@@ -160,7 +160,7 @@ class DoctrineExceptionHandlerServiceTest extends TestCase
         $doctrineExceptionHandler->toHttpException($dbal);
     }
 
-    public function testToHttpExceptionWithException()
+    public function testToHttpExceptionWithException(): void
     {
         static::expectException("Exception");
         static::expectExceptionMessage("message");
@@ -171,7 +171,7 @@ class DoctrineExceptionHandlerServiceTest extends TestCase
         $doctrineExceptionHandler->toHttpException($dbal);
     }
 
-    public function testMissingDatabaseTableMessage()
+    public function testMissingDatabaseTableMessage(): void
     {
         // given
         $message = "new error message";
@@ -184,7 +184,7 @@ class DoctrineExceptionHandlerServiceTest extends TestCase
         static::assertEquals($message, $doctrineExceptionHandler->getMissingDatabaseTableMessage());
     }
 
-    public function testDatabaseSchemaErrorMessage()
+    public function testDatabaseSchemaErrorMessage(): void
     {
         // given
         $message = "new error message";
@@ -197,7 +197,7 @@ class DoctrineExceptionHandlerServiceTest extends TestCase
         static::assertEquals($message, $doctrineExceptionHandler->getDatabaseSchemaErrorMessage());
     }
 
-    public function testQuerySyntaxErrorMessage()
+    public function testQuerySyntaxErrorMessage(): void
     {
         // given
         $message = "new error message";
@@ -210,7 +210,7 @@ class DoctrineExceptionHandlerServiceTest extends TestCase
         static::assertEquals($message, $doctrineExceptionHandler->getQuerySyntaxErrorMessage());
     }
 
-    public function testEntityManagementErrorMessage()
+    public function testEntityManagementErrorMessage(): void
     {
         // given
         $message = "new error message";
@@ -223,7 +223,7 @@ class DoctrineExceptionHandlerServiceTest extends TestCase
         static::assertEquals($message, $doctrineExceptionHandler->getEntityManagementErrorMessage());
     }
 
-    public function testConflictMessage()
+    public function testConflictMessage(): void
     {
         // given
         $message = "new error message";
@@ -236,7 +236,7 @@ class DoctrineExceptionHandlerServiceTest extends TestCase
         static::assertEquals($message, $doctrineExceptionHandler->getConflictMessage());
     }
 
-    public function testDatabaseErrorMessage()
+    public function testDatabaseErrorMessage(): void
     {
         // given
         $message = "new error message";
@@ -249,7 +249,7 @@ class DoctrineExceptionHandlerServiceTest extends TestCase
         static::assertEquals($message, $doctrineExceptionHandler->getDatabaseErrorMessage());
     }
 
-    public function testDatabaseRequestErrorMessage()
+    public function testDatabaseRequestErrorMessage(): void
     {
         // given
         $message = "new error message";
@@ -262,7 +262,7 @@ class DoctrineExceptionHandlerServiceTest extends TestCase
         static::assertEquals($message, $doctrineExceptionHandler->getDatabaseRequestErrorMessage());
     }
 
-    public function testMissingPropertyErrorMessage()
+    public function testMissingPropertyErrorMessage(): void
     {
         // given
         $message = "new error message";

@@ -49,7 +49,7 @@ class ServerService implements ServerServiceInterface
     public function getBasePath(): string
     {
         $request = $this->requestStack->getCurrentRequest();
-        if (!$request) {
+        if (is_null($request)) {
             return '';
         }
         if ($request->isSecure()) {

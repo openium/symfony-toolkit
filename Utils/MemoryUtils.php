@@ -27,7 +27,7 @@ class MemoryUtils
      *
      * @param bool $real_usage
      *
-     * @return void
+     * @return string
      */
     public static function getMemoryUsage(bool $real_usage = true): string
     {

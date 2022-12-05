@@ -20,16 +20,21 @@ class ContentExtractorUtils
     /**
      * checkKeyNotEmpty
      *
-     * @param array $content
+     * @param array<string, mixed> $content
      * @param string $key
-     * @param bool|null $nullable
+     * @param bool $nullable
      *
      * @throws ContentExtractorMissingParameterException
      * @return void
      */
-    public static function checkKeyNotEmpty(array $content, string $key, ?bool $nullable = false): void
+    public static function checkKeyNotEmpty(array $content, string $key, bool $nullable = false): void
     {
-        if (!array_key_exists($key, $content) || (!$nullable && empty($content[$key]))) {
+        if (
+            !array_key_exists($key, $content)
+            || (
+                !$nullable && is_null($content[$key])
+            )
+        ) {
             throw new ContentExtractorMissingParameterException($key);
         }
     }
@@ -37,7 +42,7 @@ class ContentExtractorUtils
     /**
      * checkKeyIsBoolean
      *
-     * @param array $content
+     * @param array<string, mixed> $content
      * @param string $key
      *
      * @throws ContentExtractorBooleanPropertyException
@@ -53,7 +58,7 @@ class ContentExtractorUtils
     /**
      * checkKeyIsInt
      *
-     * @param array $content
+     * @param array<string, mixed> $content
      * @param string $key
      * @param bool $nullable
      *
@@ -74,7 +79,7 @@ class ContentExtractorUtils
     /**
      * checkKeyIsFloat
      *
-     * @param array $content
+     * @param array<string, mixed> $content
      * @param string $key
      * @param bool $nullable
      *
@@ -95,7 +100,7 @@ class ContentExtractorUtils
     /**
      * checkKeyIsArray
      *
-     * @param array $content
+     * @param array<string, mixed> $content
      * @param string $key
      * @param bool $allowEmpty
      *
@@ -106,8 +111,8 @@ class ContentExtractorUtils
     {
         if (
             !array_key_exists($key, $content)
-            || (!$allowEmpty && empty($content[$key]))
-            || (!empty($content[$key]) && !is_array($content[$key]))
+            || !is_array($content[$key])
+            || (!$allowEmpty && count($content[$key]) === 0)
         ) {
             throw new ContentExtractorArrayPropertyException();
         }
@@ -116,7 +121,7 @@ class ContentExtractorUtils
     /**
      * getString
      *
-     * @param array $content
+     * @param array<string, mixed> $content
      * @param string $key
      * @param bool $required
      * @param string|null $default
@@ -151,7 +156,7 @@ class ContentExtractorUtils
     /**
      * getBool
      *
-     * @param array $content
+     * @param array<string, mixed> $content
      * @param string $key
      * @param bool $required
      * @param bool|null $default
@@ -176,7 +181,7 @@ class ContentExtractorUtils
     /**
      * getInt
      *
-     * @param array $content
+     * @param array<string, mixed> $content
      * @param string $key
      * @param bool $required
      * @param int|null $default
@@ -207,7 +212,7 @@ class ContentExtractorUtils
     /**
      * getFloat
      *
-     * @param array $content
+     * @param array<string, mixed> $content
      * @param string $key
      * @param bool $required
      * @param float|null $default
@@ -238,7 +243,7 @@ class ContentExtractorUtils
     /**
      * getDateTimeInterface
      *
-     * @param array $content
+     * @param array<string, mixed> $content
      * @param string $key
      * @param bool $required
      * @param DateTimeInterface|null $default
@@ -278,14 +283,14 @@ class ContentExtractorUtils
     /**
      * getArray
      *
-     * @param array $content
+     * @param array<string, mixed> $content
      * @param string $key
      * @param bool $required
-     * @param array|null $default
+     * @param array<string|int, mixed>|null $default
      * @param bool $allowEmpty
      *
      * @throws ContentExtractorArrayPropertyException
-     * @return array|null
+     * @return array<string|int, mixed>|null
      */
     public static function getArray(
         array $content,

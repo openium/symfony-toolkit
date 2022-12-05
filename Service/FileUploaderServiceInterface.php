@@ -14,7 +14,6 @@
 namespace Openium\SymfonyToolKitBundle\Service;
 
 use Openium\SymfonyToolKitBundle\Entity\WithUploadInterface;
-use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
@@ -30,11 +29,11 @@ interface FileUploaderServiceInterface
      * Prepare upload path for file
      *
      * @param WithUploadInterface $uploadEntity
-     * @param mixed $imageName
+     * @param string|null $imageName
      *
      * @return WithUploadInterface
      */
-    public function prepareUploadPath(WithUploadInterface $uploadEntity, $imageName = null): WithUploadInterface;
+    public function prepareUploadPath(WithUploadInterface $uploadEntity, ?string $imageName = null): WithUploadInterface;
 
     /**
      * Return the path to save file
@@ -62,7 +61,7 @@ interface FileUploaderServiceInterface
      *
      * @return void
      */
-    public function removeUpload(WithUploadInterface $uploadEntity);
+    public function removeUpload(WithUploadInterface $uploadEntity): void;
 
     /**
      * Upload File in the path
@@ -72,7 +71,7 @@ interface FileUploaderServiceInterface
      *
      * @throws ConflictHttpException
      */
-    public function upload(File $file, string $path);
+    public function upload(File $file, string $path): void;
 
     /**
      * removeFile
@@ -81,5 +80,5 @@ interface FileUploaderServiceInterface
      *
      * @return void
      */
-    public function removeFile(string $path);
+    public function removeFile(string $path): void;
 }

@@ -41,12 +41,12 @@ class AtHelper implements AtHelperInterface
     /**
      * executeAndCaptureOutput
      *
-     * @param $cmd
-     * @param $result
+     * @param string $cmd
+     * @param int $result
      *
-     * @return string
+     * @return string|false
      */
-    public function executeAndCaptureOutput($cmd, &$result)
+    public function executeAndCaptureOutput(string $cmd, int &$result): string|false
     {
         $res = 0;
         ob_start();
@@ -64,12 +64,12 @@ class AtHelper implements AtHelperInterface
      * @param string $cmd command to execute
      * @param int $timestamp when the command will be executed
      * @param string $path path where the at creation command will be executed
-     * @param &$result result of at
+     * @param int &$result result of at
      *
      * @throws InvalidArgumentException
-     * @return string the output of at command
+     * @return false|string the output of at command
      */
-    public function createAtCommandFromPath(string $cmd, int $timestamp, string $path, &$result)
+    public function createAtCommandFromPath(string $cmd, int $timestamp, string $path, int &$result): false|string
     {
         $date = $this->formatTimestampForAt($timestamp);
         $fullCmd = sprintf('cd %s; echo "%s" | at %s 2>&1 ; let \!PIPESTATUS', $path, $cmd, $date);
@@ -82,13 +82,13 @@ class AtHelper implements AtHelperInterface
      *
      * @param string $cmd command to execute
      * @param int $timestamp when the command will be executed
-     * @param &$result result of at
+     * @param int &$result result of at
      *
      * @throws InvalidArgumentException
-     * @return string the output of at command
+     * @return false|string the output of at command
      * @deprecated use createAtCommandFromPath instead
      */
-    public function createAtCommand(string $cmd, int $timestamp, &$result)
+    public function createAtCommand(string $cmd, int $timestamp, int &$result): false|string
     {
         $date = $this->formatTimestampForAt($timestamp);
         $fullCmd = sprintf('echo "%s" | at %s 2>&1 ; let \!PIPESTATUS', $cmd, $date);
@@ -99,17 +99,17 @@ class AtHelper implements AtHelperInterface
      * atCommand
      *
      * @param string $fullCmd
-     * @param $result
+     * @param int $result
      *
-     * @return string
+     * @return false|string
      */
-    private function atCommand(string $fullCmd, &$result)
+    private function atCommand(string $fullCmd, int &$result): false|string
     {
         $this->logger->debug("Create AT command (${fullCmd})");
         $output = $this->executeAndCaptureOutput($fullCmd, $result);
         $this->logger->debug("AT Output : ${output}");
         $this->logger->debug("AT Result : ${result})");
-        if (strstr($output, "garbled time") || $result != 0) {
+        if ($output === false || str_contains($output, "garbled time") || $result != 0) {
             $this->logger->error("Creation of AT command failed (${result}) : ${fullCmd}");
         }
         return $output;
@@ -122,16 +122,19 @@ class AtHelper implements AtHelperInterface
      *
      * @return string|null
      */
-    public function extractJobNumberFromAtOutput($output): ?string
+    public function extractJobNumberFromAtOutput(string $output): ?string
     {
-        $output = trim(preg_replace('/\s+/', ' ', $output));
-        $explodedOutput = explode(' ', $output);
-        if (sizeof($explodedOutput) >= 2) {
-            $jobIndex = array_search('job', $explodedOutput);
-            if ($jobIndex !== false) {
-                $jobNumber = $explodedOutput[$jobIndex + 1];
-                if (is_numeric($jobNumber)) {
-                    return $jobNumber;
+        $cleanOutput = preg_replace('/\s+/', ' ', $output);
+        if (is_string($cleanOutput)) {
+            $cleanOutput = trim($cleanOutput);
+            $explodedOutput = explode(' ', $cleanOutput);
+            if (sizeof($explodedOutput) >= 2) {
+                $jobIndex = array_search('job', $explodedOutput, true);
+                if ($jobIndex !== false) {
+                    $jobNumber = $explodedOutput[$jobIndex + 1];
+                    if (is_numeric($jobNumber)) {
+                        return $jobNumber;
+                    }
                 }
             }
         }
@@ -148,8 +151,9 @@ class AtHelper implements AtHelperInterface
     public function removeAtCommand(string $atJobNumber): bool
     {
         $fullCmd = sprintf("atrm %s", $atJobNumber);
+        $result = -1;
         $output = $this->executeAndCaptureOutput($fullCmd, $result);
-        return empty($output);
+        return $output !== false;
     }
 
     /**

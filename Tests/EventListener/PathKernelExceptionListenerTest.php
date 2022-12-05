@@ -37,7 +37,7 @@ class PathKernelExceptionListenerTest extends TestCase
         parent::setUp();
     }
 
-    public function testIsEnable()
+    public function testIsEnable(): void
     {
         $exceptionFormat = $this->createMock(ExceptionFormatServiceInterface::class);
         $listener = new TestPathKernelExceptionListener($exceptionFormat, '/api', true, $this->logger);
@@ -46,7 +46,7 @@ class PathKernelExceptionListenerTest extends TestCase
         self::assertFalse($listener->getEnable());
     }
 
-    public function testOnKernelExceptionWithRandowError()
+    public function testOnKernelExceptionWithRandowError(): void
     {
         $exceptionFormat = $this->createMock(ExceptionFormatServiceInterface::class);
         $response = new Response('test');
@@ -63,7 +63,7 @@ class PathKernelExceptionListenerTest extends TestCase
         self::assertEquals($response, $event->getResponse());
     }
 
-    public function testOnKernelExceptionWithCritError()
+    public function testOnKernelExceptionWithCritError(): void
     {
         $exceptionFormat = $this->createMock(ExceptionFormatServiceInterface::class);
         $response = new Response('test', 500);
@@ -80,7 +80,7 @@ class PathKernelExceptionListenerTest extends TestCase
         self::assertEquals($response, $event->getResponse());
     }
 
-    public function testOnKernelExceptionWithAuthError()
+    public function testOnKernelExceptionWithAuthError(): void
     {
         $exceptionFormat = $this->createMock(ExceptionFormatServiceInterface::class);
         $response = new Response('test', 401);

@@ -27,7 +27,7 @@ class MissingContentException extends BadRequestHttpException
      * MissingContentException constructor.
      *
      * @param Exception|null $previous
-     * @param array $headers
+     * @param array<string, string> $headers
      */
     public function __construct(Exception $previous = null, array $headers = [])
     {

@@ -1,8 +1,6 @@
 <?php
-
 /**
  * FileUploaderService
- *
  * PHP Version >=8.0
  *
  * @package  Openium\SymfonyToolKitBundle\Service
@@ -13,6 +11,7 @@
 
 namespace Openium\SymfonyToolKitBundle\Service;
 
+use LogicException;
 use Openium\SymfonyToolKitBundle\Entity\WithUploadInterface;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\File\File;
@@ -20,6 +19,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
+use UnexpectedValueException;
 
 /**
  * Class FileUploaderService
@@ -28,20 +28,11 @@ use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
  */
 class FileUploaderService implements FileUploaderServiceInterface
 {
-    /**
-     * @var string
-     */
-    protected $publicDirPath;
+    protected string $publicDirPath;
 
-    /**
-     * @var string
-     */
-    protected $uploadDirPath;
+    protected string $uploadDirPath;
 
-    /**
-     * @var string
-     */
-    protected $uploadDirName;
+    protected string $uploadDirName;
 
     /**
      * ThumbnailFileUploaderService constructor.
@@ -60,21 +51,21 @@ class FileUploaderService implements FileUploaderServiceInterface
      * prepareUploadPath
      *
      * @param WithUploadInterface $uploadEntity
-     * @param null $imageName
+     * @param string|null $imageName
      *
      * @throws BadRequestHttpException
-     *
+     * @throws LogicException
      * @return WithUploadInterface
      */
-    public function prepareUploadPath(WithUploadInterface $uploadEntity, $imageName = null): WithUploadInterface
+    public function prepareUploadPath(WithUploadInterface $uploadEntity, ?string $imageName = null): WithUploadInterface
     {
-        if (is_null($uploadEntity->getFile())) {
+        $file = $uploadEntity->getFile();
+        if (is_null($file)) {
             return $uploadEntity;
         }
-        if (!is_null($uploadEntity->getImagePath())) {
+        if ($uploadEntity->getImagePath() !== null) {
             $this->removeUpload($uploadEntity);
         }
-        $file = $uploadEntity->getFile();
         $path = $this->getPath($file, $uploadEntity->getUploadsDir(), $imageName);
         $uploadEntity->setImagePath($path);
         return $uploadEntity;
@@ -85,16 +76,16 @@ class FileUploaderService implements FileUploaderServiceInterface
      *
      * @param File $file
      * @param string $dirName
-     * @param null $imageName
+     * @param string|null $imageName
      *
      * @throws BadRequestHttpException
-     *
+     * @throws LogicException
      * @return string
      */
-    public function getPath(File $file, string $dirName, $imageName = null): string
+    public function getPath(File $file, string $dirName, ?string $imageName = null): string
     {
         if (is_null($imageName)) {
-            $randString = sha1(uniqid(mt_rand(), true));
+            $randString = sha1(uniqid(strval(mt_rand()), true));
             $fileName = substr($randString, 0, 32);
         } else {
             $fileName = $imageName;
@@ -104,23 +95,18 @@ class FileUploaderService implements FileUploaderServiceInterface
             $fileExtension = strtolower($file->guessClientExtension() ?? '');
         } else {
             $fileNameParts = explode('.', $file->getFilename());
-            if (sizeof($fileNameParts) > 0) {
-                $fileExtension = $fileNameParts[sizeof($fileNameParts) - 1];
+            if (count($fileNameParts) > 1) {
+                $fileExtension = trim($fileNameParts[sizeof($fileNameParts) - 1]);
             }
         }
-        if (empty($fileExtension)) {
+        if (is_null($fileExtension) || $fileExtension === '') {
             throw new BadRequestHttpException(
                 'The file extension is empty.',
                 null,
                 Response::HTTP_UNSUPPORTED_MEDIA_TYPE
             );
         }
-        if ($fileExtension !== null) {
-            $filePath = sprintf("%s/%s/%s.%s", $this->uploadDirName, $dirName, $fileName, $fileExtension);
-        } else {
-            $filePath = sprintf("%s/%s/%s", $this->uploadDirName, $dirName, $fileName);
-        }
-        return $filePath;
+        return sprintf("%s/%s/%s.%s", $this->uploadDirName, $dirName, $fileName, $fileExtension);
     }
 
     /**
@@ -129,17 +115,16 @@ class FileUploaderService implements FileUploaderServiceInterface
      * @param WithUploadInterface $uploadEntity
      *
      * @throws ConflictHttpException
-     * @throws \UnexpectedValueException
-     *
+     * @throws UnexpectedValueException
      * @return WithUploadInterface
      */
     public function uploadEntity(WithUploadInterface $uploadEntity): WithUploadInterface
     {
-        /** @var UploadedFile $file */
+        /** @var UploadedFile|null $file */
         $file = $uploadEntity->getFile();
         if (!is_null($file)) {
-            if (empty($uploadEntity->getImagePath())) {
-                throw new \UnexpectedValueException("Call prepareUploadPath method on the entity before upload.");
+            if (is_null($uploadEntity->getImagePath())) {
+                throw new UnexpectedValueException("Call prepareUploadPath method on the entity before upload.");
             }
             $this->upload($file, $uploadEntity->getImagePath());
             $uploadEntity->setFile(null);
@@ -154,10 +139,10 @@ class FileUploaderService implements FileUploaderServiceInterface
      *
      * @return void
      */
-    public function removeUpload(WithUploadInterface $uploadEntity)
+    public function removeUpload(WithUploadInterface $uploadEntity): void
     {
         $path = $uploadEntity->getImagePath();
-        if (!empty($path)) {
+        if (!is_null($path)) {
             $this->removeFile($path);
         }
     }
@@ -169,10 +154,9 @@ class FileUploaderService implements FileUploaderServiceInterface
      * @param string $path
      *
      * @throws ConflictHttpException
-     *
      * @return void
      */
-    public function upload(File $file, string $path)
+    public function upload(File $file, string $path): void
     {
         $uploadPath = explode('/', $path);
         $fileName = array_pop($uploadPath);
@@ -191,13 +175,11 @@ class FileUploaderService implements FileUploaderServiceInterface
      *
      * @return void
      */
-    public function removeFile(string $path)
+    public function removeFile(string $path): void
     {
-        if (!empty($path)) {
-            $file = $this->publicDirPath . DIRECTORY_SEPARATOR . $path;
-            if (file_exists($file)) {
-                unlink($file);
-            }
+        $file = $this->publicDirPath . DIRECTORY_SEPARATOR . $path;
+        if (file_exists($file)) {
+            unlink($file);
         }
     }
 }

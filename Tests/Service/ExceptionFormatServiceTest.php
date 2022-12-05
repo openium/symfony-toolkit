@@ -27,7 +27,7 @@ class ExceptionFormatServiceTest extends TestCase
         parent::setUp();
     }
 
-    public function testGetStatusCodeWithHttpException()
+    public function testGetStatusCodeWithHttpException(): void
     {
         $exception = new HttpException(Response::HTTP_FORBIDDEN);
         $exceptionFormatService = new ExceptionFormatService($this->testKernel);
@@ -37,7 +37,7 @@ class ExceptionFormatServiceTest extends TestCase
         self::assertEquals($statusCode, Response::HTTP_FORBIDDEN);
     }
 
-    public function testGetStatusCodeWithAccessDeniedException()
+    public function testGetStatusCodeWithAccessDeniedException(): void
     {
         $exception = new \Exception();
         $exceptionFormatService = new ExceptionFormatService($this->testKernel);
@@ -47,7 +47,7 @@ class ExceptionFormatServiceTest extends TestCase
         self::assertEquals($statusCode, Response::HTTP_INTERNAL_SERVER_ERROR);
     }
 
-    public function testGetStatusTextWith402HttpException()
+    public function testGetStatusTextWith402HttpException(): void
     {
         $exception = new HttpException(Response::HTTP_PAYMENT_REQUIRED);
         $exceptionFormatService = new ExceptionFormatService($this->testKernel);
@@ -57,7 +57,7 @@ class ExceptionFormatServiceTest extends TestCase
         self::assertEquals($text, 'Request Failed');
     }
 
-    public function testGetStatusTextWith404HttpException()
+    public function testGetStatusTextWith404HttpException(): void
     {
         $exception = new HttpException(Response::HTTP_NOT_FOUND);
         $exceptionFormatService = new ExceptionFormatService($this->testKernel);
@@ -67,7 +67,7 @@ class ExceptionFormatServiceTest extends TestCase
         self::assertEquals($text, Response::$statusTexts[Response::HTTP_NOT_FOUND]);
     }
 
-    public function testGetStatusTextWithUnknowHttpException()
+    public function testGetStatusTextWithUnknowHttpException(): void
     {
         $exception = new HttpException(456987);
         $exceptionFormatService = new ExceptionFormatService($this->testKernel);
@@ -77,7 +77,7 @@ class ExceptionFormatServiceTest extends TestCase
         self::assertEquals($text, Response::$statusTexts[Response::HTTP_INTERNAL_SERVER_ERROR]);
     }
 
-    public function testGetArrayWith404HttpException()
+    public function testGetArrayWith404HttpException(): void
     {
         $exception = new HttpException(Response::HTTP_NOT_FOUND);
         $this->testKernel->expects(self::once())
@@ -96,7 +96,7 @@ class ExceptionFormatServiceTest extends TestCase
         self::assertFalse(array_key_exists('previous', $result));
     }
 
-    public function testGetArrayWith404HttpExceptionAndDevEnd()
+    public function testGetArrayWith404HttpExceptionAndDevEnd(): void
     {
         $previous = new \Exception('previous exception', 123456, null);
         $this->testKernel->expects(self::once())
@@ -119,7 +119,7 @@ class ExceptionFormatServiceTest extends TestCase
         self::assertEquals(123456, $result['previous']['code']);
     }
 
-    public function testFormatExceptionResponse()
+    public function testFormatExceptionResponse(): void
     {
         $exception = new HttpException(Response::HTTP_NOT_FOUND);
         $this->testKernel->expects(self::once())
@@ -133,7 +133,7 @@ class ExceptionFormatServiceTest extends TestCase
     }
 
 
-    public function testFormatExceptionResponseWithTypeError()
+    public function testFormatExceptionResponseWithTypeError(): void
     {
         $errorMsg = 'Type error';
         $exception = new \TypeError($errorMsg);

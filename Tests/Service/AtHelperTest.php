@@ -32,7 +32,7 @@ class AtHelperTest extends TestCase
         parent::setUp();
     }
 
-    public function testFormatTimestampForAt()
+    public function testFormatTimestampForAt(): void
     {
         $atHelper = new AtHelper($this->logger);
         self::assertTrue($atHelper instanceof AtHelperInterface);
@@ -40,7 +40,7 @@ class AtHelperTest extends TestCase
         self::assertEquals('12:00 AM January 1 2018', $result);
     }
 
-    public function testFormatTimestampForAtWhitNegativeTimestamp()
+    public function testFormatTimestampForAtWhitNegativeTimestamp(): void
     {
         static::expectException("InvalidArgumentException");
         static::expectExceptionMessage("timestamp < 0");
@@ -49,39 +49,39 @@ class AtHelperTest extends TestCase
         $atHelper->formatTimestampForAt(-654987);
     }
 
-    public function testCreateAtCommand()
+    public function testCreateAtCommand(): void
     {
         // given
         $atHelper = new AtHelper($this->logger);
-        $result = "";
+        $result = -1;
         // when
         $output = $atHelper->createAtCommand("echo coucou", time() + 33600, $result);
         $atNumber = $atHelper->extractJobNumberFromAtOutput($output);
         // then
         static::assertEquals(3, strlen($atNumber));
-        static::assertEquals("0", $result);
+        static::assertEquals(0, $result);
         // when
         $removeResult = $atHelper->removeAtCommand($atNumber);
         static::assertTrue($removeResult);
     }
 
-    public function testCreateAtCommandFromPath()
+    public function testCreateAtCommandFromPath(): void
     {
         // given
         $atHelper = new AtHelper($this->logger);
-        $result = "";
+        $result = -1;
         // when
         $output = $atHelper->createAtCommandFromPath("echo coucou", time() + 33600, __DIR__, $result);
         $atNumber = $atHelper->extractJobNumberFromAtOutput($output);
         // then
         static::assertEquals(3, strlen($atNumber));
-        static::assertEquals("0", $result);
+        static::assertEquals(0, $result);
         // when
         $removeResult = $atHelper->removeAtCommand($atNumber);
         static::assertTrue($removeResult);
     }
 
-    public function testExtractJobNumberFromAtOutputWithRightOutput()
+    public function testExtractJobNumberFromAtOutputWithRightOutput(): void
     {
         // given
         $atHelper = new AtHelper($this->logger);
@@ -92,7 +92,7 @@ class AtHelperTest extends TestCase
         static::assertEquals("130", $jobNumber);
     }
 
-    public function testExtractJobNumberFromAtOutputWithSmallRightOutput()
+    public function testExtractJobNumberFromAtOutputWithSmallRightOutput(): void
     {
         // given
         $atHelper = new AtHelper($this->logger);
@@ -103,7 +103,7 @@ class AtHelperTest extends TestCase
         static::assertEquals("130", $jobNumber);
     }
 
-    public function testExtractJobNumberFromAtOutputWithOutputSpecialChar()
+    public function testExtractJobNumberFromAtOutputWithOutputSpecialChar(): void
     {
         // given
         $atHelper = new AtHelper($this->logger);
@@ -114,7 +114,7 @@ class AtHelperTest extends TestCase
         static::assertEquals("130", $jobNumber);
     }
 
-    public function testExtractJobNumberFromAtOutputWithWrongOutput()
+    public function testExtractJobNumberFromAtOutputWithWrongOutput(): void
     {
         // given
         $atHelper = new AtHelper($this->logger);
@@ -125,7 +125,7 @@ class AtHelperTest extends TestCase
         static::assertNull($jobNumber);
     }
 
-    public function testExtractJobNumberFromAtOutputWithEmptyOutput()
+    public function testExtractJobNumberFromAtOutputWithEmptyOutput(): void
     {
         // given
         $atHelper = new AtHelper($this->logger);
@@ -136,7 +136,7 @@ class AtHelperTest extends TestCase
         static::assertNull($jobNumber);
     }
 
-    public function testExtractJobNumberFromAtOutputPastMessageOutput()
+    public function testExtractJobNumberFromAtOutputPastMessageOutput(): void
     {
         // given
         $atHelper = new AtHelper($this->logger);

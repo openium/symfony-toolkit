@@ -48,18 +48,33 @@
         "symfony/finder": "^6.0",
         "symfony/filesystem": "^6.0",
         "symfony/console": "^6.0",
-        "symfony/security-http": "^6.0"
+        "symfony/security-http": "^6.0",
+        "symfony/orm-pack": "^2.2"
     },
     "require-dev": {
         "phpunit/phpunit": "^9.0",
         "symfony/phpunit-bridge": "^6.0",
         "symfony/cache": "^6.0",
-        "symfony/debug": "^4.0"
+        "phpstan/phpstan": "^1.9",
+        "symfony/error-handler": "^6.0",
+        "phpstan/extension-installer": "^1.2",
+        "phpstan/phpstan-phpunit": "^1.2",
+        "phpstan/phpstan-strict-rules": "^1.4"
     },
     "extra": {
         "symfony": {
             "allow-contrib": false,
             "require": "^6.0"
+        },
+        "phpstan": {
+            "includes": [
+                "extension.neon"
+            ]
+        }
+    },
+    "config": {
+        "allow-plugins": {
+            "phpstan/extension-installer": true
         }
     }
 }

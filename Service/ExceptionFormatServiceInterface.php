@@ -13,7 +13,11 @@
 
 namespace Openium\SymfonyToolKitBundle\Service;
 
+use Exception;
+use InvalidArgumentException;
 use Symfony\Component\HttpFoundation\Response;
+use Throwable;
+use UnexpectedValueException;
 
 /**
  * Interface ExceptionFormatServiceInterface
@@ -25,42 +29,42 @@ interface ExceptionFormatServiceInterface
     /**
      * formatExceptionResponse
      *
-     * @param \Throwable $exception
+     * @param Throwable $exception
      *
-     * @throws \InvalidArgumentException
-     * @throws \UnexpectedValueException
+     * @throws InvalidArgumentException
+     * @throws UnexpectedValueException
      *
      * @return Response
      */
-    public function formatExceptionResponse(\Throwable $exception): Response;
+    public function formatExceptionResponse(Throwable $exception): Response;
 
     /**
      * getArray
      *
-     * @param \Exception $exception
-     * @param null $code
-     * @param null $text
-     * @param null $message
+     * @param Exception $exception
+     * @param int|null $code
+     * @param string|null $text
+     * @param string|null $message
      *
-     * @return array
+     * @return array<string, mixed>
      */
-    public function getArray(\Exception $exception, $code = null, $text = null, $message = null): array;
+    public function getArray(Exception $exception, ?int $code = null, ?string $text = null, ?string $message = null): array;
 
     /**
      * getStatusCode
      *
-     * @param \Exception $exception
+     * @param Exception $exception
      *
      * @return int
      */
-    public function getStatusCode(\Exception $exception);
+    public function getStatusCode(Exception $exception): int;
 
     /**
      * getStatusText
      *
-     * @param \Exception $exception
+     * @param Exception $exception
      *
      * @return string
      */
-    public function getStatusText(\Exception $exception);
+    public function getStatusText(Exception $exception): string;
 }

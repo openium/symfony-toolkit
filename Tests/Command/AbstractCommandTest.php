@@ -27,7 +27,7 @@ use Symfony\Component\Console\Output\ConsoleOutput;
  */
 class AbstractCommandTest extends TestCase
 {
-    public function testAbstractCommand()
+    public function testAbstractCommand(): void
     {
         $inputOption = new InputOption('nl', null, InputOption::VALUE_NONE, 'Disable log');
         $inputDef = new InputDefinition([$inputOption]);
@@ -43,7 +43,7 @@ class AbstractCommandTest extends TestCase
         $command->writeMessage('test');
     }
 
-    public function testAbstractCommandWithLog()
+    public function testAbstractCommandWithLog(): void
     {
         $inputOption = new InputOption('nl', null, InputOption::VALUE_NONE, 'Disable log');
         $inputDef = new InputDefinition([$inputOption]);
