@@ -38,13 +38,9 @@ class ContentExtractorUtils
     /**
      * checkKeyIsString
      *
-     * @param array $content
-     * @param string $key
-     * @param bool $nullable
      *
      * @throws ContentExtractorStringPropertyException
      * @throws ContentExtractorMissingParameterException
-     * @return void
      */
     public static function checkKeyIsString(array $content, string $key, bool $nullable = false): void
     {
@@ -66,12 +62,7 @@ class ContentExtractorUtils
      * @param array<string, mixed> $content
      *
      * @throws ContentExtractorBooleanPropertyException
-     * <<<<<<< HEAD
-     * =======
      * @throws ContentExtractorMissingParameterException
-     * @return void
-     * >>>>>>> f9313bb (Add new string verification in ContentExtractor and distinction between missing key and wrong
-     *     value type)
      */
     public static function checkKeyIsBoolean(array $content, string $key): void
     {
@@ -87,12 +78,7 @@ class ContentExtractorUtils
      * @param array<string, mixed> $content
      *
      * @throws ContentExtractorIntegerPropertyException
-     * <<<<<<< HEAD
-     * =======
      * @throws ContentExtractorMissingParameterException
-     * @return void
-     * >>>>>>> f9313bb (Add new string verification in ContentExtractor and distinction between missing key and wrong
-     *     value type)
      */
     public static function checkKeyIsInt(array $content, string $key, bool $nullable = false): void
     {
