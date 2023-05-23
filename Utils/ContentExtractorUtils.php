@@ -21,11 +21,8 @@ class ContentExtractorUtils
      * checkKeyNotEmpty
      *
      * @param array<string, mixed> $content
-     * @param string $key
-     * @param bool $nullable
      *
      * @throws ContentExtractorMissingParameterException
-     * @return void
      */
     public static function checkKeyNotEmpty(array $content, string $key, bool $nullable = false): void
     {
@@ -43,10 +40,8 @@ class ContentExtractorUtils
      * checkKeyIsBoolean
      *
      * @param array<string, mixed> $content
-     * @param string $key
      *
      * @throws ContentExtractorBooleanPropertyException
-     * @return void
      */
     public static function checkKeyIsBoolean(array $content, string $key): void
     {
@@ -59,11 +54,8 @@ class ContentExtractorUtils
      * checkKeyIsInt
      *
      * @param array<string, mixed> $content
-     * @param string $key
-     * @param bool $nullable
      *
      * @throws ContentExtractorIntegerPropertyException
-     * @return void
      */
     public static function checkKeyIsInt(array $content, string $key, bool $nullable = false): void
     {
@@ -80,11 +72,8 @@ class ContentExtractorUtils
      * checkKeyIsFloat
      *
      * @param array<string, mixed> $content
-     * @param string $key
-     * @param bool $nullable
      *
      * @throws ContentExtractorFloatPropertyException
-     * @return void
      */
     public static function checkKeyIsFloat(array $content, string $key, bool $nullable = false): void
     {
@@ -101,11 +90,8 @@ class ContentExtractorUtils
      * checkKeyIsArray
      *
      * @param array<string, mixed> $content
-     * @param string $key
-     * @param bool $allowEmpty
      *
      * @throws ContentExtractorArrayPropertyException
-     * @return void
      */
     public static function checkKeyIsArray(array $content, string $key, bool $allowEmpty = false): void
     {
@@ -114,7 +100,7 @@ class ContentExtractorUtils
             || !is_array($content[$key])
             || (!$allowEmpty && count($content[$key]) === 0)
         ) {
-            throw new ContentExtractorArrayPropertyException();
+            throw new ContentExtractorArrayPropertyException($key);
         }
     }
 
@@ -122,13 +108,8 @@ class ContentExtractorUtils
      * getString
      *
      * @param array<string, mixed> $content
-     * @param string $key
-     * @param bool $required
-     * @param string|null $default
-     * @param bool $nullable
      *
      * @throws ContentExtractorMissingParameterException
-     * @return string|null
      */
     public static function getString(
         array $content,
@@ -157,12 +138,8 @@ class ContentExtractorUtils
      * getBool
      *
      * @param array<string, mixed> $content
-     * @param string $key
-     * @param bool $required
-     * @param bool|null $default
      *
      * @throws ContentExtractorBooleanPropertyException
-     * @return bool|null
      */
     public static function getBool(array $content, string $key, bool $required = true, ?bool $default = true): ?bool
     {
@@ -182,13 +159,8 @@ class ContentExtractorUtils
      * getInt
      *
      * @param array<string, mixed> $content
-     * @param string $key
-     * @param bool $required
-     * @param int|null $default
-     * @param bool $nullable
      *
      * @throws ContentExtractorIntegerPropertyException
-     * @return int|null
      */
     public static function getInt(
         array $content,
@@ -213,13 +185,8 @@ class ContentExtractorUtils
      * getFloat
      *
      * @param array<string, mixed> $content
-     * @param string $key
-     * @param bool $required
-     * @param float|null $default
-     * @param bool $nullable
      *
      * @throws ContentExtractorFloatPropertyException
-     * @return float|null
      */
     public static function getFloat(
         array $content,
@@ -244,14 +211,9 @@ class ContentExtractorUtils
      * getDateTimeInterface
      *
      * @param array<string, mixed> $content
-     * @param string $key
-     * @param bool $required
-     * @param DateTimeInterface|null $default
-     * @param bool $nullable
      *
      * @throws ContentExtractorMissingParameterException
      * @throws ContentExtractorDateFormatException
-     * @return DateTimeInterface|null
      */
     public static function getDateTimeInterface(
         array $content,
@@ -284,10 +246,7 @@ class ContentExtractorUtils
      * getArray
      *
      * @param array<string, mixed> $content
-     * @param string $key
-     * @param bool $required
      * @param array<string|int, mixed>|null $default
-     * @param bool $allowEmpty
      *
      * @throws ContentExtractorArrayPropertyException
      * @return array<string|int, mixed>|null

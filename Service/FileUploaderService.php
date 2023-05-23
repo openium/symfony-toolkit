@@ -28,23 +28,14 @@ use UnexpectedValueException;
  */
 class FileUploaderService implements FileUploaderServiceInterface
 {
-    protected string $publicDirPath;
-
     protected string $uploadDirPath;
-
-    protected string $uploadDirName;
 
     /**
      * ThumbnailFileUploaderService constructor.
-     *
-     * @param string $publicDir
-     * @param string $uploadDirName
      */
-    public function __construct(string $publicDir, string $uploadDirName)
+    public function __construct(protected string $publicDirPath, protected string $uploadDirName)
     {
-        $this->publicDirPath = $publicDir;
-        $this->uploadDirName = $uploadDirName;
-        $this->uploadDirPath = $publicDir . DIRECTORY_SEPARATOR . $uploadDirName;
+        $this->uploadDirPath = $publicDirPath . DIRECTORY_SEPARATOR . $uploadDirName;
     }
 
     /**
@@ -85,7 +76,7 @@ class FileUploaderService implements FileUploaderServiceInterface
     public function getPath(File $file, string $dirName, ?string $imageName = null): string
     {
         if (is_null($imageName)) {
-            $randString = sha1(uniqid(strval(mt_rand()), true));
+            $randString = sha1(uniqid(strval(random_int(0, mt_getrandmax())), true));
             $fileName = substr($randString, 0, 32);
         } else {
             $fileName = $imageName;

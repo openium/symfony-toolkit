@@ -24,18 +24,10 @@ use Psr\Log\LoggerInterface;
 class AtHelper implements AtHelperInterface
 {
     /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    /**
      * AtHelper constructor.
-     *
-     * @param LoggerInterface $logger
      */
-    public function __construct(LoggerInterface $logger)
+    public function __construct(private LoggerInterface $logger)
     {
-        $this->logger = $logger;
     }
 
     /**
@@ -98,10 +90,7 @@ class AtHelper implements AtHelperInterface
     /**
      * atCommand
      *
-     * @param string $fullCmd
-     * @param int $result
      *
-     * @return false|string
      */
     private function atCommand(string $fullCmd, int &$result): false|string
     {

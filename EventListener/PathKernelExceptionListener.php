@@ -1,5 +1,4 @@
 <?php
-
 /**
  * PHP Version >=8.0
  *
@@ -25,38 +24,19 @@ use UnexpectedValueException;
  */
 class PathKernelExceptionListener implements PathKernelExceptionListenerInterface
 {
-    protected ExceptionFormatServiceInterface $exceptionFormat;
-
-    protected string $path;
-
-    private bool $enable;
-
-    private LoggerInterface $logger;
-
     /**
      * ExceptionListener constructor.
-     *
-     * @param ExceptionFormatServiceInterface $exceptionFormat
-     * @param string $path
-     * @param bool $enable
-     * @param LoggerInterface $logger
      */
     public function __construct(
-        ExceptionFormatServiceInterface $exceptionFormat,
-        string $path,
-        bool $enable,
-        LoggerInterface $logger
+        protected ExceptionFormatServiceInterface $exceptionFormat,
+        protected string $path,
+        private bool $enable,
+        private LoggerInterface $logger
     ) {
-        $this->exceptionFormat = $exceptionFormat;
-        $this->path = $path;
-        $this->enable = $enable;
-        $this->logger = $logger;
     }
 
     /**
      * Getter for enable
-     *
-     * @return bool
      */
     protected function isEnable(): bool
     {
@@ -66,10 +46,9 @@ class PathKernelExceptionListener implements PathKernelExceptionListenerInterfac
     /**
      * @param ExceptionEvent $event
      *
-     * @return void
      * @throws UnexpectedValueException
-     *
      * @throws InvalidArgumentException
+     * @return void
      */
     public function onKernelException(ExceptionEvent $event): void
     {

@@ -26,8 +26,6 @@ class AbstractController extends BaseController
     /**
      * getContentFromRequest
      *
-     * @param Request $request
-     *
      * @throws BadRequestHttpException
      * @return array<string, mixed>|array<int, mixed>
      */
@@ -41,8 +39,9 @@ class AbstractController extends BaseController
         if (!is_string($bodyContent)) {
             $bodyContent = strval($bodyContent);
         }
-        $content = json_decode($bodyContent, true);
-        if ($content === null) {
+        try {
+            $content = json_decode($bodyContent, true, 512, JSON_THROW_ON_ERROR);
+        } catch (\JsonException $exception) {
             throw new MissingContentException();
         }
         if (!is_array($content)) {

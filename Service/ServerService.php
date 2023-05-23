@@ -24,18 +24,10 @@ use Symfony\Component\HttpFoundation\RequestStack;
 class ServerService implements ServerServiceInterface
 {
     /**
-     * @var RequestStack
-     */
-    private $requestStack;
-
-    /**
      * ServerService constructor.
-     *
-     * @param RequestStack $requestStack
      */
-    public function __construct(RequestStack $requestStack)
+    public function __construct(private RequestStack $requestStack)
     {
-        $this->requestStack = $requestStack;
     }
 
     /**

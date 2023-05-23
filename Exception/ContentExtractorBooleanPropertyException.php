@@ -20,7 +20,7 @@ use Exception;
 class ContentExtractorBooleanPropertyException extends ContentExtractorException
 {
     public const MESSAGE = "Property must be a boolean";
-    public const CODE = 2015151204;
+    public const CODE = 2_015_151_204;
 
     public function __construct(
         string $key = "",

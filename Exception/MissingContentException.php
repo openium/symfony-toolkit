@@ -21,7 +21,7 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 class MissingContentException extends BadRequestHttpException
 {
     public const MESSAGE = "Missing content";
-    public const CODE = 2015151201;
+    public const CODE = 2_015_151_201;
 
     /**
      * MissingContentException constructor.

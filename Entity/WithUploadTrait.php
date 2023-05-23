@@ -28,8 +28,6 @@ trait WithUploadTrait
 
     /**
      * Getter for file
-     *
-     * @return File|null
      */
     public function getFile(): ?File
     {
@@ -38,10 +36,6 @@ trait WithUploadTrait
 
     /**
      * Setter for file
-     *
-     * @param File|null $file
-     *
-     * @return WithUploadInterface
      */
     public function setFile(?File $file): WithUploadInterface
     {
@@ -51,8 +45,6 @@ trait WithUploadTrait
 
     /**
      * Getter for imagePath
-     *
-     * @return string|null
      */
     public function getImagePath(): ?string
     {
@@ -61,10 +53,6 @@ trait WithUploadTrait
 
     /**
      * Setter for imagePath
-     *
-     * @param string|null $path
-     *
-     * @return WithUploadInterface
      */
     public function setImagePath(?string $path): WithUploadInterface
     {

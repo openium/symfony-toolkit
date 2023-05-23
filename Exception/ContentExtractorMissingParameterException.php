@@ -20,7 +20,7 @@ use Exception;
 class ContentExtractorMissingParameterException extends ContentExtractorException
 {
     public const MESSAGE = "Wrong parameters, missing parameter(s)";
-    public const CODE = 2015151203;
+    public const CODE = 2_015_151_203;
 
     public function __construct(
         string $key = "",

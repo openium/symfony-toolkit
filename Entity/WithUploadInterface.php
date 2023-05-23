@@ -30,8 +30,6 @@ interface WithUploadInterface
     /**
      * Set the file
      *
-     * @param $file|null
-     *
      * @return WithUploadInterface
      */
     public function setFile(?File $file): WithUploadInterface;
@@ -45,8 +43,6 @@ interface WithUploadInterface
 
     /**
      * Get the file local path
-     *
-     * @param string|null $path
      *
      * @return WithUploadInterface
      */

@@ -29,8 +29,6 @@ abstract class AbstractCommand extends Command
 {
     protected SymfonyStyle $io;
 
-    protected LoggerInterface $logger;
-
     protected bool $hasLog;
 
     /**
@@ -41,10 +39,9 @@ abstract class AbstractCommand extends Command
      *
      * @throws LogicException
      */
-    public function __construct(LoggerInterface $logger, string $name = null)
+    public function __construct(protected LoggerInterface $logger, string $name = null)
     {
         parent::__construct($name);
-        $this->logger = $logger;
     }
 
     /**
@@ -78,7 +75,6 @@ abstract class AbstractCommand extends Command
     /**
      * writeMessage
      *
-     * @param string $message
      *
      * @return void
      */

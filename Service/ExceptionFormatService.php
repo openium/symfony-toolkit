@@ -27,16 +27,11 @@ use Throwable;
  */
 class ExceptionFormatService implements ExceptionFormatServiceInterface
 {
-    protected KernelInterface $kernel;
-
     /**
      * ExceptionFormatService constructor.
-     *
-     * @param KernelInterface $kernel
      */
-    public function __construct(KernelInterface $kernel)
+    public function __construct(protected KernelInterface $kernel)
     {
-        $this->kernel = $kernel;
     }
 
     /**
@@ -72,8 +67,12 @@ class ExceptionFormatService implements ExceptionFormatServiceInterface
             }
             $error = $this->getArray($exception, $code, $text, $message);
             $response->setStatusCode($code);
-            $json = json_encode($error);
-            $response->setContent(($json !== false) ? $json : '');
+            try {
+                $json = json_encode($error, JSON_THROW_ON_ERROR);
+                $response->setContent(($json !== false) ? $json : '');
+            } catch (\JsonException $exception) {
+                $response->setContent('');
+            }
         } else {
             $response->setStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR);
             $response->setContent($exception->getMessage());

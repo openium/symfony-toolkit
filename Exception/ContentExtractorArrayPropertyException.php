@@ -20,7 +20,7 @@ use Exception;
 class ContentExtractorArrayPropertyException extends ContentExtractorException
 {
     public const MESSAGE = "Property must be an array";
-    public const CODE = 2015151207;
+    public const CODE = 2_015_151_207;
 
     public function __construct(
         string $key = "",

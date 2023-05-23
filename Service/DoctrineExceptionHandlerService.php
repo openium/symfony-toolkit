@@ -45,16 +45,11 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
     private string $databaseRequestErrorMessage = "Database request error";
     private string $missingPropertyErrorMessage = "Database schema error (Missing property)";
 
-    protected LoggerInterface $logger;
-
     /**
      * ExceptionHandlerService constructor.
-     *
-     * @param LoggerInterface $logger
      */
-    public function __construct(LoggerInterface $logger)
+    public function __construct(protected LoggerInterface $logger)
     {
-        $this->logger = $logger;
     }
 
     /**
@@ -65,7 +60,7 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
     public function log(Throwable $throwable): void
     {
         $this->logger->error('------------------------------------- Log from Symfony ToolKit DoctrineExceptionHandlerService');
-        $this->logger->error(get_class($throwable));
+        $this->logger->error($throwable::class);
         $this->logger->error($throwable->getMessage());
         $this->logger->error($throwable->getTraceAsString());
         $this->logger->error('-------------------------------------');
@@ -87,7 +82,7 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
         // Call the logger
         $this->log($throwable);
         // Select the process
-        switch (get_class($throwable)) {
+        switch ($throwable::class) {
             case TableNotFoundException::class:
                 $this->createBadRequest($throwable, $this->missingDatabaseTableMessage);
                 break;
@@ -119,10 +114,8 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
     /**
      * createBadRequest
      *
-     * @param Throwable $throwable
      * @param string|null $message
      *
-     * @return void
      * @throws BadRequestHttpException
      * TODO change return type to never when upgrade to php 8.1
      */
@@ -134,10 +127,8 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
     /**
      * createConflict
      *
-     * @param Throwable $throwable
      * @param string|null $message
      *
-     * @return void
      * @throws ConflictHttpException
      * TODO change return type to never when upgrade to php 8.1
      */
@@ -152,11 +143,8 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
     /**
      * dbalExceptionManagement
      *
-     * @param Exception $DBALException
      *
-     * @return void
      * @throws ConflictHttpException
-     *
      * @throws BadRequestHttpException
      * TODO change return type to never when upgrade to php 8.1
      */
