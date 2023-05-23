@@ -1,5 +1,4 @@
 <?php
-
 /**
  * PHP Version >=8.0
  *
@@ -11,6 +10,7 @@
 
 namespace Openium\SymfonyToolKitBundle\Tests\EventListener;
 
+use Exception;
 use Openium\SymfonyToolKitBundle\Service\ExceptionFormatServiceInterface;
 use Openium\SymfonyToolKitBundle\Tests\Fixtures\EventListener\TestPathKernelExceptionListener;
 use Psr\Log\LoggerInterface;
@@ -57,7 +57,7 @@ class PathKernelExceptionListenerTest extends TestCase
         $listener = new TestPathKernelExceptionListener($exceptionFormat, '/api', true, $this->logger);
         $kernel = $this->createMock(HttpKernelInterface::class);
         $request = Request::create('/api');
-        $exc = new \Exception("testError", 123);
+        $exc = new Exception("testError", 123);
         $event = new ExceptionEvent($kernel, $request, HttpKernelInterface::MASTER_REQUEST, $exc);
         $listener->onKernelException($event);
         self::assertEquals($response, $event->getResponse());
@@ -66,7 +66,7 @@ class PathKernelExceptionListenerTest extends TestCase
     public function testOnKernelExceptionWithCritError(): void
     {
         $exceptionFormat = $this->createMock(ExceptionFormatServiceInterface::class);
-        $response = new Response('test', 500);
+        $response = new Response('test', Response::HTTP_INTERNAL_SERVER_ERROR);
         $exceptionFormat->expects(self::once())->method('formatExceptionResponse')->will(
             $this->returnValue($response)
         );
@@ -74,7 +74,7 @@ class PathKernelExceptionListenerTest extends TestCase
         $listener = new TestPathKernelExceptionListener($exceptionFormat, '/api', true, $this->logger);
         $kernel = $this->createMock(HttpKernelInterface::class);
         $request = Request::create('/api');
-        $exc = new \Exception("testError", 500);
+        $exc = new Exception("testError", Response::HTTP_INTERNAL_SERVER_ERROR);
         $event = new ExceptionEvent($kernel, $request, HttpKernelInterface::MASTER_REQUEST, $exc);
         $listener->onKernelException($event);
         self::assertEquals($response, $event->getResponse());
@@ -83,7 +83,7 @@ class PathKernelExceptionListenerTest extends TestCase
     public function testOnKernelExceptionWithAuthError(): void
     {
         $exceptionFormat = $this->createMock(ExceptionFormatServiceInterface::class);
-        $response = new Response('test', 401);
+        $response = new Response('test', Response::HTTP_UNAUTHORIZED);
         $exceptionFormat->expects(self::once())->method('formatExceptionResponse')->will(
             $this->returnValue($response)
         );
@@ -91,7 +91,7 @@ class PathKernelExceptionListenerTest extends TestCase
         $listener = new TestPathKernelExceptionListener($exceptionFormat, '/api', true, $this->logger);
         $kernel = $this->createMock(HttpKernelInterface::class);
         $request = Request::create('/api');
-        $exc = new \Exception("testError", 401);
+        $exc = new Exception("testError", Response::HTTP_UNAUTHORIZED);
         $event = new ExceptionEvent($kernel, $request, HttpKernelInterface::MASTER_REQUEST, $exc);
         $listener->onKernelException($event);
         self::assertEquals($response, $event->getResponse());

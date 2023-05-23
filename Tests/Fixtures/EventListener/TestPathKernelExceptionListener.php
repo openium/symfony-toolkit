@@ -22,8 +22,6 @@ class TestPathKernelExceptionListener extends PathKernelExceptionListener
 {
     /**
      * getEnable
-     *
-     * @return bool
      */
     public function getEnable(): bool
     {

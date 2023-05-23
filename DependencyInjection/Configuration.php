@@ -28,7 +28,7 @@ class Configuration implements ConfigurationInterface
      *
      * @return TreeBuilder The tree builder
      */
-    public function getConfigTreeBuilder()
+    public function getConfigTreeBuilder(): TreeBuilder
     {
         return new TreeBuilder('openium_symfony_toolkit');
         //$rootNode = method_exists(TreeBuilder::class, 'getRootNode') ?

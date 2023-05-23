@@ -7,8 +7,12 @@ use Doctrine\DBAL\Exception\NotNullConstraintViolationException;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\ORMInvalidArgumentException;
 use Openium\SymfonyToolKitBundle\Service\DoctrineExceptionHandlerService;
+use PDOException;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
+use UnexpectedValueException;
 
 /**
  * Class DoctrineExceptionHandlerServiceTest
@@ -76,9 +80,9 @@ class DoctrineExceptionHandlerServiceTest extends TestCase
 */
     public function testToHttpExceptionWithORMInvalidArgumentException(): void
     {
-        static::expectException("Symfony\Component\HttpKernel\Exception\BadRequestHttpException");
+        static::expectException(BadRequestHttpException::class);
         static::expectExceptionMessage("Entity's management error");
-        $exc = new \PDOException();
+        $exc = new PDOException();
         $pdoExc = new Exception($exc);
         $exceptionDE = new Exception($pdoExc);
         $ormiae = new ORMInvalidArgumentException("message", 0, $exceptionDE);
@@ -90,12 +94,12 @@ class DoctrineExceptionHandlerServiceTest extends TestCase
 
     public function testToHttpExceptionWithUnexpectedValueException(): void
     {
-        static::expectException("Symfony\Component\HttpKernel\Exception\BadRequestHttpException");
+        static::expectException(BadRequestHttpException::class);
         static::expectExceptionMessage("Entity's management error");
-        $exc = new \PDOException();
+        $exc = new PDOException();
         $pdoExc = new Exception($exc);
         $exceptionDE = new Exception($pdoExc);
-        $uve = new \UnexpectedValueException("message", 0, $exceptionDE);
+        $uve = new UnexpectedValueException("message", 0, $exceptionDE);
         $this->logger->expects($this->exactly(5))->method('error');
         $doctrineExceptionHandler = new DoctrineExceptionHandlerService($this->logger);
         self::assertTrue($doctrineExceptionHandler instanceof DoctrineExceptionHandlerService);
@@ -104,7 +108,7 @@ class DoctrineExceptionHandlerServiceTest extends TestCase
 
     public function testToHttpExceptionWith23000DBALException(): void
     {
-        static::expectException("Symfony\Component\HttpKernel\Exception\ConflictHttpException");
+        static::expectException(ConflictHttpException::class);
         static::expectExceptionMessage("Conflict error");
         $exception = new \Exception("test", 23000);
         $dbal = new Exception("message", 0, $exception);
@@ -116,7 +120,7 @@ class DoctrineExceptionHandlerServiceTest extends TestCase
 
     public function testToHttpExceptionWith42000DBALException(): void
     {
-        static::expectException("Symfony\Component\HttpKernel\Exception\BadRequestHttpException");
+        static::expectException(BadRequestHttpException::class);
         static::expectExceptionMessage("Database error");
         $exception = new \Exception("test", 42000);
         $dbal = new Exception("message", 0, $exception);
@@ -128,7 +132,7 @@ class DoctrineExceptionHandlerServiceTest extends TestCase
 
     public function testToHttpExceptionWith21000DBALException(): void
     {
-        static::expectException("Symfony\Component\HttpKernel\Exception\BadRequestHttpException");
+        static::expectException(BadRequestHttpException::class);
         static::expectExceptionMessage("Database request error");
         $exception = new \Exception("test", 21000);
         $dbal = new Exception("message", 0, $exception);
@@ -140,7 +144,7 @@ class DoctrineExceptionHandlerServiceTest extends TestCase
 
     public function testToHttpExceptionWith21000DBALExceptionAndWithoutPreviousException(): void
     {
-        static::expectException("Symfony\Component\HttpKernel\Exception\BadRequestHttpException");
+        static::expectException(BadRequestHttpException::class);
         static::expectExceptionMessage("Database request error");
         $dbal = new Exception("message", 21000, null);
         $this->logger->expects($this->exactly(5))->method('error');
@@ -151,7 +155,7 @@ class DoctrineExceptionHandlerServiceTest extends TestCase
 
     public function testToHttpExceptionWith0DBALExceptionAndWithoutPreviousException(): void
     {
-        static::expectException("Symfony\Component\HttpKernel\Exception\BadRequestHttpException");
+        static::expectException(BadRequestHttpException::class);
         static::expectExceptionMessage("Entity's management error");
         $dbal = new Exception("message", 0, null);
         $this->logger->expects($this->exactly(5))->method('error');

@@ -36,7 +36,7 @@ class AtHelperTest extends TestCase
     {
         $atHelper = new AtHelper($this->logger);
         self::assertTrue($atHelper instanceof AtHelperInterface);
-        $result = $atHelper->formatTimestampForAt(1514761200);
+        $result = $atHelper->formatTimestampForAt(1_514_761_200);
         self::assertEquals('12:00 AM January 1 2018', $result);
     }
 

@@ -51,7 +51,7 @@ class ContentExtractorUtilsTest extends TestCase
         // when
         try {
             ContentExtractorUtils::checkKeyNotEmpty($content, $key, $nullable);
-        } catch (ContentExtractorMissingParameterException $e) {
+        } catch (ContentExtractorMissingParameterException) {
             self::fail('ContentExtractorMissingParameterException');
         }
         // then
@@ -78,7 +78,7 @@ class ContentExtractorUtilsTest extends TestCase
         // when
         try {
             ContentExtractorUtils::checkKeyNotEmpty($content, $key, $nullable);
-        } catch (ContentExtractorMissingParameterException $e) {
+        } catch (ContentExtractorMissingParameterException) {
             self::fail('ContentExtractorMissingParameterException');
         }
         // then
@@ -124,7 +124,7 @@ class ContentExtractorUtilsTest extends TestCase
         // when
         try {
             ContentExtractorUtils::checkKeyIsBoolean($content, $key);
-        } catch (ContentExtractorBooleanPropertyException $e) {
+        } catch (ContentExtractorBooleanPropertyException) {
             self::fail('ContentExtractorBooleanPropertyException');
         }
         // then
@@ -163,7 +163,7 @@ class ContentExtractorUtilsTest extends TestCase
         // when
         try {
             ContentExtractorUtils::checkKeyIsInt($content, $key, $nullable);
-        } catch (ContentExtractorIntegerPropertyException $e) {
+        } catch (ContentExtractorIntegerPropertyException) {
             self::fail('ContentExtractorIntegerPropertyException');
         }
         // then
@@ -179,7 +179,7 @@ class ContentExtractorUtilsTest extends TestCase
         // when
         try {
             ContentExtractorUtils::checkKeyIsInt($content, $key, $nullable);
-        } catch (ContentExtractorIntegerPropertyException $e) {
+        } catch (ContentExtractorIntegerPropertyException) {
             self::fail('ContentExtractorIntegerPropertyException');
         }
         // then
@@ -229,7 +229,7 @@ class ContentExtractorUtilsTest extends TestCase
         // when
         try {
             ContentExtractorUtils::checkKeyIsFloat($content, $key, $nullable);
-        } catch (ContentExtractorFloatPropertyException $e) {
+        } catch (ContentExtractorFloatPropertyException) {
             self::fail('ContentExtractorFloatPropertyException');
         }
         // then
@@ -256,7 +256,7 @@ class ContentExtractorUtilsTest extends TestCase
         // when
         try {
             ContentExtractorUtils::checkKeyIsFloat($content, $key, $nullable);
-        } catch (ContentExtractorFloatPropertyException $e) {
+        } catch (ContentExtractorFloatPropertyException) {
             self::fail('ContentExtractorFloatPropertyException');
         }
         // then
@@ -284,7 +284,7 @@ class ContentExtractorUtilsTest extends TestCase
         // when
         try {
             ContentExtractorUtils::checkKeyIsArray($content, $key, $allowEmpty);
-        } catch (ContentExtractorArrayPropertyException $e) {
+        } catch (ContentExtractorArrayPropertyException) {
             self::fail('ContentExtractorArrayPropertyException');
         }
         // then

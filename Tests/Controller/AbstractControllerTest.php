@@ -12,6 +12,8 @@
 namespace Openium\SymfonyToolKitBundle\Tests\Controller;
 
 use Openium\SymfonyToolKitBundle\Controller\AbstractController;
+use Openium\SymfonyToolKitBundle\Exception\InvalidContentFormatException;
+use Openium\SymfonyToolKitBundle\Exception\MissingContentException;
 use Openium\SymfonyToolKitBundle\Tests\Fixtures\Controller\TestController;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
@@ -37,7 +39,7 @@ class AbstractControllerTest extends TestCase
 
     public function testAbstractControllerWithEmptyContent(): void
     {
-        static::expectException("Openium\SymfonyToolKitBundle\Exception\MissingContentException");
+        static::expectException(MissingContentException::class);
         static::expectExceptionMessage("Missing content");
         $controller = new TestController();
         self::assertInstanceOf(AbstractController::class, $controller);
@@ -47,7 +49,7 @@ class AbstractControllerTest extends TestCase
 
     public function testAbstractControllerWithNonArrayContent(): void
     {
-        static::expectException("Openium\SymfonyToolKitBundle\Exception\InvalidContentFormatException");
+        static::expectException(InvalidContentFormatException::class);
         static::expectExceptionMessage("Incorrect content format");
         $controller = new TestController();
         self::assertInstanceOf(AbstractController::class, $controller);

@@ -6,6 +6,7 @@ use Openium\SymfonyToolKitBundle\Service\FileUploaderService;
 use Openium\SymfonyToolKitBundle\Tests\Fixtures\Entity\EntityWithUpload;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 /**
  * Class FileUploaderServiceTest
@@ -59,7 +60,7 @@ class FileUploaderServiceTest extends TestCase
      */
     public function testPrepareUploadPathWithFileWithoutExtension(): void
     {
-        static::expectException("Symfony\Component\HttpKernel\Exception\BadRequestHttpException");
+        static::expectException(BadRequestHttpException::class);
         static::expectExceptionMessage("The file extension is empty.");
         $this->file->expects(self::once())
             ->method('guessClientExtension')

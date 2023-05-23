@@ -1,5 +1,4 @@
 <?php
-
 /**
  * PHP Version >=8.0
  *
@@ -25,10 +24,7 @@ class TestController extends AbstractController
     /**
      * test
      *
-     * @param Request $request
-     *
      * @throws BadRequestHttpException
-     * @return array
      */
     public function test(Request $request): array
     {
