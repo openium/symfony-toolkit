@@ -1,8 +1,6 @@
 <?php
-
 /**
  * ServerService
- *
  * PHP Version >=8.0
  *
  * @package  Openium\SymfonyToolKitBundle\Service
@@ -35,8 +33,6 @@ class ServerService implements ServerServiceInterface
      * Get server base url
      *
      * @throws SuspiciousOperationException
-     *
-     * @return string
      */
     public function getBasePath(): string
     {
@@ -44,13 +40,8 @@ class ServerService implements ServerServiceInterface
         if (is_null($request)) {
             return '';
         }
-        if ($request->isSecure()) {
-            $prefix = 'https://';
-        } else {
-            $prefix = 'http://';
-        }
+        $prefix = $request->isSecure() ? 'https://' : 'http://';
         $host = $request->getHost();
-        $basePath = $prefix . $host . '/';
-        return $basePath;
+        return $prefix . $host . '/';
     }
 }

@@ -20,16 +20,14 @@ class DateStringUtils
     ): DateTime | false {
         if (null === $format) {
             if (strlen($dateString) > 10) {
-                if (str_starts_with(substr($dateString, -3), ':')) {
-                    $format = DateTimeInterface::ATOM;
-                } else {
-                    $format = DateTimeInterface::ISO8601;
-                }
+                $format = str_starts_with(substr($dateString, -3), ':')
+                    ? DateTimeInterface::ATOM
+                    : DateTimeInterface::ISO8601;
             } else {
                 $format = 'Y-m-d';
             }
         }
-        if (null === $timeZone) {
+        if (!$timeZone instanceof \DateTimeZone) {
             $timeZone = new DateTimeZone('Europe/Paris');
         }
         return DateTime::createFromFormat(

@@ -41,12 +41,8 @@ class FileUploaderService implements FileUploaderServiceInterface
     /**
      * prepareUploadPath
      *
-     * @param WithUploadInterface $uploadEntity
-     * @param string|null $imageName
-     *
      * @throws BadRequestHttpException
      * @throws LogicException
-     * @return WithUploadInterface
      */
     public function prepareUploadPath(WithUploadInterface $uploadEntity, ?string $imageName = null): WithUploadInterface
     {
@@ -65,18 +61,13 @@ class FileUploaderService implements FileUploaderServiceInterface
     /**
      * getPath
      *
-     * @param File $file
-     * @param string $dirName
-     * @param string|null $imageName
-     *
      * @throws BadRequestHttpException
      * @throws LogicException
-     * @return string
      */
     public function getPath(File $file, string $dirName, ?string $imageName = null): string
     {
         if (is_null($imageName)) {
-            $randString = sha1(uniqid(strval(random_int(0, mt_getrandmax())), true));
+            $randString = sha1(uniqid((string)random_int(0, mt_getrandmax()), true));
             $fileName = substr($randString, 0, 32);
         } else {
             $fileName = $imageName;
@@ -87,7 +78,7 @@ class FileUploaderService implements FileUploaderServiceInterface
         } else {
             $fileNameParts = explode('.', $file->getFilename());
             if (count($fileNameParts) > 1) {
-                $fileExtension = trim($fileNameParts[sizeof($fileNameParts) - 1]);
+                $fileExtension = trim($fileNameParts[count($fileNameParts) - 1]);
             }
         }
         if (is_null($fileExtension) || $fileExtension === '') {
@@ -103,11 +94,8 @@ class FileUploaderService implements FileUploaderServiceInterface
     /**
      * uploadEntity
      *
-     * @param WithUploadInterface $uploadEntity
-     *
      * @throws ConflictHttpException
      * @throws UnexpectedValueException
-     * @return WithUploadInterface
      */
     public function uploadEntity(WithUploadInterface $uploadEntity): WithUploadInterface
     {
@@ -125,10 +113,6 @@ class FileUploaderService implements FileUploaderServiceInterface
 
     /**
      * removeUpload
-     *
-     * @param WithUploadInterface $uploadEntity
-     *
-     * @return void
      */
     public function removeUpload(WithUploadInterface $uploadEntity): void
     {
@@ -141,11 +125,7 @@ class FileUploaderService implements FileUploaderServiceInterface
     /**
      * upload
      *
-     * @param File $file
-     * @param string $path
-     *
      * @throws ConflictHttpException
-     * @return void
      */
     public function upload(File $file, string $path): void
     {
@@ -161,10 +141,6 @@ class FileUploaderService implements FileUploaderServiceInterface
 
     /**
      * removeFile
-     *
-     * @param string $path
-     *
-     * @return void
      */
     public function removeFile(string $path): void
     {

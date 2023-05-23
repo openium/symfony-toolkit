@@ -1,5 +1,4 @@
 <?php
-
 /**
  * PHP Version >=8.0
  *
@@ -34,7 +33,6 @@ abstract class AbstractCommand extends Command
     /**
      * AbstractCommand constructor.
      *
-     * @param LoggerInterface $logger
      * @param string|null $name
      *
      * @throws LogicException
@@ -48,8 +46,6 @@ abstract class AbstractCommand extends Command
      * configure
      *
      * @throws InvalidArgumentException
-     *
-     * @return void
      */
     protected function configure(): void
     {
@@ -59,12 +55,7 @@ abstract class AbstractCommand extends Command
     /**
      * execute
      *
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     *
      * @throws InvalidArgumentException
-     *
-     * @return void
      */
     protected function execute(InputInterface $input, OutputInterface $output): void
     {
@@ -74,9 +65,6 @@ abstract class AbstractCommand extends Command
 
     /**
      * writeMessage
-     *
-     *
-     * @return void
      */
     protected function writeMessage(string $message): void
     {

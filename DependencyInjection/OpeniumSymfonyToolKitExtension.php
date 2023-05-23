@@ -17,6 +17,7 @@ use Openium\SymfonyToolKitBundle\Service\DoctrineExceptionHandlerServiceInterfac
 use Openium\SymfonyToolKitBundle\Service\ExceptionFormatServiceInterface;
 use Openium\SymfonyToolKitBundle\Service\FileUploaderServiceInterface;
 use Openium\SymfonyToolKitBundle\Service\ServerServiceInterface;
+use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Alias;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -33,17 +34,13 @@ class OpeniumSymfonyToolKitExtension extends Extension
     /**
      * Load services
      *
-     * @param array $configs
-     * @param ContainerBuilder $container
-     *
      * @throws Exception
-     * @return void
      */
     /* @phpstan-ignore-next-line */
     public function load(array $configs, ContainerBuilder $container): void
     {
         $configuration = $this->getConfiguration($configs, $container);
-        if ($configuration !== null) {
+        if ($configuration instanceof ConfigurationInterface) {
             $this->processConfiguration($configuration, $configs);
         }
         $loader = new YamlFileLoader(

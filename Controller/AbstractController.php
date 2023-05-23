@@ -37,11 +37,11 @@ class AbstractController extends BaseController
             throw new MissingContentException();
         }
         if (!is_string($bodyContent)) {
-            $bodyContent = strval($bodyContent);
+            $bodyContent = (string)$bodyContent;
         }
         try {
             $content = json_decode($bodyContent, true, 512, JSON_THROW_ON_ERROR);
-        } catch (\JsonException $exception) {
+        } catch (\JsonException) {
             throw new MissingContentException();
         }
         if (!is_array($content)) {

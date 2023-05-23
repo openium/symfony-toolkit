@@ -54,8 +54,6 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
 
     /**
      * Log an exception information for debug
-     *
-     * @param Throwable $throwable
      */
     public function log(Throwable $throwable): void
     {
@@ -69,8 +67,6 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
     /**
      * toHttpException
      * Catch & Process the throwable
-     *
-     * @param Throwable $throwable
      *
      * @throws BadRequestHttpException
      * @throws ConflictHttpException
@@ -134,7 +130,7 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
      */
     protected function createConflict(Throwable $throwable, ?string $message = null): void
     {
-        if ($throwable->getPrevious() !== null) {
+        if ($throwable->getPrevious() instanceof \Throwable) {
             $this->logger->error($throwable->getPrevious()->getCode());
         }
         throw new ConflictHttpException($message ?? $this->conflictMessage, $throwable);
@@ -152,11 +148,7 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
     {
         $code = '0';
         $previous = $DBALException->getPrevious();
-        if ($previous !== null) {
-            $code = strval($previous->getCode());
-        } else {
-            $code = strval($DBALException->getCode());
-        }
+        $code = $previous instanceof \Throwable ? (string) $previous->getCode() : (string) $DBALException->getCode();
         switch ($code) {
             case '23000':
                 $this->createConflict($DBALException);
@@ -181,8 +173,6 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
 
     /**
      * Getter for missingDatabaseTableMessage
-     *
-     * @return string
      */
     public function getMissingDatabaseTableMessage(): string
     {
@@ -191,10 +181,6 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
 
     /**
      * Setter for missingDatabaseTableMessage
-     *
-     * @param string $missingDatabaseTableMessage
-     *
-     * @return DoctrineExceptionHandlerServiceInterface
      */
     public function setMissingDatabaseTableMessage(string $missingDatabaseTableMessage): DoctrineExceptionHandlerServiceInterface
     {
@@ -204,8 +190,6 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
 
     /**
      * Getter for databaseSchemaErrorMessage
-     *
-     * @return string
      */
     public function getDatabaseSchemaErrorMessage(): string
     {
@@ -214,10 +198,6 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
 
     /**
      * Setter for databaseSchemaErrorMessage
-     *
-     * @param string $databaseSchemaErrorMessage
-     *
-     * @return DoctrineExceptionHandlerServiceInterface
      */
     public function setDatabaseSchemaErrorMessage(string $databaseSchemaErrorMessage): DoctrineExceptionHandlerServiceInterface
     {
@@ -227,8 +207,6 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
 
     /**
      * Getter for querySyntaxErrorMessage
-     *
-     * @return string
      */
     public function getQuerySyntaxErrorMessage(): string
     {
@@ -237,10 +215,6 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
 
     /**
      * Setter for querySyntaxErrorMessage
-     *
-     * @param string $querySyntaxErrorMessage
-     *
-     * @return DoctrineExceptionHandlerServiceInterface
      */
     public function setQuerySyntaxErrorMessage(string $querySyntaxErrorMessage): DoctrineExceptionHandlerServiceInterface
     {
@@ -250,8 +224,6 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
 
     /**
      * Getter for entityManagementErrorMessage
-     *
-     * @return string
      */
     public function getEntityManagementErrorMessage(): string
     {
@@ -260,10 +232,6 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
 
     /**
      * Setter for entityManagementErrorMessage
-     *
-     * @param string $entityManagementErrorMessage
-     *
-     * @return DoctrineExceptionHandlerServiceInterface
      */
     public function setEntityManagementErrorMessage(string $entityManagementErrorMessage): DoctrineExceptionHandlerServiceInterface
     {
@@ -273,8 +241,6 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
 
     /**
      * Getter for conflictMessage
-     *
-     * @return string
      */
     public function getConflictMessage(): string
     {
@@ -283,10 +249,6 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
 
     /**
      * Setter for conflictMessage
-     *
-     * @param string $conflictMessage
-     *
-     * @return DoctrineExceptionHandlerServiceInterface
      */
     public function setConflictMessage(string $conflictMessage): DoctrineExceptionHandlerServiceInterface
     {
@@ -296,8 +258,6 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
 
     /**
      * Getter for databaseErrorMessage
-     *
-     * @return string
      */
     public function getDatabaseErrorMessage(): string
     {
@@ -306,10 +266,6 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
 
     /**
      * Setter for databaseErrorMessage
-     *
-     * @param string $databaseErrorMessage
-     *
-     * @return DoctrineExceptionHandlerServiceInterface
      */
     public function setDatabaseErrorMessage(string $databaseErrorMessage): DoctrineExceptionHandlerServiceInterface
     {
@@ -319,8 +275,6 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
 
     /**
      * Getter for databaseRequestErrorMessage
-     *
-     * @return string
      */
     public function getDatabaseRequestErrorMessage(): string
     {
@@ -329,10 +283,6 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
 
     /**
      * Setter for databaseRequestErrorMessage
-     *
-     * @param string $databaseRequestErrorMessage
-     *
-     * @return DoctrineExceptionHandlerServiceInterface
      */
     public function setDatabaseRequestErrorMessage(string $databaseRequestErrorMessage): DoctrineExceptionHandlerServiceInterface
     {
@@ -342,8 +292,6 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
 
     /**
      * Getter for missingPropertyErrorMessage
-     *
-     * @return string
      */
     public function getMissingPropertyErrorMessage(): string
     {
@@ -352,10 +300,6 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
 
     /**
      * Setter for missingPropertyErrorMessage
-     *
-     * @param string $missingPropertyErrorMessage
-     *
-     * @return DoctrineExceptionHandlerServiceInterface
      */
     public function setMissingPropertyErrorMessage(string $missingPropertyErrorMessage): DoctrineExceptionHandlerServiceInterface
     {

@@ -98,7 +98,7 @@ class ContentExtractorUtils
         if (
             !array_key_exists($key, $content)
             || !is_array($content[$key])
-            || (!$allowEmpty && count($content[$key]) === 0)
+            || (!$allowEmpty && $content[$key] === [])
         ) {
             throw new ContentExtractorArrayPropertyException($key);
         }
@@ -128,7 +128,7 @@ class ContentExtractorUtils
             }
         }
         if ($content[$key] !== null) {
-            return strval($content[$key]);
+            return (string)$content[$key];
         } else {
             return null;
         }

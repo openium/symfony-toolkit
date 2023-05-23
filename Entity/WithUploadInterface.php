@@ -22,36 +22,26 @@ interface WithUploadInterface
 {
     /**
      * Get the file
-     *
-     * @return ?File
      */
     public function getFile(): ?File;
 
     /**
      * Set the file
-     *
-     * @return WithUploadInterface
      */
     public function setFile(?File $file): WithUploadInterface;
 
     /**
      * Set the file local path
-     *
-     * @return ?string
      */
     public function getImagePath(): ?string;
 
     /**
      * Get the file local path
-     *
-     * @return WithUploadInterface
      */
     public function setImagePath(?string $path): WithUploadInterface;
 
     /**
      * Get the uploads sub-dir name
-     *
-     * @return string
      */
     public function getUploadsDir(): string;
 }

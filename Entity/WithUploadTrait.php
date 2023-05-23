@@ -1,8 +1,6 @@
 <?php
-
 /**
  * WithUpload trait
- *
  * PHP Version >=8.0
  *
  * @package  Openium\SymfonyToolKitBundle\Entity

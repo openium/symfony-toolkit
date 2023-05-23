@@ -37,10 +37,7 @@ class ExceptionFormatService implements ExceptionFormatServiceInterface
     /**
      * formatExceptionResponse
      *
-     * @param Throwable $exception
-     *
      * @throws InvalidArgumentException
-     * @return Response
      */
     public function formatExceptionResponse(Throwable $exception): Response
     {
@@ -83,10 +80,6 @@ class ExceptionFormatService implements ExceptionFormatServiceInterface
     /**
      * getArray
      *
-     * @param Exception $exception
-     * @param int|null $code
-     * @param string|null $text
-     * @param string|null $message
      *
      * @return array<string, mixed>
      */
@@ -103,7 +96,7 @@ class ExceptionFormatService implements ExceptionFormatServiceInterface
         // Stripe part
         if (
             $error['status_code'] == Response::HTTP_PAYMENT_REQUIRED
-            && $exception->getPrevious() !== null
+            && $exception->getPrevious() instanceof \Throwable
             && is_a($exception->getPrevious(), "Stripe\Error\Card")
         ) {
             /* @phpstan-ignore-next-line */
@@ -125,10 +118,6 @@ class ExceptionFormatService implements ExceptionFormatServiceInterface
 
     /**
      * getStatusCode
-     *
-     * @param Exception $exception
-     *
-     * @return int
      */
     public function getStatusCode(Exception $exception): int
     {
@@ -142,10 +131,6 @@ class ExceptionFormatService implements ExceptionFormatServiceInterface
 
     /**
      * getStatusText
-     *
-     * @param Exception $exception
-     *
-     * @return string
      */
     public function getStatusText(Exception $exception): string
     {

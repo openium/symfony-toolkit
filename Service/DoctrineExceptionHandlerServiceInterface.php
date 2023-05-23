@@ -25,16 +25,12 @@ interface DoctrineExceptionHandlerServiceInterface
 {
     /**
      * Log an exception information for debug
-     *
-     * @param Throwable $throwable
      */
     public function log(Throwable $throwable): void;
 
     /**
      * toHttpException
      * Catch & Process the throwable
-     *
-     * @param Throwable $throwable
      *
      * @throws BadRequestHttpException
      * @throws ConflictHttpException
