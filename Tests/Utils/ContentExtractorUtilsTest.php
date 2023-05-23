@@ -9,6 +9,7 @@ use Openium\SymfonyToolKitBundle\Exception\ContentExtractorDateFormatException;
 use Openium\SymfonyToolKitBundle\Exception\ContentExtractorFloatPropertyException;
 use Openium\SymfonyToolKitBundle\Exception\ContentExtractorIntegerPropertyException;
 use Openium\SymfonyToolKitBundle\Exception\ContentExtractorMissingParameterException;
+use Openium\SymfonyToolKitBundle\Exception\ContentExtractorStringPropertyException;
 use Openium\SymfonyToolKitBundle\Utils\ContentExtractorUtils;
 use PHPUnit\Framework\TestCase;
 
@@ -19,8 +20,8 @@ use PHPUnit\Framework\TestCase;
  */
 class ContentExtractorUtilsTest extends TestCase
 {
-    // checkKeyIsBoolean
-    public function testCheckKeyNotEmptyWithoutKey(): void
+    // checkKeyExists
+    public function testCheckKeyExistsWithoutKey()
     {
         self::expectException(ContentExtractorMissingParameterException::class);
         // given
@@ -28,10 +29,10 @@ class ContentExtractorUtilsTest extends TestCase
         $key = 'key';
         $nullable = false;
         // when
-        ContentExtractorUtils::checkKeyNotEmpty($content, $key, $nullable);
+        ContentExtractorUtils::checkKeyExists($content, $key, $nullable);
     }
 
-    public function testCheckKeyNotEmptyWithNullKey(): void
+    public function testCheckKeyExistsWithNullKey()
     {
         self::expectException(ContentExtractorMissingParameterException::class);
         // given
@@ -39,10 +40,10 @@ class ContentExtractorUtilsTest extends TestCase
         $key = 'key';
         $nullable = false;
         // when
-        ContentExtractorUtils::checkKeyNotEmpty($content, $key, $nullable);
+        ContentExtractorUtils::checkKeyExists($content, $key, $nullable);
     }
 
-    public function testCheckKeyNotEmptyWithNullKeyAndNullable(): void
+    public function testCheckKeyExistsWithNullKeyAndNullable()
     {
         // given
         $content = ['key' => null];
@@ -50,26 +51,31 @@ class ContentExtractorUtilsTest extends TestCase
         $nullable = true;
         // when
         try {
-            ContentExtractorUtils::checkKeyNotEmpty($content, $key, $nullable);
-        } catch (ContentExtractorMissingParameterException) {
+            ContentExtractorUtils::checkKeyExists($content, $key, $nullable);
+        } catch (ContentExtractorMissingParameterException $e) {
             self::fail('ContentExtractorMissingParameterException');
         }
         // then
         self::assertTrue(true);
     }
 
-    // public function testCheckKeyNotEmptyWithEmptyStringKey(): void
-    // {
-    //     self::expectException(ContentExtractorMissingParameterException::class);
-    //     // given
-    //     $content = ['key' => ''];
-    //     $key = 'key';
-    //     $nullable = false;
-    //     // when
-    //     ContentExtractorUtils::checkKeyNotEmpty($content, $key, $nullable);
-    // }
+    public function testCheckKeyExistsWithEmptyStringKey()
+    {
+        // given
+        $content = ['key' => ''];
+        $key = 'key';
+        $nullable = false;
+        // when
+        try {
+            ContentExtractorUtils::checkKeyExists($content, $key, $nullable);
+        } catch (ContentExtractorMissingParameterException $e) {
+            self::fail('ContentExtractorMissingParameterException');
+        }
+        // then
+        self::assertTrue(true);
+    }
 
-    public function testCheckKeyNotEmptyWithStringKey(): void
+    public function testCheckKeyExistsWithStringKey()
     {
         // given
         $content = ['key' => 'value'];
@@ -77,17 +83,83 @@ class ContentExtractorUtilsTest extends TestCase
         $nullable = false;
         // when
         try {
-            ContentExtractorUtils::checkKeyNotEmpty($content, $key, $nullable);
-        } catch (ContentExtractorMissingParameterException) {
+            ContentExtractorUtils::checkKeyExists($content, $key, $nullable);
+        } catch (ContentExtractorMissingParameterException $e) {
             self::fail('ContentExtractorMissingParameterException');
         }
         // then
         self::assertTrue(true);
     }
 
+    // checkKeyIsString
+    public function testCheckKeyIsStringWithoutKey()
+    {
+        self::expectException(ContentExtractorMissingParameterException::class);
+        // given
+        $content = [];
+        $key = 'key';
+        // when
+        ContentExtractorUtils::checkKeyIsString($content, $key);
+    }
+
+    public function testCheckKeyIsStringWithNullValue()
+    {
+        self::expectException(ContentExtractorMissingParameterException::class);
+        // given
+        $content = ['key' => null];
+        $key = 'key';
+        $nullable = false;
+        // when
+        ContentExtractorUtils::checkKeyIsString($content, $key, $nullable);
+    }
+
+    public function testCheckKeyIsStringWithNullValueAllowNullable()
+    {
+        // given
+        $content = ['key' => null];
+        $key = 'key';
+        $nullable = true;
+        // when
+        try {
+            ContentExtractorUtils::checkKeyIsString($content, $key, $nullable);
+        } catch (ContentExtractorStringPropertyException $e) {
+            self::fail('ContentExtractorStringPropertyException');
+        }
+        // then
+        self::assertTrue(true);
+    }
+
+    public function testCheckKeyIsStringWithString()
+    {
+        // given
+        $content = ['key' => 'value'];
+        $key = 'key';
+        $nullable = false;
+        // when
+        try {
+            ContentExtractorUtils::checkKeyIsString($content, $key, $nullable);
+        } catch (ContentExtractorStringPropertyException $e) {
+            self::fail('ContentExtractorStringPropertyException');
+        }
+        // then
+        self::assertTrue(true);
+    }
+
+    public function testCheckKeyIsStringWithIntValue()
+    {
+        self::expectException(ContentExtractorStringPropertyException::class);
+        // given
+        $content = ['key' => 3];
+        $key = 'key';
+        $nullable = false;
+        // when
+        ContentExtractorUtils::checkKeyIsString($content, $key, $nullable);
+    }
+
+    // checkKeyIsBoolean
     public function testCheckKeyIsBooleanWithoutKey(): void
     {
-        self::expectException(ContentExtractorBooleanPropertyException::class);
+        self::expectException(ContentExtractorMissingParameterException::class);
         // given
         $content = [];
         $key = 'key';
@@ -134,7 +206,7 @@ class ContentExtractorUtilsTest extends TestCase
     // checkKeyIsInt
     public function testCheckKeyIsIntWithoutKey(): void
     {
-        self::expectException(ContentExtractorIntegerPropertyException::class);
+        self::expectException(ContentExtractorMissingParameterException::class);
         // given
         $content = [];
         $key = 'key';
@@ -145,7 +217,7 @@ class ContentExtractorUtilsTest extends TestCase
 
     public function testCheckKeyIsIntWithNullKey(): void
     {
-        self::expectException(ContentExtractorIntegerPropertyException::class);
+        self::expectException(ContentExtractorMissingParameterException::class);
         // given
         $content = ['key' => null];
         $key = 'key';
@@ -200,7 +272,7 @@ class ContentExtractorUtilsTest extends TestCase
     // checkKeyIsFloat
     public function testCheckKeyIsFloatWithoutKey(): void
     {
-        self::expectException(ContentExtractorFloatPropertyException::class);
+        self::expectException(ContentExtractorMissingParameterException::class);
         // given
         $content = [];
         $key = 'key';
@@ -211,7 +283,7 @@ class ContentExtractorUtilsTest extends TestCase
 
     public function testCheckKeyIsFloatWithNullKey(): void
     {
-        self::expectException(ContentExtractorFloatPropertyException::class);
+        self::expectException(ContentExtractorMissingParameterException::class);
         // given
         $content = ['key' => null];
         $key = 'key';
@@ -612,7 +684,7 @@ class ContentExtractorUtilsTest extends TestCase
 
     public function testGetArrayWithNullButRequiredNotNullArray(): void
     {
-        self::expectException(ContentExtractorArrayPropertyException::class);
+        self::expectException(ContentExtractorMissingParameterException::class);
         // given
         $content = ['key' => null];
         $key = 'key';
@@ -625,7 +697,7 @@ class ContentExtractorUtilsTest extends TestCase
 
     public function testGetArrayWithNullRequiredString(): void
     {
-        self::expectException(ContentExtractorArrayPropertyException::class);
+        self::expectException(ContentExtractorMissingParameterException::class);
         // given
         $content = ['key' => null];
         $key = 'key';

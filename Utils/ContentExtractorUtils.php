@@ -9,6 +9,7 @@ use Openium\SymfonyToolKitBundle\Exception\ContentExtractorDateFormatException;
 use Openium\SymfonyToolKitBundle\Exception\ContentExtractorFloatPropertyException;
 use Openium\SymfonyToolKitBundle\Exception\ContentExtractorIntegerPropertyException;
 use Openium\SymfonyToolKitBundle\Exception\ContentExtractorMissingParameterException;
+use Openium\SymfonyToolKitBundle\Exception\ContentExtractorStringPropertyException;
 
 /**
  * Class ContentExtractorUtils
@@ -18,21 +19,44 @@ use Openium\SymfonyToolKitBundle\Exception\ContentExtractorMissingParameterExcep
 class ContentExtractorUtils
 {
     /**
-     * checkKeyNotEmpty
+     * checkKeyExists
      *
      * @param array<string, mixed> $content
      *
      * @throws ContentExtractorMissingParameterException
      */
-    public static function checkKeyNotEmpty(array $content, string $key, bool $nullable = false): void
+    public static function checkKeyExists(array $content, string $key, ?bool $nullable = false): void
     {
         if (
             !array_key_exists($key, $content)
-            || (
-                !$nullable && is_null($content[$key])
-            )
+            || (!$nullable && $content[$key] === null)
         ) {
             throw new ContentExtractorMissingParameterException($key);
+        }
+    }
+
+    /**
+     * checkKeyIsString
+     *
+     * @param array $content
+     * @param string $key
+     * @param bool $nullable
+     *
+     * @throws ContentExtractorStringPropertyException
+     * @throws ContentExtractorMissingParameterException
+     * @return void
+     */
+    public static function checkKeyIsString(array $content, string $key, bool $nullable = false): void
+    {
+        self::checkKeyExists($content, $key, $nullable);
+        if (
+            array_key_exists($key, $content)
+            && (
+                (!$nullable && $content[$key] === null)
+                || ($content[$key] !== null && !is_string($content[$key]))
+            )
+        ) {
+            throw new ContentExtractorStringPropertyException($key);
         }
     }
 
@@ -42,10 +66,17 @@ class ContentExtractorUtils
      * @param array<string, mixed> $content
      *
      * @throws ContentExtractorBooleanPropertyException
+     * <<<<<<< HEAD
+     * =======
+     * @throws ContentExtractorMissingParameterException
+     * @return void
+     * >>>>>>> f9313bb (Add new string verification in ContentExtractor and distinction between missing key and wrong
+     *     value type)
      */
     public static function checkKeyIsBoolean(array $content, string $key): void
     {
-        if (!array_key_exists($key, $content) || !is_bool($content[$key])) {
+        self::checkKeyExists($content, $key);
+        if (!is_bool($content[$key])) {
             throw new ContentExtractorBooleanPropertyException($key);
         }
     }
@@ -56,13 +87,22 @@ class ContentExtractorUtils
      * @param array<string, mixed> $content
      *
      * @throws ContentExtractorIntegerPropertyException
+     * <<<<<<< HEAD
+     * =======
+     * @throws ContentExtractorMissingParameterException
+     * @return void
+     * >>>>>>> f9313bb (Add new string verification in ContentExtractor and distinction between missing key and wrong
+     *     value type)
      */
     public static function checkKeyIsInt(array $content, string $key, bool $nullable = false): void
     {
+        self::checkKeyExists($content, $key, $nullable);
         if (
-            !array_key_exists($key, $content)
-            || (!$nullable && !is_int($content[$key]))
-            || ($nullable && !is_null($content[$key]) && !is_int($content[$key]))
+            array_key_exists($key, $content)
+            && (
+                (!$nullable && $content[$key] === null)
+                || ($content[$key] !== null && !is_int($content[$key]))
+            )
         ) {
             throw new ContentExtractorIntegerPropertyException($key);
         }
@@ -74,13 +114,17 @@ class ContentExtractorUtils
      * @param array<string, mixed> $content
      *
      * @throws ContentExtractorFloatPropertyException
+     * @throws ContentExtractorMissingParameterException
      */
     public static function checkKeyIsFloat(array $content, string $key, bool $nullable = false): void
     {
+        self::checkKeyExists($content, $key, $nullable);
         if (
-            !array_key_exists($key, $content)
-            || (!$nullable && !is_float($content[$key]))
-            || ($nullable && !is_null($content[$key]) && !is_float($content['key']))
+            array_key_exists($key, $content)
+            && (
+                (!$nullable && $content[$key] === null)
+                || ($content[$key] !== null && !is_float($content['key']))
+            )
         ) {
             throw new ContentExtractorFloatPropertyException($key);
         }
@@ -92,13 +136,22 @@ class ContentExtractorUtils
      * @param array<string, mixed> $content
      *
      * @throws ContentExtractorArrayPropertyException
+     * @throws ContentExtractorMissingParameterException
      */
     public static function checkKeyIsArray(array $content, string $key, bool $allowEmpty = false): void
     {
         if (
             !array_key_exists($key, $content)
-            || !is_array($content[$key])
-            || (!$allowEmpty && $content[$key] === [])
+            || $content[$key] === null
+        ) {
+            throw new ContentExtractorMissingParameterException($key);
+        }
+        if (
+            array_key_exists($key, $content)
+            && (
+                !is_array($content[$key])
+                || (!$allowEmpty && $content[$key] === [])
+            )
         ) {
             throw new ContentExtractorArrayPropertyException($key);
         }
@@ -110,28 +163,30 @@ class ContentExtractorUtils
      * @param array<string, mixed> $content
      *
      * @throws ContentExtractorMissingParameterException
+     * @throws ContentExtractorStringPropertyException
      */
     public static function getString(
         array $content,
         string $key,
         bool $required = true,
         ?string $default = null,
-        bool $nullable = false
+        bool $nullable = false,
+        bool $convertToString = false
     ): ?string {
         try {
-            self::checkKeyNotEmpty($content, $key, $nullable);
+            self::checkKeyIsString($content, $key, $nullable);
         } catch (ContentExtractorMissingParameterException $exception) {
             if ($required) {
                 throw $exception;
             } else {
                 return $default;
             }
+        } catch (ContentExtractorStringPropertyException $exception) {
+            if (!$convertToString) {
+                throw $exception;
+            }
         }
-        if ($content[$key] !== null) {
-            return (string)$content[$key];
-        } else {
-            return null;
-        }
+        return isset($content[$key]) ? (string)$content[$key] : null;
     }
 
     /**
@@ -140,12 +195,13 @@ class ContentExtractorUtils
      * @param array<string, mixed> $content
      *
      * @throws ContentExtractorBooleanPropertyException
+     * @throws ContentExtractorMissingParameterException
      */
     public static function getBool(array $content, string $key, bool $required = true, ?bool $default = true): ?bool
     {
         try {
             self::checkKeyIsBoolean($content, $key);
-        } catch (ContentExtractorBooleanPropertyException $exception) {
+        } catch (ContentExtractorMissingParameterException $exception) {
             if ($required) {
                 throw $exception;
             } else {
@@ -161,6 +217,7 @@ class ContentExtractorUtils
      * @param array<string, mixed> $content
      *
      * @throws ContentExtractorIntegerPropertyException
+     * @throws ContentExtractorMissingParameterException
      */
     public static function getInt(
         array $content,
@@ -171,7 +228,7 @@ class ContentExtractorUtils
     ): ?int {
         try {
             self::checkKeyIsInt($content, $key, $nullable);
-        } catch (ContentExtractorIntegerPropertyException $exception) {
+        } catch (ContentExtractorMissingParameterException $exception) {
             if ($required) {
                 throw $exception;
             } else {
@@ -187,6 +244,7 @@ class ContentExtractorUtils
      * @param array<string, mixed> $content
      *
      * @throws ContentExtractorFloatPropertyException
+     * @throws ContentExtractorMissingParameterException
      */
     public static function getFloat(
         array $content,
@@ -197,7 +255,7 @@ class ContentExtractorUtils
     ): ?float {
         try {
             self::checkKeyIsFloat($content, $key, $nullable);
-        } catch (ContentExtractorFloatPropertyException $exception) {
+        } catch (ContentExtractorMissingParameterException $exception) {
             if ($required) {
                 throw $exception;
             } else {
@@ -223,7 +281,7 @@ class ContentExtractorUtils
         bool $nullable = false
     ): ?DateTimeInterface {
         try {
-            self::checkKeyNotEmpty($content, $key, $nullable);
+            self::checkKeyExists($content, $key, $nullable);
         } catch (ContentExtractorMissingParameterException $exception) {
             if ($required) {
                 throw $exception;
@@ -249,7 +307,7 @@ class ContentExtractorUtils
      * @param array<string|int, mixed>|null $default
      *
      * @throws ContentExtractorArrayPropertyException
-     * @return array<string|int, mixed>|null
+     * @throws ContentExtractorMissingParameterException
      */
     public static function getArray(
         array $content,
@@ -260,17 +318,13 @@ class ContentExtractorUtils
     ): ?array {
         try {
             self::checkKeyIsArray($content, $key, $allowEmpty);
-        } catch (ContentExtractorArrayPropertyException $exception) {
+        } catch (ContentExtractorMissingParameterException $exception) {
             if ($required) {
                 throw $exception;
             } else {
                 return $default;
             }
         }
-        if ($content[$key] !== null) {
-            return $content[$key];
-        } else {
-            return null;
-        }
+        return $content[$key];
     }
 }
