@@ -109,7 +109,7 @@ class ContentExtractorUtils
             || (!$allowEmpty && empty($content[$key]))
             || (!empty($content[$key]) && !is_array($content[$key]))
         ) {
-            throw new ContentExtractorArrayPropertyException();
+            throw new ContentExtractorArrayPropertyException($key);
         }
     }
 

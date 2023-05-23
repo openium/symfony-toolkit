@@ -56,11 +56,12 @@ class TestCommand extends AbstractCommand
      *
      * @throws InvalidArgumentException
      *
-     * @return int|void|null
+     * @return int
      */
     public function execute(InputInterface $input, OutputInterface $output)
     {
-        parent::execute($input, $output);
+        parent::prepareExecute($input, $output);
+        return 1;
     }
 
     /**

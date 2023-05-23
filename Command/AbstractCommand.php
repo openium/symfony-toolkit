@@ -76,9 +76,9 @@ abstract class AbstractCommand extends Command
      *
      * @throws InvalidArgumentException
      *
-     * @return int|void|null
+     * @return void
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function prepareExecute(InputInterface $input, OutputInterface $output)
     {
         $this->io = new SymfonyStyle($input, $output);
         $this->hasLog = $input->getOption('nl') === false;

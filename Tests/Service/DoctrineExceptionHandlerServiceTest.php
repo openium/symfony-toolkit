@@ -2,13 +2,13 @@
 
 namespace Openium\SymfonyToolKitBundle\Tests\Service;
 
-use Doctrine\DBAL\DBALException;
-use Doctrine\DBAL\Driver\PDOException;
+use Doctrine\DBAL\Exception as DBALException;
+use Doctrine\DBAL\Driver\PDO\PDOException;
 use Doctrine\DBAL\Exception\NotNullConstraintViolationException;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
+use Doctrine\DBAL\Query;
 use Doctrine\ORM\ORMInvalidArgumentException;
 use Openium\SymfonyToolKitBundle\Service\DoctrineExceptionHandlerService;
-use Openium\SymfonyToolKitBundle\Tests\Fixtures\Exception\FakeException;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 
@@ -53,7 +53,8 @@ class DoctrineExceptionHandlerServiceTest extends TestCase
         $exc = new \PDOException();
         $pdoExc = new PDOException($exc);
         $exceptionDE = new PDOException($pdoExc);
-        $ucve = new UniqueConstraintViolationException("message", $exceptionDE);
+        $query = new Query("", [], []);
+        $ucve = new UniqueConstraintViolationException($exceptionDE, $query);
         $this->logger->expects($this->exactly(6))->method('error');
         $doctrineExceptionHandler = new DoctrineExceptionHandlerService($this->logger);
         self::assertTrue($doctrineExceptionHandler instanceof DoctrineExceptionHandlerService);
@@ -67,7 +68,8 @@ class DoctrineExceptionHandlerServiceTest extends TestCase
         $exc = new \PDOException();
         $pdoExc = new PDOException($exc);
         $exceptionDE = new PDOException($pdoExc);
-        $nncve = new NotNullConstraintViolationException("message", $exceptionDE);
+        $query = new Query("", [], []);
+        $nncve = new NotNullConstraintViolationException($exceptionDE, $query);
         $this->logger->expects($this->exactly(5))->method('error');
         $doctrineExceptionHandler = new DoctrineExceptionHandlerService($this->logger);
         self::assertTrue($doctrineExceptionHandler instanceof DoctrineExceptionHandlerService);

@@ -13,7 +13,7 @@
 
 namespace Openium\SymfonyToolKitBundle\Service;
 
-use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\Exception as DBALException;
 use Doctrine\DBAL\Exception\DriverException;
 use Doctrine\DBAL\Exception\ForeignKeyConstraintViolationException;
 use Doctrine\DBAL\Exception\NonUniqueFieldNameException;
