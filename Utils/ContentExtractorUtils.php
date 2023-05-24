@@ -109,7 +109,7 @@ class ContentExtractorUtils
             array_key_exists($key, $content)
             && (
                 (!$nullable && $content[$key] === null)
-                || ($content[$key] !== null && !is_float($content['key']))
+                || ($content[$key] !== null && !is_float($content[$key]))
             )
         ) {
             throw new ContentExtractorFloatPropertyException($key);
