@@ -172,7 +172,7 @@ class ContentExtractorUtils
                 throw $exception;
             }
         }
-        return isset($content[$key]) ? (string)$content[$key] : null;
+        return isset($content[$key]) ? trim((string)$content[$key]) : null;
     }
 
     /**
