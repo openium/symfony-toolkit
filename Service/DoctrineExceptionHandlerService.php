@@ -105,13 +105,13 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
             case ForeignKeyConstraintViolationException::class:
                 $this->createConflict($throwable, $this->conflictMessage);
                 break;
-            case DBALException::class:
-                $this->dbalManagement($throwable);
-                break;
             case NotNullConstraintViolationException::class:
             case ORMInvalidArgumentException::class:
             case UnexpectedValueException::class:
                 $this->createBadRequest($throwable);
+                break;
+            case DBALException::class:
+                $this->dbalManagement($throwable);
                 break;
             default:
                 throw $throwable;
