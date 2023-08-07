@@ -35,7 +35,7 @@ interface DoctrineExceptionHandlerServiceInterface
      * @throws BadRequestHttpException
      * @throws ConflictHttpException
      */
-    public function toHttpException(Throwable $throwable): void;
+    public function toHttpException(Throwable $throwable): never;
 
     public function getMissingDatabaseTableMessage(): string;
 

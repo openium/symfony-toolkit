@@ -13,6 +13,7 @@ namespace Openium\SymfonyToolKitBundle\Tests\EventListener;
 use Exception;
 use Openium\SymfonyToolKitBundle\Service\ExceptionFormatServiceInterface;
 use Openium\SymfonyToolKitBundle\Tests\Fixtures\EventListener\TestPathKernelExceptionListener;
+use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Log\LoggerInterface;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
@@ -27,7 +28,7 @@ use Symfony\Component\HttpKernel\HttpKernelInterface;
  */
 class PathKernelExceptionListenerTest extends TestCase
 {
-    private $logger;
+    private MockObject&LoggerInterface $logger;
 
     public function setUp(): void
     {

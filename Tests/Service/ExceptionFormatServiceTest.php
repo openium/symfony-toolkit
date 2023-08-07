@@ -2,11 +2,14 @@
 
 namespace Openium\SymfonyToolKitBundle\Tests\Service;
 
+use Exception;
 use Openium\SymfonyToolKitBundle\Service\ExceptionFormatService;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\KernelInterface;
+use TypeError;
 
 /**
  * Class ExceptionFormatServiceTest
@@ -17,7 +20,7 @@ use Symfony\Component\HttpKernel\KernelInterface;
  */
 class ExceptionFormatServiceTest extends TestCase
 {
-    private $testKernel;
+    private MockObject&KernelInterface $testKernel;
 
     public function setUp(): void
     {
@@ -39,7 +42,7 @@ class ExceptionFormatServiceTest extends TestCase
 
     public function testGetStatusCodeWithAccessDeniedException(): void
     {
-        $exception = new \Exception();
+        $exception = new Exception();
         $exceptionFormatService = new ExceptionFormatService($this->testKernel);
         self::assertTrue($exceptionFormatService instanceof ExceptionFormatService);
         $statusCode = $exceptionFormatService->getStatusCode($exception);
@@ -98,7 +101,7 @@ class ExceptionFormatServiceTest extends TestCase
 
     public function testGetArrayWith404HttpExceptionAndDevEnd(): void
     {
-        $previous = new \Exception('previous exception', 123456, null);
+        $previous = new Exception('previous exception', 123456, null);
         $this->testKernel->expects(self::once())
             ->method('getEnvironment')
             ->will($this->returnValue("dev"));
@@ -136,7 +139,7 @@ class ExceptionFormatServiceTest extends TestCase
     public function testFormatExceptionResponseWithTypeError(): void
     {
         $errorMsg = 'Type error';
-        $exception = new \TypeError($errorMsg);
+        $exception = new TypeError($errorMsg);
         $exceptionFormatService = new ExceptionFormatService($this->testKernel);
         self::assertTrue($exceptionFormatService instanceof ExceptionFormatService);
         $response = $exceptionFormatService->formatExceptionResponse($exception);

@@ -18,7 +18,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
  */
 class ServerServiceTest extends TestCase
 {
-    private $requestStack;
+    private MockObject&RequestStack $requestStack;
 
     public function setUp(): void
     {

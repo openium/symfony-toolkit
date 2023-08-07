@@ -19,8 +19,8 @@ use Exception;
  */
 class ContentExtractorIntegerPropertyException extends ContentExtractorException
 {
-    public const MESSAGE = "Property must be an integer";
-    public const CODE = 2_015_151_205;
+    final public const MESSAGE = "Property must be an integer";
+    final public const CODE = 2_015_151_205;
 
     public function __construct(
         string $key = "",

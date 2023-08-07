@@ -8,6 +8,7 @@ use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\ORMInvalidArgumentException;
 use Openium\SymfonyToolKitBundle\Service\DoctrineExceptionHandlerService;
 use PDOException;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -23,7 +24,7 @@ use UnexpectedValueException;
  */
 class DoctrineExceptionHandlerServiceTest extends TestCase
 {
-    private $logger;
+    private MockObject&LoggerInterface $logger;
 
     public function setUp(): void
     {

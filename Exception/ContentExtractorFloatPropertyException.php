@@ -19,8 +19,8 @@ use Exception;
  */
 class ContentExtractorFloatPropertyException extends ContentExtractorException
 {
-    public const MESSAGE = "Property must be a float";
-    public const CODE = 2_015_151_206;
+    final public const MESSAGE = "Property must be a float";
+    final public const CODE = 2_015_151_206;
 
     public function __construct(
         string $key = "",

@@ -4,6 +4,7 @@ namespace Openium\SymfonyToolKitBundle\Tests\Service;
 
 use Openium\SymfonyToolKitBundle\Service\FileUploaderService;
 use Openium\SymfonyToolKitBundle\Tests\Fixtures\Entity\EntityWithUpload;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -12,12 +13,11 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
  * Class FileUploaderServiceTest
  *
  * @package Openium\SymfonyToolKitBundle\Tests\Service
- *
  * @codeCoverageIgnore
  */
 class FileUploaderServiceTest extends TestCase
 {
-    protected $file;
+    protected MockObject&UploadedFile $file;
 
     public function setUp(): void
     {

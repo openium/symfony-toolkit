@@ -20,8 +20,8 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
  */
 class InvalidContentFormatException extends BadRequestHttpException
 {
-    public const MESSAGE = "Incorrect content format";
-    public const CODE = 2_015_151_202;
+    final public const MESSAGE = "Incorrect content format";
+    final public const CODE = 2_015_151_202;
 
     /**
      * MissingContentException constructor.

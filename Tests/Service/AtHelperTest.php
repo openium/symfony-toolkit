@@ -4,6 +4,7 @@ namespace Openium\SymfonyToolKitBundle\Tests\Service;
 
 use Openium\SymfonyToolKitBundle\Service\AtHelper;
 use Openium\SymfonyToolKitBundle\Service\AtHelperInterface;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 
@@ -15,7 +16,7 @@ use Psr\Log\LoggerInterface;
  */
 class AtHelperTest extends TestCase
 {
-    private $logger;
+    private MockObject&LoggerInterface $logger;
 
     public function setUp(): void
     {

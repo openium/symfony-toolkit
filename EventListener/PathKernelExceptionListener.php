@@ -30,8 +30,8 @@ class PathKernelExceptionListener implements PathKernelExceptionListenerInterfac
     public function __construct(
         protected ExceptionFormatServiceInterface $exceptionFormat,
         protected string $path,
-        private bool $enable,
-        private LoggerInterface $logger
+        private readonly bool $enable,
+        private readonly LoggerInterface $logger
     ) {
     }
 

@@ -19,8 +19,8 @@ use Exception;
  */
 class ContentExtractorDateFormatException extends ContentExtractorException
 {
-    public const MESSAGE = "Wrong date format";
-    public const CODE = 2_015_151_208;
+    final public const MESSAGE = "Wrong date format";
+    final public const CODE = 2_015_151_208;
 
     public function __construct(
         string $key = "",

@@ -11,8 +11,8 @@ use Exception;
  */
 class ContentExtractorStringPropertyException extends ContentExtractorException
 {
-    public const MESSAGE = "Property must be a string";
-    public const CODE = 2_015_151_209;
+    final public const MESSAGE = "Property must be a string";
+    final public const CODE = 2_015_151_209;
 
     public function __construct(
         string $key = "",
