@@ -1,6 +1,8 @@
 Symfony toolkit
 ===============
 
+This symfony bundle provides abstractions for many common cases.
+
 Installation
 ------------
 
@@ -15,45 +17,69 @@ Usage
 
 ### ServerService
 
-You can get the actual server url with the method `getBasePath()`
+This service provide a way to get the actual server url.
+
+Add ServerServiceInterface with dependencies injection and use the method `getBasePath()` from it.
+~~~php
+    function myFunc(ServerServiceInterface $serverService): mixed
+    {
+        // ...
+        $basePath = $serverService->getBasePath();
+        // ...
+    }
+~~~
 
 ---
 
 ### FileUploaderService
 
-implements an entity with WithUploadInterface.
+This service help you to manage an entity with a uploaded **file reference.
+Caution, this service allow only one upload property**.
 
-You can use WithUploadTrait for implements some methods and properties
+First, implements your entity with WithUploadInterface.
 
-Prepare entity properties
+Next, you can use the WithUploadTrait, which contains certain methods and properties required by the interface.
+
+Then inject into your entity event listener the FileUploaderServiceInterface service.
+
+Finally, use the service like that :
+
+- _prepareUploadPath_ in prePersist and preUpdate to set entity properties before persist in database
 ~~~php
     $fileUploaderService->prepareUploadPath($entity);
 ~~~
 
-Move upload to right directory
+- _upload_ postPersist and postUpdate to move upload to right directory
 ~~~php
     $fileUploaderService->upload($entity);
+~~~
+
+- _removeUpload_ postPersist and postRemove to delete upload file
+~~~php
+    $fileUploaderService->removeUpload($entity);
 ~~~
 
 ---
 
 ### AtHelper
 
-Allow you to execute some commande with Unix At command
+Allow you to execute some commands with Unix AT command.
 
-#### Example
-
+- To create a new AT job :
 ~~~php
-    $result = '';
-    $cmb = 'bin/console app:some:thing';
     
-    // Create at
-    $output = $atHelper->createAtCommand($cmd, time(), $result);
+    // $cmd command to execute
+    // $timestamp when the command will be executed
+    // $path path where the at creation command will be executed
+    // &$result result of at
+    $output = $atHelper->createAtCommandFromPath($cmd, $timestamp, $path, $result);
     
     // get at job number
     $jobNumber = $atHelper->extractJobNumberFromAtOutput($output);
-    
-    // remove at job
+~~~
+
+- to remove existing AT job, save the jobNumber from extractJobNumberFromAtOutput() method and use it with removeAtCommand() method. 
+~~~php
     $removeSuccess = $atHelper->removeAtCommand($jobNumber);
 ~~~
 
@@ -61,10 +87,13 @@ Allow you to execute some commande with Unix At command
 ---
 
 ### DoctrineExceptionHandlerService
+Transform doctrine exceptions into HttpException.
 
-Transform doctrine exceptions to HttpException
+In most cases, the exception will be a BadRequestHttpException.
 
-#### Example
+But if the database error refers to a conflict, the method will throw a ConflictHttpException.
+
+To use it, you need to inject DoctrineExceptionHandlerServiceInterface service.
 
 ~~~php
         try {
@@ -93,7 +122,8 @@ Transform exceptions to json Response
 
 ### PathExceptionListener
 
-The listener catch kernel exceptions.
+The listener catch kernel exceptions and transform them into HttpException thanks to ExceptionFormatService.
+
 It is enabled by default and have this configuration :
 
 ~~~yaml
@@ -110,14 +140,14 @@ only for the routes defined in exception_listener_path parameter
 
 ### MemoryUtils
 
-Use to display memory usage or juste bytes into human readable string
+Use to display memory usage or juste bytes into human-readable string.
 
 ~~~php
 $str = MemoryUtils::convert(1024);
 // $str = '1 kb';
 
 $phpMemory = MemoryUtils::getMemoryUsage();
-// use convert() with actual php memory usage
+// apply convert() to actual php memory usage
 ~~~
 
 
@@ -126,7 +156,7 @@ $phpMemory = MemoryUtils::getMemoryUsage();
 Use to extract types data from array with specific key
 
 ~~~php
-    $myString = $this->contentExtractor->getString($content, $key);
+    $myString = ContentExtractorUtils::getString($content, $key);
 ~~~
 
 With option to allow null value, set a default value and set if value is required.
@@ -141,6 +171,19 @@ List of methods :
 
 All methods throws 400 HTTP error with correct message if the value is missing or is not with the right type (depends of parameters)
 
+Behind all these methods are control methods.
+
+List of check methods :
+- checkKeyExists
+- checkKeyIsString
+- checkKeyIsBoolean
+- checkKeyIsInt
+- checkKeyIsFloat
+- checkKeyIsArray
+
+Methods checkKeyIs{type} use checkKeyExists().
+
+All the methods in this class are static.
 
 ### DateStringUtils
 
@@ -154,9 +197,10 @@ public static function getDateTimeFromString(
 ): DateTime | false
 ~~~
 
-Date format can be :
+If no format has been supplied, the method attempts to determine the correct date format.
+
+Two formats can be detected:
 - ATOM `'Y-m-d\TH:i:sP'`
 - ISO8601 `'Y-m-d\TH:i:sO'`
-- `'Y-m-d'`
 
-return false if the string can't be parse as DateTime.
+If no format is detected, the method falls back to the `'Y-m-d'` format and return false if the string can't be parse as DateTime.
