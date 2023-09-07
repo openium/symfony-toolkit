@@ -43,25 +43,26 @@ class ExceptionFormatService implements ExceptionFormatServiceInterface
     {
         $response = new JsonResponse();
         if ($exception instanceof Exception) {
-            if (is_a($exception, "Symfony\Component\Security\Core\Exception\AuthenticationException")) {
-                $code = Response::HTTP_UNAUTHORIZED;
-                $text = Response::$statusTexts[$code];
-                $message = $text;
-            } elseif (
-                is_a($exception, "Firebase\Auth\Token\Exception\ExpiredToken")
-                || is_a($exception, "Firebase\Auth\Token\Exception\IssuedInTheFuture")
-                || is_a($exception, "Firebase\Auth\Token\Exception\InvalidToken")
-            ) {
-                // Firebase part
-                $code = Response::HTTP_UNAUTHORIZED;
-                /* @phpstan-ignore-next-line */
-                $text = $exception->getMessage();
-                $message = $text;
-            } else {
-                $code = $this->getStatusCode($exception);
-                $text = $this->getStatusText($exception);
-                $message = null;
-            }
+            // if (is_a($exception, "Symfony\Component\Security\Core\Exception\AuthenticationException")) {
+            //     $code = Response::HTTP_UNAUTHORIZED;
+            //     $text = Response::$statusTexts[$code];
+            //     $message = $text;
+            // } elseif (
+            //     is_a($exception, "Firebase\Auth\Token\Exception\ExpiredToken")
+            //     || is_a($exception, "Firebase\Auth\Token\Exception\IssuedInTheFuture")
+            //     || is_a($exception, "Firebase\Auth\Token\Exception\InvalidToken")
+            // ) {
+            //     // Firebase part
+            //     $code = Response::HTTP_UNAUTHORIZED;
+            //     /* @phpstan-ignore-next-line */
+            //     $text = $exception->getMessage();
+            //     $message = $text;
+            // } else {
+            //     $code = $this->getStatusCode($exception);
+            //     $text = $this->getStatusText($exception);
+            //     $message = null;
+            // }
+            [$code, $text, $message] = $this->genericExceptionResponse($exception);
             $error = $this->getArray($exception, $code, $text, $message);
             $response->setStatusCode($code);
             try {
@@ -75,6 +76,17 @@ class ExceptionFormatService implements ExceptionFormatServiceInterface
             $response->setContent($exception->getMessage());
         }
         return $response;
+    }
+
+    /**
+     * @return array [code, text, message]
+     */
+    public function genericExceptionResponse(Exception $exception) : array
+    {
+        $code = $this->getStatusCode($exception);
+        $text = $this->getStatusText($exception);
+        $message = null;
+        return [$code, $text, $message];
     }
 
     /**

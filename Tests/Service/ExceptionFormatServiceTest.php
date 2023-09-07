@@ -147,4 +147,24 @@ class ExceptionFormatServiceTest extends TestCase
         self::assertEquals(Response::HTTP_INTERNAL_SERVER_ERROR, $response->getStatusCode());
         self::assertEquals($errorMsg, $response->getContent());
     }
+
+    public function testGenericExceptionResponseNotFound(): void
+    {
+        $exception = new HttpException(Response::HTTP_NOT_FOUND);
+        $exceptionFormatService = new ExceptionFormatService($this->testKernel);
+        [$code, $text, $message] = $exceptionFormatService->genericExceptionResponse($exception);
+        self::assertEquals(404, $code);
+        self::assertEquals('Not Found', $text);
+        self::assertNull($message);
+    }
+
+    public function testGenericExceptionResponseUnauthorized(): void
+    {
+        $exception = new HttpException(Response::HTTP_UNAUTHORIZED);
+        $exceptionFormatService = new ExceptionFormatService($this->testKernel);
+        [$code, $text, $message] = $exceptionFormatService->genericExceptionResponse($exception);
+        self::assertEquals(401, $code);
+        self::assertEquals('Unauthorized', $text);
+        self::assertNull($message);
+    }
 }

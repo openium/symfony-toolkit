@@ -53,4 +53,10 @@ interface ExceptionFormatServiceInterface
      * getStatusText
      */
     public function getStatusText(Exception $exception): string;
+
+    /**
+     * genericExceptionResponse
+     * @return array<string|int> [code, text, message]
+     */
+    public function genericExceptionResponse(Exception $exception): array;
 }
