@@ -20,6 +20,7 @@ Usage
 This service provide a way to get the actual server url.
 
 Add ServerServiceInterface with dependencies injection and use the method `getBasePath()` from it.
+
 ~~~php
     function myFunc(ServerServiceInterface $serverService): mixed
     {
@@ -45,16 +46,19 @@ Then inject into your entity event listener the FileUploaderServiceInterface ser
 Finally, use the service like that :
 
 - _prepareUploadPath_ in prePersist and preUpdate to set entity properties before persist in database
+
 ~~~php
     $fileUploaderService->prepareUploadPath($entity);
 ~~~
 
 - _upload_ postPersist and postUpdate to move upload to right directory
+
 ~~~php
     $fileUploaderService->upload($entity);
 ~~~
 
 - _removeUpload_ postPersist and postRemove to delete upload file
+
 ~~~php
     $fileUploaderService->removeUpload($entity);
 ~~~
@@ -66,6 +70,7 @@ Finally, use the service like that :
 Allow you to execute some commands with Unix AT command.
 
 - To create a new AT job :
+
 ~~~php
     
     // $cmd command to execute
@@ -78,15 +83,17 @@ Allow you to execute some commands with Unix AT command.
     $jobNumber = $atHelper->extractJobNumberFromAtOutput($output);
 ~~~
 
-- to remove existing AT job, save the jobNumber from extractJobNumberFromAtOutput() method and use it with removeAtCommand() method. 
+- to remove existing AT job, save the jobNumber from extractJobNumberFromAtOutput() method and use it with
+  removeAtCommand() method.
+
 ~~~php
     $removeSuccess = $atHelper->removeAtCommand($jobNumber);
 ~~~
 
-
 ---
 
 ### DoctrineExceptionHandlerService
+
 Transform doctrine exceptions into HttpException.
 
 In most cases, the exception will be a BadRequestHttpException.
@@ -110,7 +117,12 @@ Work fine with doctrine exceptions but not with other/custom exceptions
 
 ### ExceptionFormatService
 
-Transform exceptions to json Response
+Transform exceptions to json Response.
+Exception's response is now generic, which means you can give your own code, text and message to the response.<br>
+
+```php
+   [$code, $text, $message] = $this->genericExceptionResponse($exception);
+```
 
 #### Example
 
@@ -128,9 +140,9 @@ It is enabled by default and have this configuration :
 
 ~~~yaml
 parameters:
-    openium_symfony_toolkit.kernel_exception_listener_enable: true
-    openium_symfony_toolkit.kernel_exception_listener_path: '/api'
-    openium_symfony_toolkit.kernel_exception_listener_class: 'Openium\SymfonyToolKitBundle\EventListener\PathExceptionListener'
+  openium_symfony_toolkit.kernel_exception_listener_enable: true
+  openium_symfony_toolkit.kernel_exception_listener_path: '/api'
+  openium_symfony_toolkit.kernel_exception_listener_class: 'Openium\SymfonyToolKitBundle\EventListener\PathExceptionListener'
 ~~~
 
 it use the ExceptionFormatService to format automatically the kernel exceptions
@@ -150,7 +162,6 @@ $phpMemory = MemoryUtils::getMemoryUsage();
 // apply convert() to actual php memory usage
 ~~~
 
-
 ### ContentExtractorService
 
 Use to extract types data from array with specific key
@@ -161,7 +172,8 @@ Use to extract types data from array with specific key
 
 With option to allow null value, set a default value and set if value is required.
 
-List of methods : 
+List of methods :
+
 - getString
 - getBool
 - getInt
@@ -169,11 +181,13 @@ List of methods :
 - getDateTimeInterface
 - getArray
 
-All methods throws 400 HTTP error with correct message if the value is missing or is not with the right type (depends of parameters)
+All methods throws 400 HTTP error with correct message if the value is missing or is not with the right type (depends of
+parameters)
 
 Behind all these methods are control methods.
 
 List of check methods :
+
 - checkKeyExists
 - checkKeyIsString
 - checkKeyIsBoolean
@@ -200,7 +214,9 @@ public static function getDateTimeFromString(
 If no format has been supplied, the method attempts to determine the correct date format.
 
 Two formats can be detected:
+
 - ATOM `'Y-m-d\TH:i:sP'`
 - ISO8601 `'Y-m-d\TH:i:sO'`
 
-If no format is detected, the method falls back to the `'Y-m-d'` format and return false if the string can't be parse as DateTime.
+If no format is detected, the method falls back to the `'Y-m-d'` format and return false if the string can't be parse as
+DateTime.
