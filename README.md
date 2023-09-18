@@ -119,7 +119,18 @@ Work fine with doctrine exceptions but not with other/custom exceptions
 
 Transform exceptions to json Response.
 Exception's response is now generic, which means you can give your own code, text and message to the response.<br>
-If you want to do so, you need to add a method `genericExceptionResponse` in your service which will be defining each part of the exception: `$code, $text, $message`.
+
+Firstly, to override the service of the bundle, you have to add your own service in config/services.yaml.  
+  For example:
+```yaml
+    openium_symfony_toolkit.exception_format:
+        class: App\Service\ExceptionFormatService
+        arguments:
+            - '@kernel'
+        public: true
+  ```
+
+Then, you need to add a method `genericExceptionResponse` in your service which will be defining each part of the exception: `$code, $text, $message`.
 
 #### Example
 ```php
