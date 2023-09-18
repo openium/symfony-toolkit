@@ -81,7 +81,7 @@ class ExceptionFormatService implements ExceptionFormatServiceInterface
     /**
      * @return array [code, text, message]
      */
-    public function genericExceptionResponse(Exception $exception) : array
+    public function genericExceptionResponse(Exception $exception): array
     {
         $code = $this->getStatusCode($exception);
         $text = $this->getStatusText($exception);

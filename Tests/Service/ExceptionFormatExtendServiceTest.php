@@ -19,7 +19,7 @@ use TypeError;
  * @codeCoverageIgnore
  */
 class ExceptionFormatExtendServiceTest extends TestCase
-{    
+{
     private MockObject&KernelInterface $testKernel;
 
     public function setUp(): void

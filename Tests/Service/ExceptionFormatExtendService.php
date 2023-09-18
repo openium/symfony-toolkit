@@ -17,7 +17,7 @@ class ExceptionFormatExtendService extends ExceptionFormatService
     /**
      * @return array [code, text, message]
      */
-    public function genericExceptionResponse(Exception $exception) : array
+    public function genericExceptionResponse(Exception $exception): array
     {
         $code = 400;
         $text = "bad request";
