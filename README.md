@@ -119,13 +119,34 @@ Work fine with doctrine exceptions but not with other/custom exceptions
 
 Transform exceptions to json Response.
 Exception's response is now generic, which means you can give your own code, text and message to the response.<br>
-
-```php
-   [$code, $text, $message] = $this->genericExceptionResponse($exception);
-```
+If you want to do so, you need to add a method `genericExceptionResponse` in your service which will be defining each part of the exception: `$code, $text, $message`.
 
 #### Example
+```php
+<?php
+namespace App\Service;
 
+use Openium\SymfonyToolKitBundle\Service\ExceptionFormatService as BaseExceptionFormatService;
+use Openium\SymfonyToolKitBundle\Service\ExceptionFormatServiceInterface;
+
+class ExceptionFormatService extends BaseExceptionFormatService implements ExceptionFormatServiceInterface {
+
+    public function genericExceptionResponse(Exception $exception): array
+    {
+        // You define conditions and exceptions you want here 
+        if ($exception instanceof MyException) {
+            $code = 123;
+            $text = 'This is my custom exception text';
+            $message = $text;
+            return [$code, $text, $message];
+        }
+        // Or use the default method in the toolkit
+        return parent::genericExceptionResponse($exception);
+    }
+}
+```
+The exception you formatted is going to be used in the method `formatExceptionResponse`.
+This way you can handle a custom exception.
 ~~~php
     $response = $this->exceptionFormat->formatExceptionResponse($exception);
 ~~~
