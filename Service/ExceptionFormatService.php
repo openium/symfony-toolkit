@@ -114,12 +114,9 @@ class ExceptionFormatService implements ExceptionFormatServiceInterface
      */
     public function getStatusCode(Exception $exception): int
     {
-        if ($exception instanceof AccessDeniedHttpException) {
-            return Response::HTTP_UNAUTHORIZED;
-        } elseif ($exception instanceof HttpExceptionInterface) {
-            return $exception->getStatusCode();
-        }
-        return Response::HTTP_INTERNAL_SERVER_ERROR;
+        return ($exception instanceof HttpExceptionInterface)
+            ? $exception->getStatusCode()
+            : Response::HTTP_INTERNAL_SERVER_ERROR;
     }
 
     /**

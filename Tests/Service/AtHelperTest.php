@@ -59,7 +59,7 @@ class AtHelperTest extends TestCase
         $output = $atHelper->createAtCommand("echo coucou", time() + 33600, $result);
         $atNumber = $atHelper->extractJobNumberFromAtOutput($output);
         // then
-        static::assertEquals(3, strlen($atNumber));
+        static::assertIsNumeric($atNumber);
         static::assertEquals(0, $result);
         // when
         $removeResult = $atHelper->removeAtCommand($atNumber);
@@ -75,7 +75,7 @@ class AtHelperTest extends TestCase
         $output = $atHelper->createAtCommandFromPath("echo coucou", time() + 33600, __DIR__, $result);
         $atNumber = $atHelper->extractJobNumberFromAtOutput($output);
         // then
-        static::assertEquals(3, strlen($atNumber));
+        static::assertIsNumeric($atNumber);
         static::assertEquals(0, $result);
         // when
         $removeResult = $atHelper->removeAtCommand($atNumber);
