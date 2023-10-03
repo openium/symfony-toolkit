@@ -56,7 +56,7 @@ class AtHelperTest extends TestCase
         $atHelper = new AtHelper($this->logger);
         $result = -1;
         // when
-        $output = $atHelper->createAtCommand("echo coucou", time() + 33600, $result);
+        $output = $atHelper->createAtCommand("echo test", time() + 33600, $result);
         $atNumber = $atHelper->extractJobNumberFromAtOutput($output);
         // then
         static::assertIsNumeric($atNumber);
@@ -72,7 +72,7 @@ class AtHelperTest extends TestCase
         $atHelper = new AtHelper($this->logger);
         $result = -1;
         // when
-        $output = $atHelper->createAtCommandFromPath("echo coucou", time() + 33600, __DIR__, $result);
+        $output = $atHelper->createAtCommandFromPath("echo test", time() + 33600, __DIR__, $result);
         $atNumber = $atHelper->extractJobNumberFromAtOutput($output);
         // then
         static::assertIsNumeric($atNumber);

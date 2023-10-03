@@ -30,7 +30,7 @@ class ExceptionFormatExtendServiceTest extends TestCase
         parent::setUp();
     }
 
-    public function testUserAuthenticatorCustom(): void
+    public function testGenericExceptionResponse(): void
     {
         $exception = new HttpException(Response::HTTP_FORBIDDEN);
         $exceptionFormatExtendService = new ExceptionFormatExtendService($this->testKernel);
@@ -38,6 +38,16 @@ class ExceptionFormatExtendServiceTest extends TestCase
         self::assertEquals(400, $code);
         self::assertEquals('bad request', $text);
         self::assertEquals('bad request', $message);
+    }
+
+    public function testAddKeyToErrorArray(): void
+    {
+        $exception = new HttpException(Response::HTTP_FORBIDDEN);
+        $exceptionFormatExtendService = new ExceptionFormatExtendService($this->testKernel);
+        $error = [];
+        $error = $exceptionFormatExtendService->addKeyToErrorArray($error, $exception);
+        self::assertArrayHasKey('exception', $error);
+        self::assertEquals(HttpException::class, $error['exception']);
     }
 
     public function testFormatExceptionResponse(): void
@@ -51,6 +61,15 @@ class ExceptionFormatExtendServiceTest extends TestCase
         $response = $exceptionFormatExtendService->formatExceptionResponse($exception);
         self::assertTrue($response instanceof Response);
         self::assertEquals($response->getStatusCode(), Response::HTTP_BAD_REQUEST);
+        $content = json_decode($response->getContent(), true);
+        self::assertArrayHasKey('status_code', $content);
+        self::assertEquals(Response::HTTP_BAD_REQUEST, $content['status_code']);
+        self::assertArrayHasKey('status_text', $content);
+        self::assertEquals('bad request', $content['status_text']);
+        self::assertArrayHasKey('message', $content);
+        self::assertEquals('bad request', $content['message']);
+        self::assertArrayHasKey('exception', $content);
+        self::assertEquals(HttpException::class, $content['exception']);
     }
 
 }

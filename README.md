@@ -120,8 +120,10 @@ Work fine with doctrine exceptions but not with other/custom exceptions
 Transform exceptions to json Response.
 Exception's response is now generic, which means you can give your own code, text and message to the response.<br>
 
-Firstly, to override the service of the bundle, you have to add your own service in config/services.yaml.  
-  For example:
+In the case which you want to add secific code, firstly override the service of the bundle. 
+You have to add your own service in config/services.yaml. 
+
+For example:
 ```yaml
     openium_symfony_toolkit.exception_format:
         class: App\Service\ExceptionFormatService
@@ -130,7 +132,11 @@ Firstly, to override the service of the bundle, you have to add your own service
         public: true
   ```
 
-Then, you need to add a method `genericExceptionResponse` in your service which will be defining each part of the exception: `$code, $text, $message`.
+Then, you need to create an ExceptionFormatService in your project and extends  the one in the bundle.
+
+2 methods can be override :
+- `genericExceptionResponse` which will be defining each part of the exception: `$code, $text, $message`.
+- `addKeyToErrorArray` which will add keys in final json object 
 
 #### Example
 ```php
@@ -153,6 +159,14 @@ class ExceptionFormatService extends BaseExceptionFormatService implements Excep
         }
         // Or use the default method in the toolkit
         return parent::genericExceptionResponse($exception);
+    }
+
+    public function addKeyToErrorArray(array $error, Exception $exception): array
+    {
+        if ($exception instanceof MyException) {
+            $error['MyNewKey'] = 'value';
+        }
+        return $error;
     }
 }
 ```

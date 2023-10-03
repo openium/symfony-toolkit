@@ -15,7 +15,6 @@ use Exception;
 use InvalidArgumentException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Throwable;
@@ -73,7 +72,6 @@ class ExceptionFormatService implements ExceptionFormatServiceInterface
     /**
      * getArray
      *
-     *
      * @return array<string, mixed>
      */
     public function getArray(
@@ -82,22 +80,12 @@ class ExceptionFormatService implements ExceptionFormatServiceInterface
         ?string $text = null,
         ?string $message = null
     ): array {
-        $error = [];
-        $error['status_code'] = $code ?? $this->getStatusCode($exception);
-        $error['status_text'] = $text ?? $this->getStatusText($exception);
-        $error['message'] = $message ?? $exception->getMessage();
-        // Stripe part
-        if (
-            $error['status_code'] == Response::HTTP_PAYMENT_REQUIRED
-            && $exception->getPrevious() instanceof \Throwable
-            && is_a($exception->getPrevious(), "Stripe\Error\Card")
-        ) {
-            /* @phpstan-ignore-next-line */
-            $body = $exception->getPrevious()->getJsonBody();
-            $err = $body['error'];
-            $error['type'] = $err['type'];
-            $error['code'] = $err['code'];
-        }
+        $error = [
+            'status_code' => $code ?? $this->getStatusCode($exception),
+            'status_text' => $text ?? $this->getStatusText($exception),
+            'message' => $message ?? $exception->getMessage(),
+        ];
+        $error = $this->addKeyToErrorArray($error, $exception);
         if ($this->kernel->getEnvironment() !== 'prod') {
             $error['trace'] = $exception->getTrace();
             $error['previous'] = [];
@@ -106,6 +94,19 @@ class ExceptionFormatService implements ExceptionFormatServiceInterface
                 $error['previous']['code'] = $exception->getPrevious()->getCode();
             }
         }
+        return $error;
+    }
+
+    /**
+     * getGenericArray
+     *
+     * @param array $error
+     * @param Exception $exception
+     *
+     * @return array
+     */
+    public function addKeyToErrorArray(array $error, Exception $exception): array
+    {
         return $error;
     }
 
@@ -129,7 +130,8 @@ class ExceptionFormatService implements ExceptionFormatServiceInterface
             return 'Request Failed';
         } else {
             $isCodeExists = array_key_exists($code, Response::$statusTexts);
-            return ($isCodeExists) ? Response::$statusTexts[$code]
+            return ($isCodeExists)
+                ? Response::$statusTexts[$code]
                 : Response::$statusTexts[Response::HTTP_INTERNAL_SERVER_ERROR];
         }
     }

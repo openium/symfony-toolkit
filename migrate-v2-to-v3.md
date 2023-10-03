@@ -49,9 +49,33 @@ class ExceptionFormatService extends BaseExceptionFormatService implements Excep
         }
         return [$code, $text, $message];
     }
+    /**
+     * getGenericArray
+     *
+     * @param array $error
+     * @param Exception $exception
+     *
+     * @return array
+     */
+    public function addKeyToErrorArray(array $error, Exception $exception): array
+    {
+        if (
+            $error['status_code'] == Response::HTTP_PAYMENT_REQUIRED
+            && $exception->getPrevious() instanceof \Throwable
+            && is_a($exception->getPrevious(), "Stripe\Error\Card")
+        ) {
+            /* @phpstan-ignore-next-line */
+            $body = $exception->getPrevious()->getJsonBody();
+            $err = $body['error'];
+            $error['type'] = $err['type'];
+            $error['code'] = $err['code'];
+        }
+        return $error;
+    }
+}
 ```
 
-You can add or remove cases as you like. 
+Previous example is the old code. You can add or remove cases as you like.
 
 - To override the service of the bundle, you have to add your own service in config/services.yaml  
 For example:

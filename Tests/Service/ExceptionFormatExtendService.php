@@ -9,7 +9,6 @@ use Openium\SymfonyToolKitBundle\Service\ExceptionFormatService;
  * Class ExceptionFormatServiceTest
  *
  * @package Openium\SymfonyToolKitBundle\Test\Service
- *
  * @codeCoverageIgnore
  */
 class ExceptionFormatExtendService extends ExceptionFormatService
@@ -25,4 +24,9 @@ class ExceptionFormatExtendService extends ExceptionFormatService
         return [$code, $text, $message];
     }
 
+    public function addKeyToErrorArray(array $error, Exception $exception): array
+    {
+        $error['exception'] = get_class($exception);
+        return $error;
+    }
 }
