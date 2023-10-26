@@ -87,12 +87,12 @@ class AtHelper implements AtHelperInterface
      */
     private function atCommand(string $fullCmd, int &$result): false|string
     {
-        $this->logger->debug("Create AT command (${fullCmd})");
+        $this->logger->debug(sprintf("Create AT command (%s)", $fullCmd));
         $output = $this->executeAndCaptureOutput($fullCmd, $result);
-        $this->logger->debug("AT Output : ${output}");
-        $this->logger->debug("AT Result : ${result})");
+        $this->logger->debug(sprintf("AT Output : %s", $output));
+        $this->logger->debug(sprintf("AT Result : %s)", $result));
         if ($output === false || str_contains($output, "garbled time") || $result != 0) {
-            $this->logger->error("Creation of AT command failed (${result}) : ${fullCmd}");
+            $this->logger->error(sprintf("Creation of AT command failed (%s) : %s", $result, $fullCmd));
         }
         return $output;
     }
