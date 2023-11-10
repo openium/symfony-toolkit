@@ -33,6 +33,12 @@ class ExceptionFormatService implements ExceptionFormatServiceInterface
     {
     }
 
+    protected array $jsonKeys = [
+        'code' => 'status_code',
+        'text' => 'status_text',
+        'message' => 'message',
+    ];
+
     /**
      * formatExceptionResponse
      *
@@ -81,9 +87,9 @@ class ExceptionFormatService implements ExceptionFormatServiceInterface
         ?string $message = null
     ): array {
         $error = [
-            'status_code' => $code ?? $this->getStatusCode($exception),
-            'status_text' => $text ?? $this->getStatusText($exception),
-            'message' => $message ?? $exception->getMessage(),
+            $this->jsonKeys['code'] => $code ?? $this->getStatusCode($exception),
+            $this->jsonKeys['text'] => $text ?? $this->getStatusText($exception),
+            $this->jsonKeys['message'] => $message ?? $exception->getMessage(),
         ];
         $error = $this->addKeyToErrorArray($error, $exception);
         if ($this->kernel->getEnvironment() !== 'prod') {

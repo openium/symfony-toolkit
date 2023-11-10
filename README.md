@@ -134,10 +134,10 @@ For example:
 
 Then, you need to create an ExceptionFormatService in your project and extends  the one in the bundle.
 
-2 methods can be override :
+2 methods and one property can be override :
 - `genericExceptionResponse` which will be defining each part of the exception: `$code, $text, $message`.
 - `addKeyToErrorArray` which will add keys in final json object 
-
+- `$jsonKeys` to override final json keys
 #### Example
 ```php
 <?php
@@ -148,9 +148,15 @@ use Openium\SymfonyToolKitBundle\Service\ExceptionFormatServiceInterface;
 
 class ExceptionFormatService extends BaseExceptionFormatService implements ExceptionFormatServiceInterface {
 
+    protected array $jsonKeys = [
+        'code' => 'statusCode',
+        'text' => 'statusText',
+        'message' => 'message',
+    ];
+    
     public function genericExceptionResponse(Exception $exception): array
     {
-        // You define conditions and exceptions you want here 
+        // You define conditions and exceptions[ExceptionFormatExtendService.php](Tests%2FService%2FExceptionFormatExtendService.php) you want here 
         if ($exception instanceof MyException) {
             $code = 123;
             $text = 'This is my custom exception text';

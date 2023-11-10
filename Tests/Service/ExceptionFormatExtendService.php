@@ -13,6 +13,12 @@ use Openium\SymfonyToolKitBundle\Service\ExceptionFormatService;
  */
 class ExceptionFormatExtendService extends ExceptionFormatService
 {
+    protected array $jsonKeys = [
+        'code' => 'statusCode',
+        'text' => 'statusText',
+        'message' => 'message',
+    ];
+
     /**
      * @return array [code, text, message]
      */

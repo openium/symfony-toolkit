@@ -62,10 +62,10 @@ class ExceptionFormatExtendServiceTest extends TestCase
         self::assertTrue($response instanceof Response);
         self::assertEquals($response->getStatusCode(), Response::HTTP_BAD_REQUEST);
         $content = json_decode($response->getContent(), true);
-        self::assertArrayHasKey('status_code', $content);
-        self::assertEquals(Response::HTTP_BAD_REQUEST, $content['status_code']);
-        self::assertArrayHasKey('status_text', $content);
-        self::assertEquals('bad request', $content['status_text']);
+        self::assertArrayHasKey('statusCode', $content);
+        self::assertEquals(Response::HTTP_BAD_REQUEST, $content['statusCode']);
+        self::assertArrayHasKey('statusText', $content);
+        self::assertEquals('bad request', $content['statusText']);
         self::assertArrayHasKey('message', $content);
         self::assertEquals('bad request', $content['message']);
         self::assertArrayHasKey('exception', $content);
