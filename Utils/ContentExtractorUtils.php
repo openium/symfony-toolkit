@@ -237,7 +237,8 @@ class ContentExtractorUtils
         string $key,
         bool $required = true,
         ?float $default = 0.0,
-        bool $nullable = false
+        bool $nullable = false,
+        bool $acceptInt = false
     ): ?float {
         try {
             self::checkKeyIsFloat($content, $key, $nullable);
@@ -247,6 +248,13 @@ class ContentExtractorUtils
             } else {
                 return $default;
             }
+        } catch (ContentExtractorFloatPropertyException $exception) {
+            if ($acceptInt) {
+                return floatval(
+                    self::getInt($content, $key, $required, intval($default), $nullable)
+                );
+            }
+            throw $exception;
         }
         return $content[$key];
     }

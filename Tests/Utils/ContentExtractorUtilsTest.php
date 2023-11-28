@@ -570,6 +570,20 @@ class ContentExtractorUtilsTest extends TestCase
         // then
         self::assertNull($result);
     }
+    public function testGetFloatWithAcceptInt(): void
+    {
+        // given
+        $content = ['key' => 1];
+        $key = 'key';
+        $required = false;
+        $default = null;
+        $nullable = true;
+        $acceptInt = true;
+        // when
+        $result = ContentExtractorUtils::getFloat($content, $key, $required, $default, $nullable, $acceptInt);
+        // then
+        self::assertEquals(1.0, $result);
+    }
 
     // getDateTimeInterface
     public function testGetDateTimeInterfaceWithStringRequiredNotNull(): void
