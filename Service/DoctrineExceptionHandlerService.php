@@ -122,9 +122,7 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
     /**
      * createConflict
      *
-     * @param Throwable $throwable
      * @param string|null $message
-     *
      * @throws ConflictHttpException
      */
     protected function createConflict(Throwable $throwable, ?string $message = null): never

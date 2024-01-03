@@ -54,7 +54,7 @@ class ExceptionFormatService implements ExceptionFormatServiceInterface
             try {
                 $json = json_encode($error, JSON_THROW_ON_ERROR);
                 $response->setContent(($json !== false) ? $json : '');
-            } catch (\JsonException $exception) {
+            } catch (\JsonException) {
                 $response->setContent('');
             }
         } else {
@@ -106,10 +106,7 @@ class ExceptionFormatService implements ExceptionFormatServiceInterface
     /**
      * getGenericArray
      *
-     * @param array $error
-     * @param Exception $exception
      *
-     * @return array
      */
     public function addKeyToErrorArray(array $error, Exception $exception): array
     {

@@ -9,8 +9,8 @@ use Openium\SymfonyToolKitBundle\Service\ExceptionFormatService;
  * Class ExceptionFormatServiceTest
  *
  * @package Openium\SymfonyToolKitBundle\Test\Service
- * @codeCoverageIgnore
  */
+#[\PHPUnit\Framework\Attributes\CodeCoverageIgnore]
 class ExceptionFormatExtendService extends ExceptionFormatService
 {
     protected array $jsonKeys = [
@@ -32,7 +32,7 @@ class ExceptionFormatExtendService extends ExceptionFormatService
 
     public function addKeyToErrorArray(array $error, Exception $exception): array
     {
-        $error['exception'] = get_class($exception);
+        $error['exception'] = $exception::class;
         return $error;
     }
 }

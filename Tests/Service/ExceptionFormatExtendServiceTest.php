@@ -15,9 +15,8 @@ use TypeError;
  * Class ExceptionFormatServiceTest
  *
  * @package Openium\SymfonyToolKitBundle\Test\Service
- *
- * @codeCoverageIgnore
  */
+#[\PHPUnit\Framework\Attributes\CodeCoverageIgnore]
 class ExceptionFormatExtendServiceTest extends TestCase
 {
     private MockObject&KernelInterface $testKernel;

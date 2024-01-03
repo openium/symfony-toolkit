@@ -13,8 +13,8 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
  * Class FileUploaderServiceTest
  *
  * @package Openium\SymfonyToolKitBundle\Tests\Service
- * @codeCoverageIgnore
  */
+#[\PHPUnit\Framework\Attributes\CodeCoverageIgnore]
 class FileUploaderServiceTest extends TestCase
 {
     protected MockObject&UploadedFile $file;

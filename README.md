@@ -12,6 +12,12 @@ Open a command console, enter your project directory and execute:
 $ composer require openium/symfony-toolkit
 ```
 
+> For Symfony 7 use the v4
+
+> For Symfony 6 use the v3
+
+> For Symfony < 6 use the v2
+
 Usage
 -----
 

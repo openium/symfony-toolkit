@@ -49,10 +49,7 @@ interface ExceptionFormatServiceInterface
      * Used to add key in error array
      * All keys in array will be serialized and returned to client in a json object
      *
-     * @param array $error
-     * @param Exception $exception
      *
-     * @return array
      */
     public function addKeyToErrorArray(array $error, Exception $exception): array;
     /**

@@ -13,9 +13,8 @@ use Symfony\Component\HttpFoundation\RequestStack;
  * Class ServerServiceTest
  *
  * @package Openium\SymfonyToolKitBundle\Test\Service
- *
- * @codeCoverageIgnore
  */
+#[\PHPUnit\Framework\Attributes\CodeCoverageIgnore]
 class ServerServiceTest extends TestCase
 {
     private MockObject&RequestStack $requestStack;

@@ -250,9 +250,7 @@ class ContentExtractorUtils
             }
         } catch (ContentExtractorFloatPropertyException $exception) {
             if ($acceptInt) {
-                return floatval(
-                    self::getInt($content, $key, $required, intval($default), $nullable)
-                );
+                return (float) self::getInt($content, $key, $required, (int) $default, $nullable);
             }
             throw $exception;
         }

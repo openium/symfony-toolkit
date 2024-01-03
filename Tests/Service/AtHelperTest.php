@@ -12,8 +12,8 @@ use Psr\Log\LoggerInterface;
  * Class AtHelperTest
  *
  * @package Openium\SymfonyToolKitBundle\Test\Service
- * @codeCoverageIgnore
  */
+#[\PHPUnit\Framework\Attributes\CodeCoverageIgnore]
 class AtHelperTest extends TestCase
 {
     private MockObject&LoggerInterface $logger;
