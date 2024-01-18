@@ -1,5 +1,3 @@
-includes:
-
 parameters:
     level: max
     paths:
