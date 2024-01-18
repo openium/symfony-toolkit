@@ -10,6 +10,7 @@
 
 namespace Openium\SymfonyToolKitBundle\Controller;
 
+use JsonException;
 use Openium\SymfonyToolKitBundle\Exception\InvalidContentFormatException;
 use Openium\SymfonyToolKitBundle\Exception\MissingContentException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController as BaseController;
@@ -31,17 +32,10 @@ class AbstractController extends BaseController
      */
     protected function getContentFromRequest(Request $request): array
     {
-        /** @var string|resource $bodyContent */
         $bodyContent = $request->getContent();
-        if ($bodyContent === null) {
-            throw new MissingContentException();
-        }
-        if (!is_string($bodyContent)) {
-            $bodyContent = (string)$bodyContent;
-        }
         try {
             $content = json_decode($bodyContent, true, 512, JSON_THROW_ON_ERROR);
-        } catch (\JsonException) {
+        } catch (JsonException) {
             throw new MissingContentException();
         }
         if (!is_array($content)) {

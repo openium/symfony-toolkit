@@ -35,7 +35,7 @@ interface ExceptionFormatServiceInterface
     /**
      * getArray
      *
-     * @return array<string, mixed>
+     * @return array<string, int|string|array<string|int, mixed>|null>
      */
     public function getArray(
         Exception $exception,
@@ -49,7 +49,10 @@ interface ExceptionFormatServiceInterface
      * Used to add key in error array
      * All keys in array will be serialized and returned to client in a json object
      *
+     * @param array<string, int|string|array<string|int, mixed>|null> $error
+     * @param Exception $exception
      *
+     * @return array<string, int|string|array<string|int, mixed>|null>
      */
     public function addKeyToErrorArray(array $error, Exception $exception): array;
     /**
@@ -65,7 +68,7 @@ interface ExceptionFormatServiceInterface
     /**
      * genericExceptionResponse
      * must return array composed by error information returned to client
-     * @return array<string|int> [code, text, message]
+     * @return array{0: int, 1: string, 2:string|null} [code, text, message]
      */
     public function genericExceptionResponse(Exception $exception): array;
 }

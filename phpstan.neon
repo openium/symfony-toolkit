@@ -1,1 +1,13 @@
 includes:
+
+parameters:
+    level: max
+    paths:
+        - Command
+        - Controller
+        - DependencyInjection
+        - Entity
+        - EventListener
+        - Exception
+        - Service
+        - Utils

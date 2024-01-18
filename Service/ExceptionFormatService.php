@@ -33,6 +33,7 @@ class ExceptionFormatService implements ExceptionFormatServiceInterface
     {
     }
 
+    /** @var array{code: string, text: string, message: string} */
     protected array $jsonKeys = [
         'code' => 'status_code',
         'text' => 'status_text',
@@ -53,7 +54,7 @@ class ExceptionFormatService implements ExceptionFormatServiceInterface
             $response->setStatusCode($code);
             try {
                 $json = json_encode($error, JSON_THROW_ON_ERROR);
-                $response->setContent(($json !== false) ? $json : '');
+                $response->setContent($json);
             } catch (\JsonException) {
                 $response->setContent('');
             }
@@ -65,7 +66,7 @@ class ExceptionFormatService implements ExceptionFormatServiceInterface
     }
 
     /**
-     * @return array [code, text, message]
+     * @return array{0: int, 1: string, 2:string|null} [code, text, message]
      */
     public function genericExceptionResponse(Exception $exception): array
     {
@@ -78,7 +79,7 @@ class ExceptionFormatService implements ExceptionFormatServiceInterface
     /**
      * getArray
      *
-     * @return array<string, mixed>
+     * @return array<string, int|string|array<string|int, mixed>|null>
      */
     public function getArray(
         Exception $exception,
@@ -86,6 +87,7 @@ class ExceptionFormatService implements ExceptionFormatServiceInterface
         ?string $text = null,
         ?string $message = null
     ): array {
+        /** @var array<string, int|string|array<string|int, mixed>|null> $error */
         $error = [
             $this->jsonKeys['code'] => $code ?? $this->getStatusCode($exception),
             $this->jsonKeys['text'] => $text ?? $this->getStatusText($exception),
@@ -104,9 +106,12 @@ class ExceptionFormatService implements ExceptionFormatServiceInterface
     }
 
     /**
-     * getGenericArray
+     * addKeyToErrorArray
      *
+     * @param array<string, int|string|array<string|int, mixed>|null> $error
+     * @param Exception $exception
      *
+     * @return array<string, int|string|array<string|int, mixed>|null>
      */
     public function addKeyToErrorArray(array $error, Exception $exception): array
     {

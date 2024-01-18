@@ -25,7 +25,7 @@ class ContentExtractorUtils
      *
      * @throws ContentExtractorMissingParameterException
      */
-    public static function checkKeyExists(array $content, string $key, ?bool $nullable = false): void
+    public static function checkKeyExists(array $content, string $key, bool $nullable = false): void
     {
         if (
             !array_key_exists($key, $content)
@@ -38,9 +38,12 @@ class ContentExtractorUtils
     /**
      * checkKeyIsString
      *
+     * @param array<string, mixed> $content
+     * @param string $key
+     * @param bool $nullable
      *
-     * @throws ContentExtractorStringPropertyException
      * @throws ContentExtractorMissingParameterException
+     * @throws ContentExtractorStringPropertyException
      */
     public static function checkKeyIsString(array $content, string $key, bool $nullable = false): void
     {
@@ -133,11 +136,8 @@ class ContentExtractorUtils
             throw new ContentExtractorMissingParameterException($key);
         }
         if (
-            array_key_exists($key, $content)
-            && (
-                !is_array($content[$key])
-                || (!$allowEmpty && $content[$key] === [])
-            )
+            !is_array($content[$key])
+            || (!$allowEmpty && $content[$key] === [])
         ) {
             throw new ContentExtractorArrayPropertyException($key);
         }
@@ -147,9 +147,15 @@ class ContentExtractorUtils
      * getString
      *
      * @param array<string, mixed> $content
+     * @param string $key
+     * @param bool $required
+     * @param string|null $default
+     * @param bool $nullable
+     * @param bool $convertToString
      *
      * @throws ContentExtractorMissingParameterException
      * @throws ContentExtractorStringPropertyException
+     * @return string|null
      */
     public static function getString(
         array $content,
@@ -172,6 +178,7 @@ class ContentExtractorUtils
                 throw $exception;
             }
         }
+        /** @phpstan-ignore-next-line */
         return isset($content[$key]) ? trim((string)$content[$key]) : null;
     }
 
@@ -194,6 +201,7 @@ class ContentExtractorUtils
                 return $default;
             }
         }
+        /** @phpstan-ignore-next-line */
         return $content[$key];
     }
 
@@ -221,6 +229,7 @@ class ContentExtractorUtils
                 return $default;
             }
         }
+        /** @phpstan-ignore-next-line */
         return $content[$key];
     }
 
@@ -250,10 +259,14 @@ class ContentExtractorUtils
             }
         } catch (ContentExtractorFloatPropertyException $exception) {
             if ($acceptInt) {
-                return (float) self::getInt($content, $key, $required, (int) $default, $nullable);
+                try {
+                    return (float)self::getInt($content, $key, $required, (int)$default, $nullable);
+                } catch (ContentExtractorIntegerPropertyException | ContentExtractorMissingParameterException) {
+                    throw $exception;
+                }
             }
-            throw $exception;
         }
+        /** @phpstan-ignore-next-line */
         return $content[$key];
     }
 
@@ -265,7 +278,8 @@ class ContentExtractorUtils
      * @throws ContentExtractorMissingParameterException
      * @throws ContentExtractorDateFormatException
      */
-    public static function getDateTimeInterface(
+    public
+    static function getDateTimeInterface(
         array $content,
         string $key,
         bool $required = true,
@@ -284,6 +298,7 @@ class ContentExtractorUtils
         if ($content[$key] === null) {
             return null;
         }
+        /** @phpstan-ignore-next-line */
         $dateTimeResult = DateStringUtils::getDateTimeFromString($content[$key]);
         // => false if wrong date format
         if ($dateTimeResult === false) {
@@ -296,12 +311,18 @@ class ContentExtractorUtils
      * getArray
      *
      * @param array<string, mixed> $content
+     * @param string $key
+     * @param bool $required
      * @param array<string|int, mixed>|null $default
+     * @param bool $allowEmpty
      *
      * @throws ContentExtractorArrayPropertyException
      * @throws ContentExtractorMissingParameterException
+     * @return array|null
      */
-    public static function getArray(
+    /** @phpstan-ignore-next-line */
+    public
+    static function getArray(
         array $content,
         string $key,
         bool $required = true,
@@ -310,7 +331,7 @@ class ContentExtractorUtils
     ): ?array {
         try {
             self::checkKeyIsArray($content, $key, $allowEmpty);
-        } catch (ContentExtractorMissingParameterException $exception) {
+        } catch (ContentExtractorMissingParameterException | ContentExtractorArrayPropertyException $exception) {
             if ($required) {
                 throw $exception;
             } else {

@@ -36,7 +36,6 @@ class OpeniumSymfonyToolKitExtension extends Extension
      *
      * @throws Exception
      */
-    /* @phpstan-ignore-next-line */
     public function load(array $configs, ContainerBuilder $container): void
     {
         $configuration = $this->getConfiguration($configs, $container);
