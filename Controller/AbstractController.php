@@ -13,6 +13,8 @@ namespace Openium\SymfonyToolKitBundle\Controller;
 use JsonException;
 use Openium\SymfonyToolKitBundle\Exception\InvalidContentFormatException;
 use Openium\SymfonyToolKitBundle\Exception\MissingContentException;
+use Openium\SymfonyToolKitBundle\Utils\FilterParameters;
+use Openium\SymfonyToolKitBundle\Utils\FilterUtils;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController as BaseController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -42,5 +44,16 @@ class AbstractController extends BaseController
             throw new InvalidContentFormatException();
         }
         return $content;
+    }
+
+    /**
+     * getFilterParameters
+     *
+     * @param Request $request
+     * @return FilterParameters
+     */
+    protected function getFilterParameters(Request $request): FilterParameters
+    {
+        return FilterUtils::generateFromRequest($request);
     }
 }

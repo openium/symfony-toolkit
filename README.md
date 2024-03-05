@@ -21,6 +21,17 @@ $ composer require openium/symfony-toolkit
 Usage
 -----
 
+### AbstractController
+
+Add 2 protected methods for controllers :
+
+- getContentFromRequest: get json body from request
+- getFilterParameters: get filter query parameters from request
+
+Notes on filters :
+- if the page parameter is passed but not the limit parameter, the limit is set to 10
+- if order-by parameter is passed but not order parameter, order is set to ASC
+
 ### ServerService
 
 This service provide a way to get the actual server url.
