@@ -265,6 +265,7 @@ class ContentExtractorUtils
                     throw $exception;
                 }
             }
+            throw $exception;
         }
         /** @phpstan-ignore-next-line */
         return $content[$key];

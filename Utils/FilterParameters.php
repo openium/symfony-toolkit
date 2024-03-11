@@ -23,6 +23,9 @@ class FilterParameters
     ) {
         $this->search = $search;
         $this->page = $page;
+        if ($page !== null && $page < 1) {
+            $page = 1;
+        }
         // if client send page without limit, set default limit to 10 items
         if ($page !== null && $limit === null) {
             $this->limit = 10;
@@ -61,5 +64,33 @@ class FilterParameters
     public function getOrderBy(): ?string
     {
         return $this->orderBy;
+    }
+
+    public function getOffset(): ?int
+    {
+        return ($this->getPage() !== null && $this->getLimit() !== null)
+            ? ($this->getPage() - 1) * $this->getLimit()
+            : null;
+    }
+
+    /**
+     * getHash
+     * return sha1 string who contains whole filters
+     * can be useful for cache name
+     *
+     * @return string
+     */
+    public function getHash(): string
+    {
+        return sha1(
+            sprintf(
+                '%s%s%s%s%s',
+                $this->search ?? '',
+                $this->order ?? '',
+                $this->page ?? '',
+                $this->limit ?? '',
+                $this->orderBy ?? ''
+            )
+        );
     }
 }
