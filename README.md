@@ -34,7 +34,7 @@ Add a class containing filters from the query parameters.
 
 To get filters, use getFilterParameters in AbstractController.
 
-You can also use AbstractFilterRepository to define the sort, limit and offset in queries.
+You can also use FilterRepositoryUtils->applyFilters() to define the sort, limit and offset in queries.
 
 Notes on filters :
 - if the page parameter is passed but not the limit parameter, the limit is set to 10

@@ -1,17 +1,15 @@
 <?php
 
-namespace Openium\SymfonyToolKitBundle\Repository;
+namespace Openium\SymfonyToolKitBundle\Utils;
 
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
-use Openium\SymfonyToolKitBundle\Utils\FilterParameters;
 
 /**
- * Class AbstractFilterRepository
+ * Class FilterRepositoryUtils
  *
- * @package Openium\SymfonyToolKitBundle\Repository
+ * @package Openium\SymfonyToolKitBundle\Utils
  */
-abstract class AbstractFilterRepository extends ServiceEntityRepository
+class FilterRepositoryUtils
 {
     /**
      * applyFilters
@@ -22,7 +20,7 @@ abstract class AbstractFilterRepository extends ServiceEntityRepository
      *
      * @return void
      */
-    protected function applyFilters(QueryBuilder $qb, string $alias, FilterParameters $filterParameters): void
+    public static function applyFilters(QueryBuilder $qb, string $alias, FilterParameters $filterParameters): void
     {
         if ($filterParameters->getOrderBy() !== null) {
             $qb->orderBy($alias . '.' . $filterParameters->getOrderBy(), $filterParameters->getOrder());
