@@ -26,6 +26,8 @@ Usage
 Add 2 protected methods for controllers :
 
 - getContentFromRequest: get json body from request
+- getMultipartContent: get json body from multipart request
+- extractObjectFromString: get json from string (used by getContentFromRequest and getMultipartContent)
 - getFilterParameters: get filter query parameters from request
 
 ### Filters
