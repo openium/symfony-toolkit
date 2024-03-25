@@ -1,6 +1,6 @@
 <?php
 
-namespace Openium\SymfonyToolKitBundle\Tests\Service;
+namespace Openium\SymfonyToolKitBundle\Tests\Utils;
 
 use Openium\SymfonyToolKitBundle\Utils\FilterParameters;
 use PHPUnit\Framework\TestCase;

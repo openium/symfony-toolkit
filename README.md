@@ -42,6 +42,10 @@ Notes on filters :
 - if the page parameter is passed but not the limit parameter, the limit is set to 10
 - if order-by parameter is passed but not order parameter, order is set to ASC
 
+### PaginatedResult
+
+The PaginatedResult allow you to have a formatted result for endpoints who used filters. 
+
 ### ServerService
 
 This service provide a way to get the actual server url.
