@@ -22,7 +22,7 @@ class FilterParameters
         ?string $orderBy = null
     ) {
         $this->search = $search;
-        $this->page = $page;
+        $this->page = $page ?? 1;
         if ($page !== null && $page < 1) {
             $page = 1;
         }

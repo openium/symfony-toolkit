@@ -27,5 +27,11 @@ class FilterParametersTest extends TestCase
         );
         self::assertEquals(40, $fp2->getOffset());
         self::assertNotEquals($fp->getHash(), $fp2->getHash());
+        $fp3 = new FilterParameters(
+            'search'
+        );
+        self::assertEquals(null, $fp3->getOffset());
+        self::assertEquals(1, $fp3->getPage());
+        self::assertNotEquals($fp->getHash(), $fp3->getHash());
     }
 }
