@@ -12,6 +12,7 @@
 namespace Openium\SymfonyToolKitBundle\Entity;
 
 use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\Serializer\Attribute\Ignore;
 
 /**
  * Trait WithUploadTrait
@@ -20,6 +21,7 @@ use Symfony\Component\HttpFoundation\File\File;
  */
 trait WithUploadTrait
 {
+    #[Ignore]
     protected ?File $file = null;
 
     protected ?string $imagePath = null;
