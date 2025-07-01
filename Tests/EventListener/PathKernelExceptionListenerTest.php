@@ -1,12 +1,4 @@
 <?php
-/**
- * PHP Version >=8.0
- *
- * @package  Openium\SymfonyToolKitBundle\Tests\EventListener
- * @author   Openium <contact@openium.fr>
- * @license  Openium All right reserved
- * @link     https://www.openium.fr/
- */
 
 namespace Openium\SymfonyToolKitBundle\Tests\EventListener;
 
@@ -30,7 +22,7 @@ class PathKernelExceptionListenerTest extends TestCase
 {
     private MockObject&LoggerInterface $logger;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->logger = $this->getMockBuilder(LoggerInterface::class)
             ->disableOriginalConstructor()
@@ -41,9 +33,19 @@ class PathKernelExceptionListenerTest extends TestCase
     public function testIsEnable(): void
     {
         $exceptionFormat = $this->createMock(ExceptionFormatServiceInterface::class);
-        $listener = new TestPathKernelExceptionListener($exceptionFormat, '/api', true, $this->logger);
+        $listener = new TestPathKernelExceptionListener(
+            $exceptionFormat,
+            '/api',
+            true,
+            $this->logger
+        );
         self::assertTrue($listener->getEnable());
-        $listener = new TestPathKernelExceptionListener($exceptionFormat, '/api', false, $this->logger);
+        $listener = new TestPathKernelExceptionListener(
+            $exceptionFormat,
+            '/api',
+            false,
+            $this->logger
+        );
         self::assertFalse($listener->getEnable());
     }
 
@@ -51,11 +53,16 @@ class PathKernelExceptionListenerTest extends TestCase
     {
         $exceptionFormat = $this->createMock(ExceptionFormatServiceInterface::class);
         $response = new Response('test');
-        $exceptionFormat->expects(self::once())->method('formatExceptionResponse')->will(
-            $this->returnValue($response)
-        );
+        $exceptionFormat->expects(self::once())
+            ->method('formatExceptionResponse')
+            ->willReturn($response);
         $this->logger->expects(self::once())->method('error');
-        $listener = new TestPathKernelExceptionListener($exceptionFormat, '/api', true, $this->logger);
+        $listener = new TestPathKernelExceptionListener(
+            $exceptionFormat,
+            '/api',
+            true,
+            $this->logger
+        );
         $kernel = $this->createMock(HttpKernelInterface::class);
         $request = Request::create('/api');
         $exc = new Exception("testError", 123);
@@ -68,11 +75,16 @@ class PathKernelExceptionListenerTest extends TestCase
     {
         $exceptionFormat = $this->createMock(ExceptionFormatServiceInterface::class);
         $response = new Response('test', Response::HTTP_INTERNAL_SERVER_ERROR);
-        $exceptionFormat->expects(self::once())->method('formatExceptionResponse')->will(
-            $this->returnValue($response)
-        );
+        $exceptionFormat->expects(self::once())
+            ->method('formatExceptionResponse')
+            ->willReturn($response);
         $this->logger->expects(self::once())->method('critical');
-        $listener = new TestPathKernelExceptionListener($exceptionFormat, '/api', true, $this->logger);
+        $listener = new TestPathKernelExceptionListener(
+            $exceptionFormat,
+            '/api',
+            true,
+            $this->logger
+        );
         $kernel = $this->createMock(HttpKernelInterface::class);
         $request = Request::create('/api');
         $exc = new Exception("testError", Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -85,11 +97,15 @@ class PathKernelExceptionListenerTest extends TestCase
     {
         $exceptionFormat = $this->createMock(ExceptionFormatServiceInterface::class);
         $response = new Response('test', Response::HTTP_UNAUTHORIZED);
-        $exceptionFormat->expects(self::once())->method('formatExceptionResponse')->will(
-            $this->returnValue($response)
-        );
+        $exceptionFormat->expects(self::once())->method('formatExceptionResponse')
+            ->willReturn($response);
         $this->logger->expects(self::once())->method('info');
-        $listener = new TestPathKernelExceptionListener($exceptionFormat, '/api', true, $this->logger);
+        $listener = new TestPathKernelExceptionListener(
+            $exceptionFormat,
+            '/api',
+            true,
+            $this->logger
+        );
         $kernel = $this->createMock(HttpKernelInterface::class);
         $request = Request::create('/api');
         $exc = new Exception("testError", Response::HTTP_UNAUTHORIZED);

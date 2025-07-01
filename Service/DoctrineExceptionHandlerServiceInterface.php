@@ -1,15 +1,5 @@
 <?php
 
-/**
- * DoctrineExceptionHandlerServiceInterface
- * PHP Version >=8.0
- *
- * @package  Openium\SymfonyToolKitBundle\Service
- * @author   Openium <contact@openium.fr>
- * @license  Openium All right reserved
- * @link     https://www.openium.fr/
- */
-
 namespace Openium\SymfonyToolKitBundle\Service;
 
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;

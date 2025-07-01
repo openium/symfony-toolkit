@@ -4,6 +4,7 @@ namespace Openium\SymfonyToolKitBundle\Tests\Service;
 
 use Openium\SymfonyToolKitBundle\Service\AtHelper;
 use Openium\SymfonyToolKitBundle\Service\AtHelperInterface;
+use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
@@ -13,19 +14,19 @@ use Psr\Log\LoggerInterface;
  *
  * @package Openium\SymfonyToolKitBundle\Test\Service
  */
-#[\PHPUnit\Framework\Attributes\CodeCoverageIgnore]
+#[CoversNothing]
 class AtHelperTest extends TestCase
 {
     private MockObject&LoggerInterface $logger;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->logger = $this->createMock(LoggerInterface::class);
         $this->logger->expects(static::any())
             ->method("debug")
             ->will(
                 static::returnCallback(
-                    function ($subject) {
+                    function ($subject): void {
                         error_log($subject);
                     }
                 )

@@ -1,13 +1,4 @@
 <?php
-/**
- * ExceptionFormatService
- * PHP Version >=8.0
- *
- * @package  Openium\SymfonyToolKitBundle\Service
- * @author   Openium <contact@openium.fr>
- * @license  Openium All right reserved
- * @link     https://www.openium.fr/
- */
 
 namespace Openium\SymfonyToolKitBundle\Service;
 
@@ -62,6 +53,7 @@ class ExceptionFormatService implements ExceptionFormatServiceInterface
             $response->setStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR);
             $response->setContent($exception->getMessage());
         }
+
         return $response;
     }
 
@@ -102,6 +94,7 @@ class ExceptionFormatService implements ExceptionFormatServiceInterface
                 $error['previous']['code'] = $exception->getPrevious()->getCode();
             }
         }
+
         return $error;
     }
 
@@ -109,7 +102,6 @@ class ExceptionFormatService implements ExceptionFormatServiceInterface
      * addKeyToErrorArray
      *
      * @param array<string, int|string|array<string|int, mixed>|null> $error
-     * @param Exception $exception
      *
      * @return array<string, int|string|array<string|int, mixed>|null>
      */

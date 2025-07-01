@@ -4,6 +4,7 @@ namespace Openium\SymfonyToolKitBundle\Tests\Service;
 
 use Exception;
 use Openium\SymfonyToolKitBundle\Service\ExceptionFormatService;
+use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,12 +17,12 @@ use TypeError;
  *
  * @package Openium\SymfonyToolKitBundle\Test\Service
  */
-#[\PHPUnit\Framework\Attributes\CodeCoverageIgnore]
+#[CoversNothing]
 class ExceptionFormatServiceTest extends TestCase
 {
     private MockObject&KernelInterface $testKernel;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->testKernel = $this->getMockBuilder(KernelInterface::class)
             ->disableOriginalConstructor()
@@ -84,7 +85,7 @@ class ExceptionFormatServiceTest extends TestCase
         $exception = new HttpException(Response::HTTP_NOT_FOUND);
         $this->testKernel->expects(self::once())
             ->method('getEnvironment')
-            ->will($this->returnValue("prod"));
+            ->willReturn("prod");
         $exceptionFormatService = new ExceptionFormatService($this->testKernel);
         self::assertTrue($exceptionFormatService instanceof ExceptionFormatService);
         $result = $exceptionFormatService->getArray($exception);
@@ -103,7 +104,7 @@ class ExceptionFormatServiceTest extends TestCase
         $previous = new Exception('previous exception', 123456, null);
         $this->testKernel->expects(self::once())
             ->method('getEnvironment')
-            ->will($this->returnValue("dev"));
+            ->willReturn("dev");
         $exception = new HttpException(Response::HTTP_NOT_FOUND, 'message exception', $previous);
         $exceptionFormatService = new ExceptionFormatService($this->testKernel);
         self::assertTrue($exceptionFormatService instanceof ExceptionFormatService);
@@ -126,7 +127,7 @@ class ExceptionFormatServiceTest extends TestCase
         $exception = new HttpException(Response::HTTP_NOT_FOUND);
         $this->testKernel->expects(self::once())
             ->method('getEnvironment')
-            ->will($this->returnValue("prod"));
+            ->willReturn("prod");
         $exceptionFormatService = new ExceptionFormatService($this->testKernel);
         self::assertTrue($exceptionFormatService instanceof ExceptionFormatService);
         $response = $exceptionFormatService->formatExceptionResponse($exception);

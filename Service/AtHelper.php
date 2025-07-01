@@ -1,14 +1,5 @@
 <?php
 
-/**
- * PHP Version >=8.0
- *
- * @package  Openium\SymfonyToolKitBundle\Service
- * @author   Openium <contact@openium.fr>
- * @license  Openium All right reserved
- * @link     https://www.openium.fr/
- */
-
 namespace Openium\SymfonyToolKitBundle\Service;
 
 use DateTime;
@@ -33,7 +24,7 @@ class AtHelper implements AtHelperInterface
     /**
      * executeAndCaptureOutput
      */
-    public function executeAndCaptureOutput(string $cmd, int &$result): string|false
+    public function executeAndCaptureOutput(string $cmd, int &$result): string | false
     {
         $res = 0;
         ob_start();
@@ -56,8 +47,12 @@ class AtHelper implements AtHelperInterface
      * @throws InvalidArgumentException
      * @return false|string the output of at command
      */
-    public function createAtCommandFromPath(string $cmd, int $timestamp, string $path, int &$result): false|string
-    {
+    public function createAtCommandFromPath(
+        string $cmd,
+        int $timestamp,
+        string $path,
+        int &$result
+    ): false | string {
         $date = $this->formatTimestampForAt($timestamp);
         $fullCmd = sprintf('cd %s; echo "%s" | at %s 2>&1 ; let \!PIPESTATUS', $path, $cmd, $date);
         return $this->atCommand($fullCmd, $result);
@@ -67,15 +62,16 @@ class AtHelper implements AtHelperInterface
      * createAtCommand
      * Execute a command with at.
      *
-     * @param string $cmd command to execute
+     * @deprecated use createAtCommandFromPath instead
+     *
      * @param int $timestamp when the command will be executed
      * @param int &$result result of at
+     * @param string $cmd command to execute
      *
      * @throws InvalidArgumentException
      * @return false|string the output of at command
-     * @deprecated use createAtCommandFromPath instead
      */
-    public function createAtCommand(string $cmd, int $timestamp, int &$result): false|string
+    public function createAtCommand(string $cmd, int $timestamp, int &$result): false | string
     {
         $date = $this->formatTimestampForAt($timestamp);
         $fullCmd = sprintf('echo "%s" | at %s 2>&1 ; let \!PIPESTATUS', $cmd, $date);
@@ -85,15 +81,18 @@ class AtHelper implements AtHelperInterface
     /**
      * atCommand
      */
-    private function atCommand(string $fullCmd, int &$result): false|string
+    private function atCommand(string $fullCmd, int &$result): false | string
     {
         $this->logger->debug(sprintf("Create AT command (%s)", $fullCmd));
         $output = $this->executeAndCaptureOutput($fullCmd, $result);
         $this->logger->debug(sprintf("AT Output : %s", $output));
         $this->logger->debug(sprintf("AT Result : %s)", $result));
         if ($output === false || str_contains($output, "garbled time") || $result != 0) {
-            $this->logger->error(sprintf("Creation of AT command failed (%s) : %s", $result, $fullCmd));
+            $this->logger->error(
+                sprintf("Creation of AT command failed (%s) : %s", $result, $fullCmd)
+            );
         }
+
         return $output;
     }
 
@@ -116,6 +115,7 @@ class AtHelper implements AtHelperInterface
                 }
             }
         }
+
         return null;
     }
 
@@ -143,6 +143,7 @@ class AtHelper implements AtHelperInterface
         if ($timestamp < 0) {
             throw new InvalidArgumentException('timestamp < 0');
         }
+
         $timeZone = new DateTimeZone("Europe/Paris");
         $date = new DateTime('now', $timeZone);
         return $date->setTimestamp($timestamp)->format('g:i A F j Y');

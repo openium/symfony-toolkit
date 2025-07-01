@@ -1,13 +1,4 @@
 <?php
-/**
- * ServerService
- * PHP Version >=8.0
- *
- * @package  Openium\SymfonyToolKitBundle\Service
- * @author   Openium <contact@openium.fr>
- * @license  Openium All right reserved
- * @link     https://www.openium.fr/
- */
 
 namespace Openium\SymfonyToolKitBundle\Service;
 
@@ -40,6 +31,7 @@ class ServerService implements ServerServiceInterface
         if (is_null($request)) {
             return '';
         }
+
         $prefix = $request->isSecure() ? 'https://' : 'http://';
         $host = $request->getHost();
         return $prefix . $host . '/';

@@ -1,13 +1,4 @@
 <?php
-/**
- * Bundle Extension class
- * PHP Version >=8.0
- *
- * @package  Openium\SymfonyToolKitBundle\DependencyInjection
- * @author   Openium <contact@openium.fr>
- * @license  Openium All right reserved
- * @link     https://www.openium.fr/
- */
 
 namespace Openium\SymfonyToolKitBundle\DependencyInjection;
 
@@ -42,11 +33,13 @@ class OpeniumSymfonyToolKitExtension extends Extension
         if ($configuration instanceof ConfigurationInterface) {
             $this->processConfiguration($configuration, $configs);
         }
+
         $loader = new YamlFileLoader(
             $container,
             new FileLocator(__DIR__ . '/../Resources/config')
         );
         $loader->load('services.yaml');
+
         $container->setAlias(
             FileUploaderServiceInterface::class,
             new Alias('openium_symfony_toolkit.file_uploader')

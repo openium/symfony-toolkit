@@ -2,22 +2,28 @@
 
 namespace Openium\SymfonyToolKitBundle\Utils;
 
+use Symfony\Component\HttpFoundation\Exception\BadRequestException;
+use Symfony\Component\HttpFoundation\Exception\UnexpectedValueException;
 use Symfony\Component\HttpFoundation\Request;
 
 class FilterUtils
 {
     public const SEARCH_PARAMETER = 'search';
+
     public const PAGE_PARAMETER = 'page';
+
     public const LIMIT_PARAMETER = 'limit';
+
     public const ORDER_PARAMETER = 'order';
+
     public const ORDER_BY_PARAMETER = 'order-by';
 
     /**
      * generateFromRequest
      *
-     * @param Request $request
      *
-     * @return FilterParameters
+     * @throws BadRequestException
+     * @throws UnexpectedValueException
      */
     public static function generateFromRequest(Request $request): FilterParameters
     {

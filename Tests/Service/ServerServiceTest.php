@@ -3,7 +3,7 @@
 namespace Openium\SymfonyToolKitBundle\Tests\Service;
 
 use Openium\SymfonyToolKitBundle\Service\ServerService;
-use PHPUnit\Framework\MockObject\MockClass;
+use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,12 +14,12 @@ use Symfony\Component\HttpFoundation\RequestStack;
  *
  * @package Openium\SymfonyToolKitBundle\Test\Service
  */
-#[\PHPUnit\Framework\Attributes\CodeCoverageIgnore]
+#[CoversNothing]
 class ServerServiceTest extends TestCase
 {
     private MockObject&RequestStack $requestStack;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->requestStack = $this->getMockBuilder(RequestStack::class)
             ->disableOriginalConstructor()
@@ -34,13 +34,13 @@ class ServerServiceTest extends TestCase
             ->getMock();
         $request->expects(self::once())
             ->method('getHost')
-            ->will($this->returnValue('127.0.0.2'));
+            ->willReturn('127.0.0.2');
         $request->expects(self::once())
             ->method('isSecure')
-            ->will($this->returnValue(true));
+            ->willReturn(true);
         $this->requestStack->expects(self::once())
             ->method('getCurrentRequest')
-            ->will($this->returnValue($request));
+            ->willReturn($request);
         $serverService = new ServerService($this->requestStack);
         $result = $serverService->getBasePath();
         self::assertNotNull($result);
@@ -54,13 +54,13 @@ class ServerServiceTest extends TestCase
             ->getMock();
         $request->expects(self::once())
             ->method('getHost')
-            ->will($this->returnValue('127.0.0.2'));
+            ->willReturn('127.0.0.2');
         $request->expects(self::once())
             ->method('isSecure')
-            ->will($this->returnValue(false));
+            ->willReturn(false);
         $this->requestStack->expects(self::once())
             ->method('getCurrentRequest')
-            ->will($this->returnValue($request));
+            ->willReturn($request);
         $serverService = new ServerService($this->requestStack);
         $result = $serverService->getBasePath();
         self::assertNotNull($result);
@@ -71,7 +71,7 @@ class ServerServiceTest extends TestCase
     {
         $this->requestStack->expects(self::once())
             ->method('getCurrentRequest')
-            ->will($this->returnValue(null));
+            ->willReturn(null);
         $serverService = new ServerService($this->requestStack);
         $result = $serverService->getBasePath();
         self::assertNotNull($result);

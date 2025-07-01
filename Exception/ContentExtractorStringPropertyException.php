@@ -12,6 +12,7 @@ use Exception;
 class ContentExtractorStringPropertyException extends ContentExtractorException
 {
     final public const MESSAGE = "Property must be a string";
+
     final public const CODE = 2_015_151_209;
 
     public function __construct(

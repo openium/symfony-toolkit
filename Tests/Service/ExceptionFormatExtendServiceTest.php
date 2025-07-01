@@ -2,26 +2,25 @@
 
 namespace Openium\SymfonyToolKitBundle\Tests\Service;
 
-use Exception;
 use Openium\SymfonyToolKitBundle\Service\ExceptionFormatService;
+use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\KernelInterface;
-use TypeError;
 
 /**
  * Class ExceptionFormatServiceTest
  *
  * @package Openium\SymfonyToolKitBundle\Test\Service
  */
-#[\PHPUnit\Framework\Attributes\CodeCoverageIgnore]
+#[CoversNothing]
 class ExceptionFormatExtendServiceTest extends TestCase
 {
     private MockObject&KernelInterface $testKernel;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->testKernel = $this->getMockBuilder(KernelInterface::class)
             ->disableOriginalConstructor()
@@ -54,7 +53,7 @@ class ExceptionFormatExtendServiceTest extends TestCase
         $exception = new HttpException(Response::HTTP_NOT_FOUND);
         $this->testKernel->expects(self::once())
             ->method('getEnvironment')
-            ->will($this->returnValue("prod"));
+            ->willReturn("prod");
         $exceptionFormatExtendService = new ExceptionFormatExtendService($this->testKernel);
         self::assertTrue($exceptionFormatExtendService instanceof ExceptionFormatService);
         $response = $exceptionFormatExtendService->formatExceptionResponse($exception);

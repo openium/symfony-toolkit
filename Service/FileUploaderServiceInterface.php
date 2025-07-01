@@ -1,13 +1,4 @@
 <?php
-/**
- * FileUploaderServiceInterface
- * PHP Version >=8.0
- *
- * @package  Openium\SymfonyToolKitBundle\Service
- * @author   Openium <contact@openium.fr>
- * @license  Openium All right reserved
- * @link     https://www.openium.fr/
- */
 
 namespace Openium\SymfonyToolKitBundle\Service;
 
@@ -33,8 +24,6 @@ interface FileUploaderServiceInterface
 
     /**
      * Return the path to save file
-     *
-     * @param File|UploadedFile $file
      */
     public function getPath(File $file, string $dirName): string;
 

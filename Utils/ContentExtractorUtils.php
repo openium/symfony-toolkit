@@ -39,14 +39,15 @@ class ContentExtractorUtils
      * checkKeyIsString
      *
      * @param array<string, mixed> $content
-     * @param string $key
-     * @param bool $nullable
      *
      * @throws ContentExtractorMissingParameterException
      * @throws ContentExtractorStringPropertyException
      */
-    public static function checkKeyIsString(array $content, string $key, bool $nullable = false): void
-    {
+    public static function checkKeyIsString(
+        array $content,
+        string $key,
+        bool $nullable = false
+    ): void {
         self::checkKeyExists($content, $key, $nullable);
         if (
             array_key_exists($key, $content)
@@ -105,8 +106,11 @@ class ContentExtractorUtils
      * @throws ContentExtractorFloatPropertyException
      * @throws ContentExtractorMissingParameterException
      */
-    public static function checkKeyIsFloat(array $content, string $key, bool $nullable = false): void
-    {
+    public static function checkKeyIsFloat(
+        array $content,
+        string $key,
+        bool $nullable = false
+    ): void {
         self::checkKeyExists($content, $key, $nullable);
         if (
             array_key_exists($key, $content)
@@ -127,14 +131,18 @@ class ContentExtractorUtils
      * @throws ContentExtractorArrayPropertyException
      * @throws ContentExtractorMissingParameterException
      */
-    public static function checkKeyIsArray(array $content, string $key, bool $allowEmpty = false): void
-    {
+    public static function checkKeyIsArray(
+        array $content,
+        string $key,
+        bool $allowEmpty = false
+    ): void {
         if (
             !array_key_exists($key, $content)
             || $content[$key] === null
         ) {
             throw new ContentExtractorMissingParameterException($key);
         }
+
         if (
             !is_array($content[$key])
             || (!$allowEmpty && $content[$key] === [])
@@ -147,15 +155,9 @@ class ContentExtractorUtils
      * getString
      *
      * @param array<string, mixed> $content
-     * @param string $key
-     * @param bool $required
-     * @param string|null $default
-     * @param bool $nullable
-     * @param bool $convertToString
      *
      * @throws ContentExtractorMissingParameterException
      * @throws ContentExtractorStringPropertyException
-     * @return string|null
      */
     public static function getString(
         array $content,
@@ -178,6 +180,7 @@ class ContentExtractorUtils
                 throw $exception;
             }
         }
+
         /** @phpstan-ignore-next-line */
         return isset($content[$key]) ? trim((string)$content[$key]) : null;
     }
@@ -190,17 +193,22 @@ class ContentExtractorUtils
      * @throws ContentExtractorBooleanPropertyException
      * @throws ContentExtractorMissingParameterException
      */
-    public static function getBool(array $content, string $key, bool $required = true, ?bool $default = true): ?bool
-    {
+    public static function getBool(
+        array $content,
+        string $key,
+        bool $required = true,
+        ?bool $default = true
+    ): ?bool {
         try {
             self::checkKeyIsBoolean($content, $key);
-        } catch (ContentExtractorMissingParameterException $exception) {
+        } catch (ContentExtractorMissingParameterException $contentExtractorMissingParameterException) {
             if ($required) {
-                throw $exception;
+                throw $contentExtractorMissingParameterException;
             } else {
                 return $default;
             }
         }
+
         /** @phpstan-ignore-next-line */
         return $content[$key];
     }
@@ -222,13 +230,14 @@ class ContentExtractorUtils
     ): ?int {
         try {
             self::checkKeyIsInt($content, $key, $nullable);
-        } catch (ContentExtractorMissingParameterException $exception) {
+        } catch (ContentExtractorMissingParameterException $contentExtractorMissingParameterException) {
             if ($required) {
-                throw $exception;
+                throw $contentExtractorMissingParameterException;
             } else {
                 return $default;
             }
         }
+
         /** @phpstan-ignore-next-line */
         return $content[$key];
     }
@@ -265,8 +274,10 @@ class ContentExtractorUtils
                     throw $exception;
                 }
             }
+
             throw $exception;
         }
+
         /** @phpstan-ignore-next-line */
         return $content[$key];
     }
@@ -289,22 +300,25 @@ class ContentExtractorUtils
     ): ?DateTimeInterface {
         try {
             self::checkKeyExists($content, $key, $nullable);
-        } catch (ContentExtractorMissingParameterException $exception) {
+        } catch (ContentExtractorMissingParameterException $contentExtractorMissingParameterException) {
             if ($required) {
-                throw $exception;
+                throw $contentExtractorMissingParameterException;
             } else {
                 return $default;
             }
         }
+
         if ($content[$key] === null) {
             return null;
         }
+
         /** @phpstan-ignore-next-line */
         $dateTimeResult = DateStringUtils::getDateTimeFromString($content[$key]);
         // => false if wrong date format
         if ($dateTimeResult === false) {
             throw new ContentExtractorDateFormatException($key);
         }
+
         return $dateTimeResult;
     }
 
@@ -339,6 +353,7 @@ class ContentExtractorUtils
                 return $default;
             }
         }
+
         return $content[$key];
     }
 }

@@ -1,12 +1,4 @@
 <?php
-/**
- * PHP Version >=8.0
- *
- * @package  Openium\SymfonyToolKitBundle\Exception
- * @author   Openium <contact@openium.fr>
- * @license  Openium All right reserved
- * @link     https://www.openium.fr/
- */
 
 namespace Openium\SymfonyToolKitBundle\Exception;
 
@@ -21,6 +13,7 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 class MissingContentException extends BadRequestHttpException
 {
     final public const MESSAGE = "Missing content";
+
     final public const CODE = 2_015_151_201;
 
     /**

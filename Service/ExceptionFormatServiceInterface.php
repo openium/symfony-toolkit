@@ -1,13 +1,4 @@
 <?php
-/**
- * ExceptionFormatServiceInterface
- * PHP Version >=8.0
- *
- * @package  Openium\SymfonyToolKitBundle\Service
- * @author   Openium <contact@openium.fr>
- * @license  Openium All right reserved
- * @link     https://www.openium.fr/
- */
 
 namespace Openium\SymfonyToolKitBundle\Service;
 
@@ -50,11 +41,11 @@ interface ExceptionFormatServiceInterface
      * All keys in array will be serialized and returned to client in a json object
      *
      * @param array<string, int|string|array<string|int, mixed>|null> $error
-     * @param Exception $exception
      *
      * @return array<string, int|string|array<string|int, mixed>|null>
      */
     public function addKeyToErrorArray(array $error, Exception $exception): array;
+
     /**
      * getStatusCode
      */
@@ -68,6 +59,7 @@ interface ExceptionFormatServiceInterface
     /**
      * genericExceptionResponse
      * must return array composed by error information returned to client
+     *
      * @return array{0: int, 1: string, 2:string|null} [code, text, message]
      */
     public function genericExceptionResponse(Exception $exception): array;

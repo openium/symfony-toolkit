@@ -15,15 +15,12 @@ class PaginatedResult
     #[Groups(['default'])]
     private ?int $limit;
 
-    #[Groups(['default'])]
-    private array $data;
-
-    public function __construct(array $data, FilterParameters $filterParameters, int $totalItems)
+    public function __construct(#[Groups(['default'])]
+    private array $data, FilterParameters $filterParameters, int $totalItems)
     {
         $this->limit = $filterParameters->getLimit();
         $this->page = $filterParameters->getPage() ?? 1;
         $this->totalPage = $this->limit !== null ? ceil($totalItems / $this->limit) : 1;
-        $this->data = $data;
     }
 
     public function getPage(): int

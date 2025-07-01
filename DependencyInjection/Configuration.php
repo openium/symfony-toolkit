@@ -1,16 +1,5 @@
 <?php
 
-/**
- * Configuration class
- *
- * PHP Version >=8.0
- *
- * @package  Openium\SymfonyToolKitBundle\DependencyInjection
- * @author   Openium <contact@openium.fr>
- * @license  Openium All right reserved
- * @link     https://www.openium.fr/
- */
-
 namespace Openium\SymfonyToolKitBundle\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;

@@ -55,6 +55,7 @@ class ContentExtractorUtilsTest extends TestCase
         } catch (ContentExtractorMissingParameterException) {
             self::fail('ContentExtractorMissingParameterException');
         }
+
         // then
         self::assertTrue(true);
     }
@@ -71,6 +72,7 @@ class ContentExtractorUtilsTest extends TestCase
         } catch (ContentExtractorMissingParameterException) {
             self::fail('ContentExtractorMissingParameterException');
         }
+
         // then
         self::assertTrue(true);
     }
@@ -87,6 +89,7 @@ class ContentExtractorUtilsTest extends TestCase
         } catch (ContentExtractorMissingParameterException) {
             self::fail('ContentExtractorMissingParameterException');
         }
+
         // then
         self::assertTrue(true);
     }
@@ -125,6 +128,7 @@ class ContentExtractorUtilsTest extends TestCase
         } catch (ContentExtractorStringPropertyException) {
             self::fail('ContentExtractorStringPropertyException');
         }
+
         // then
         self::assertTrue(true);
     }
@@ -141,6 +145,7 @@ class ContentExtractorUtilsTest extends TestCase
         } catch (ContentExtractorStringPropertyException) {
             self::fail('ContentExtractorStringPropertyException');
         }
+
         // then
         self::assertTrue(true);
     }
@@ -199,6 +204,7 @@ class ContentExtractorUtilsTest extends TestCase
         } catch (ContentExtractorBooleanPropertyException) {
             self::fail('ContentExtractorBooleanPropertyException');
         }
+
         // then
         self::assertTrue(true);
     }
@@ -238,6 +244,7 @@ class ContentExtractorUtilsTest extends TestCase
         } catch (ContentExtractorIntegerPropertyException) {
             self::fail('ContentExtractorIntegerPropertyException');
         }
+
         // then
         self::assertTrue(true);
     }
@@ -254,6 +261,7 @@ class ContentExtractorUtilsTest extends TestCase
         } catch (ContentExtractorIntegerPropertyException) {
             self::fail('ContentExtractorIntegerPropertyException');
         }
+
         // then
         self::assertTrue(true);
     }
@@ -304,6 +312,7 @@ class ContentExtractorUtilsTest extends TestCase
         } catch (ContentExtractorFloatPropertyException) {
             self::fail('ContentExtractorFloatPropertyException');
         }
+
         // then
         self::assertTrue(true);
     }
@@ -331,6 +340,7 @@ class ContentExtractorUtilsTest extends TestCase
         } catch (ContentExtractorFloatPropertyException) {
             self::fail('ContentExtractorFloatPropertyException');
         }
+
         // then
         self::assertTrue(true);
     }
@@ -359,6 +369,7 @@ class ContentExtractorUtilsTest extends TestCase
         } catch (ContentExtractorArrayPropertyException) {
             self::fail('ContentExtractorArrayPropertyException');
         }
+
         // then
         self::assertTrue(true);
     }
@@ -570,6 +581,7 @@ class ContentExtractorUtilsTest extends TestCase
         // then
         self::assertNull($result);
     }
+
     public function testGetFloatWithAcceptInt(): void
     {
         // given
@@ -580,7 +592,14 @@ class ContentExtractorUtilsTest extends TestCase
         $nullable = true;
         $acceptInt = true;
         // when
-        $result = ContentExtractorUtils::getFloat($content, $key, $required, $default, $nullable, $acceptInt);
+        $result = ContentExtractorUtils::getFloat(
+            $content,
+            $key,
+            $required,
+            $default,
+            $nullable,
+            $acceptInt
+        );
         // then
         self::assertEquals(1.0, $result);
     }
@@ -595,7 +614,13 @@ class ContentExtractorUtilsTest extends TestCase
         $default = null;
         $nullable = false;
         // when
-        $result = ContentExtractorUtils::getDateTimeInterface($content, $key, $required, $default, $nullable);
+        $result = ContentExtractorUtils::getDateTimeInterface(
+            $content,
+            $key,
+            $required,
+            $default,
+            $nullable
+        );
         // then
         self::assertInstanceOf(\DateTime::class, $result);
     }
@@ -609,7 +634,13 @@ class ContentExtractorUtilsTest extends TestCase
         $default = null;
         $nullable = false;
         // when
-        $result = ContentExtractorUtils::getDateTimeInterface($content, $key, $required, $default, $nullable);
+        $result = ContentExtractorUtils::getDateTimeInterface(
+            $content,
+            $key,
+            $required,
+            $default,
+            $nullable
+        );
         // then
         self::assertInstanceOf(\DateTime::class, $result);
     }
@@ -649,7 +680,13 @@ class ContentExtractorUtilsTest extends TestCase
         $default = null;
         $nullable = true;
         // when
-        $result = ContentExtractorUtils::getDateTimeInterface($content, $key, $required, $default, $nullable);
+        $result = ContentExtractorUtils::getDateTimeInterface(
+            $content,
+            $key,
+            $required,
+            $default,
+            $nullable
+        );
         // then
         self::assertNull($result);
     }
@@ -663,7 +700,13 @@ class ContentExtractorUtilsTest extends TestCase
         $default = new DateTimeImmutable();
         $nullable = false;
         // when
-        $result = ContentExtractorUtils::getDateTimeInterface($content, $key, $required, $default, $nullable);
+        $result = ContentExtractorUtils::getDateTimeInterface(
+            $content,
+            $key,
+            $required,
+            $default,
+            $nullable
+        );
         // then
         self::assertEquals($default, $result);
     }

@@ -3,11 +3,10 @@
 namespace Openium\SymfonyToolKitBundle\Tests\Service;
 
 use Doctrine\DBAL\Exception;
-use Doctrine\DBAL\Exception\NotNullConstraintViolationException;
-use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\ORMInvalidArgumentException;
 use Openium\SymfonyToolKitBundle\Service\DoctrineExceptionHandlerService;
 use PDOException;
+use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
@@ -20,12 +19,12 @@ use UnexpectedValueException;
  *
  * @package Openium\SymfonyToolKitBundle\Test\Service
  */
-#[\PHPUnit\Framework\Attributes\CodeCoverageIgnore]
+#[CoversNothing]
 class DoctrineExceptionHandlerServiceTest extends TestCase
 {
     private MockObject&LoggerInterface $logger;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->logger = $this->getMockBuilder(LoggerInterface::class)
             ->disableOriginalConstructor()
@@ -35,7 +34,6 @@ class DoctrineExceptionHandlerServiceTest extends TestCase
 
     public function testLog(): void
     {
-
         $throwable = $this->getMockBuilder(\Exception::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -47,37 +45,38 @@ class DoctrineExceptionHandlerServiceTest extends TestCase
         self::assertTrue($doctrineExceptionHandler instanceof DoctrineExceptionHandlerService);
         $doctrineExceptionHandler->log($throwable);
     }
-/*
-    public function testToHttpExceptionWithUniqueConstraintViolationException(): void
-    {
-        static::expectException("Symfony\Component\HttpKernel\Exception\ConflictHttpException");
-        static::expectExceptionMessage("Conflict error");
-        $exc = new \PDOException();
-        $pdoExc = $this->createMock(Exception\DriverException::class)
-        ->expects(self::once())->method('getPrevious')->willReturn($exc);
-        $exceptionDE = new Exception\DriverException($pdoExc);
-        $ucve = new UniqueConstraintViolationException($exceptionDE, null);
-        $this->logger->expects($this->exactly(6))->method('error');
-        $doctrineExceptionHandler = new DoctrineExceptionHandlerService($this->logger);
-        self::assertTrue($doctrineExceptionHandler instanceof DoctrineExceptionHandlerService);
-        $doctrineExceptionHandler->toHttpException($ucve);
-    }
 
-    public function testToHttpExceptionWithNotNullConstraintViolationException(): void
-    {
-        static::expectException("Symfony\Component\HttpKernel\Exception\BadRequestHttpException");
-        static::expectExceptionMessage("Entity's management error");
-        $exc = new \PDOException();
-        $pdoExc = $this->createMock(Exception\DriverException::class)
+    /*
+        public function testToHttpExceptionWithUniqueConstraintViolationException(): void
+        {
+            static::expectException("Symfony\Component\HttpKernel\Exception\ConflictHttpException");
+            static::expectExceptionMessage("Conflict error");
+            $exc = new \PDOException();
+            $pdoExc = $this->createMock(Exception\DriverException::class)
             ->expects(self::once())->method('getPrevious')->willReturn($exc);
-        $exceptionDE = new Exception\DriverException($pdoExc, null);
-        $nncve = new NotNullConstraintViolationException($exceptionDE, null);
-        $this->logger->expects($this->exactly(5))->method('error');
-        $doctrineExceptionHandler = new DoctrineExceptionHandlerService($this->logger);
-        self::assertTrue($doctrineExceptionHandler instanceof DoctrineExceptionHandlerService);
-        $doctrineExceptionHandler->toHttpException($nncve);
-    }
-*/
+            $exceptionDE = new Exception\DriverException($pdoExc);
+            $ucve = new UniqueConstraintViolationException($exceptionDE, null);
+            $this->logger->expects($this->exactly(6))->method('error');
+            $doctrineExceptionHandler = new DoctrineExceptionHandlerService($this->logger);
+            self::assertTrue($doctrineExceptionHandler instanceof DoctrineExceptionHandlerService);
+            $doctrineExceptionHandler->toHttpException($ucve);
+        }
+
+        public function testToHttpExceptionWithNotNullConstraintViolationException(): void
+        {
+            static::expectException("Symfony\Component\HttpKernel\Exception\BadRequestHttpException");
+            static::expectExceptionMessage("Entity's management error");
+            $exc = new \PDOException();
+            $pdoExc = $this->createMock(Exception\DriverException::class)
+                ->expects(self::once())->method('getPrevious')->willReturn($exc);
+            $exceptionDE = new Exception\DriverException($pdoExc, null);
+            $nncve = new NotNullConstraintViolationException($exceptionDE, null);
+            $this->logger->expects($this->exactly(5))->method('error');
+            $doctrineExceptionHandler = new DoctrineExceptionHandlerService($this->logger);
+            self::assertTrue($doctrineExceptionHandler instanceof DoctrineExceptionHandlerService);
+            $doctrineExceptionHandler->toHttpException($nncve);
+        }
+    */
     public function testToHttpExceptionWithORMInvalidArgumentException(): never
     {
         static::expectException(BadRequestHttpException::class);
@@ -181,7 +180,10 @@ class DoctrineExceptionHandlerServiceTest extends TestCase
         $message = "new error message";
         $doctrineExceptionHandler = new DoctrineExceptionHandlerService($this->logger);
         // then
-        static::assertEquals("Missing database table", $doctrineExceptionHandler->getMissingDatabaseTableMessage());
+        static::assertEquals(
+            "Missing database table",
+            $doctrineExceptionHandler->getMissingDatabaseTableMessage()
+        );
         // when
         $doctrineExceptionHandler->setMissingDatabaseTableMessage($message);
         // then
@@ -194,7 +196,10 @@ class DoctrineExceptionHandlerServiceTest extends TestCase
         $message = "new error message";
         $doctrineExceptionHandler = new DoctrineExceptionHandlerService($this->logger);
         // then
-        static::assertEquals("Database schema error", $doctrineExceptionHandler->getDatabaseSchemaErrorMessage());
+        static::assertEquals(
+            "Database schema error",
+            $doctrineExceptionHandler->getDatabaseSchemaErrorMessage()
+        );
         // when
         $doctrineExceptionHandler->setDatabaseSchemaErrorMessage($message);
         // then
@@ -207,7 +212,10 @@ class DoctrineExceptionHandlerServiceTest extends TestCase
         $message = "new error message";
         $doctrineExceptionHandler = new DoctrineExceptionHandlerService($this->logger);
         // then
-        static::assertEquals("Query syntax error", $doctrineExceptionHandler->getQuerySyntaxErrorMessage());
+        static::assertEquals(
+            "Query syntax error",
+            $doctrineExceptionHandler->getQuerySyntaxErrorMessage()
+        );
         // when
         $doctrineExceptionHandler->setQuerySyntaxErrorMessage($message);
         // then
@@ -220,11 +228,17 @@ class DoctrineExceptionHandlerServiceTest extends TestCase
         $message = "new error message";
         $doctrineExceptionHandler = new DoctrineExceptionHandlerService($this->logger);
         // then
-        static::assertEquals("Entity's management error", $doctrineExceptionHandler->getEntityManagementErrorMessage());
+        static::assertEquals(
+            "Entity's management error",
+            $doctrineExceptionHandler->getEntityManagementErrorMessage()
+        );
         // when
         $doctrineExceptionHandler->setEntityManagementErrorMessage($message);
         // then
-        static::assertEquals($message, $doctrineExceptionHandler->getEntityManagementErrorMessage());
+        static::assertEquals(
+            $message,
+            $doctrineExceptionHandler->getEntityManagementErrorMessage()
+        );
     }
 
     public function testConflictMessage(): void
@@ -246,7 +260,10 @@ class DoctrineExceptionHandlerServiceTest extends TestCase
         $message = "new error message";
         $doctrineExceptionHandler = new DoctrineExceptionHandlerService($this->logger);
         // then
-        static::assertEquals("Database error", $doctrineExceptionHandler->getDatabaseErrorMessage());
+        static::assertEquals(
+            "Database error",
+            $doctrineExceptionHandler->getDatabaseErrorMessage()
+        );
         // when
         $doctrineExceptionHandler->setDatabaseErrorMessage($message);
         // then
@@ -259,7 +276,10 @@ class DoctrineExceptionHandlerServiceTest extends TestCase
         $message = "new error message";
         $doctrineExceptionHandler = new DoctrineExceptionHandlerService($this->logger);
         // then
-        static::assertEquals("Database request error", $doctrineExceptionHandler->getDatabaseRequestErrorMessage());
+        static::assertEquals(
+            "Database request error",
+            $doctrineExceptionHandler->getDatabaseRequestErrorMessage()
+        );
         // when
         $doctrineExceptionHandler->setDatabaseRequestErrorMessage($message);
         // then
@@ -272,7 +292,10 @@ class DoctrineExceptionHandlerServiceTest extends TestCase
         $message = "new error message";
         $doctrineExceptionHandler = new DoctrineExceptionHandlerService($this->logger);
         // then
-        static::assertEquals("Database schema error (Missing property)", $doctrineExceptionHandler->getMissingPropertyErrorMessage());
+        static::assertEquals(
+            "Database schema error (Missing property)",
+            $doctrineExceptionHandler->getMissingPropertyErrorMessage()
+        );
         // when
         $doctrineExceptionHandler->setMissingPropertyErrorMessage($message);
         // then

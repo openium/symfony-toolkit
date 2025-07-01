@@ -27,9 +27,11 @@ class DateStringUtils
                 $format = 'Y-m-d';
             }
         }
+
         if (!$timeZone instanceof \DateTimeZone) {
             $timeZone = new DateTimeZone('Europe/Paris');
         }
+
         return DateTime::createFromFormat(
             $format,
             $dateString,

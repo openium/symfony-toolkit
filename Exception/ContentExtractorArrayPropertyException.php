@@ -1,12 +1,4 @@
 <?php
-/**
- * PHP Version >=8.0
- *
- * @package  Openium\SymfonyToolKitBundle\Exception
- * @author   Openium <contact@openium.fr>
- * @license  Openium All right reserved
- * @link     https://www.openium.fr/
- */
 
 namespace Openium\SymfonyToolKitBundle\Exception;
 
@@ -20,6 +12,7 @@ use Exception;
 class ContentExtractorArrayPropertyException extends ContentExtractorException
 {
     final public const MESSAGE = "Property must be an array";
+
     final public const CODE = 2_015_151_207;
 
     public function __construct(

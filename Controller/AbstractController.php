@@ -1,12 +1,4 @@
 <?php
-/**
- * PHP Version >=8.0
- *
- * @package  Openium\SymfonyToolKitBundle\Controller
- * @author   Openium <contact@openium.fr>
- * @license  Openium All right reserved
- * @link     https://www.openium.fr/
- */
 
 namespace Openium\SymfonyToolKitBundle\Controller;
 
@@ -42,8 +34,6 @@ class AbstractController extends BaseController
     /**
      * getMultipartContent
      *
-     * @param Request $request
-     * @param string $key
      *
      * @throws BadRequestException
      * @throws InvalidContentFormatException
@@ -57,6 +47,7 @@ class AbstractController extends BaseController
         if (!$request->request->has($key)) {
             throw new MissingContentException();
         }
+
         return $this->extractObjectFromString($request->request->get($key));
     }
 
@@ -72,22 +63,22 @@ class AbstractController extends BaseController
     protected function extractObjectFromString(?string $json): array
     {
         try {
-            $content = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
+            $content = json_decode((string) $json, true, 512, JSON_THROW_ON_ERROR);
         } catch (JsonException) {
             throw new MissingContentException();
         }
+
         if (!is_array($content)) {
             throw new InvalidContentFormatException();
         }
+
         return $content;
     }
 
     /**
      * getFilterParameters
      *
-     * @param Request $request
      *
-     * @return FilterParameters
      */
     protected function getFilterParameters(Request $request): FilterParameters
     {

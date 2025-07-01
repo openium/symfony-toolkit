@@ -1,13 +1,4 @@
 <?php
-/**
- * DoctrineExceptionHandlerService
- * PHP Version >=8.0
- *
- * @package  Openium\SymfonyToolKitBundle\Service
- * @author   Openium <contact@openium.fr>
- * @license  Openium All right reserved
- * @link     https://www.openium.fr/
- */
 
 namespace Openium\SymfonyToolKitBundle\Service;
 
@@ -116,13 +107,16 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
      */
     protected function createBadRequest(Throwable $throwable, string $message = null): never
     {
-        throw new BadRequestHttpException($message ?? $this->entityManagementErrorMessage, $throwable);
+        throw new BadRequestHttpException(
+            $message ?? $this->entityManagementErrorMessage,
+            $throwable
+        );
     }
 
     /**
      * createConflict
      *
-     * @param string|null $message
+     *
      * @throws ConflictHttpException
      */
     protected function createConflict(Throwable $throwable, ?string $message = null): never
@@ -130,6 +124,7 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
         if ($throwable->getPrevious() instanceof \Throwable) {
             $this->logger->error($throwable->getPrevious()->getCode());
         }
+
         throw new ConflictHttpException($message ?? $this->conflictMessage, $throwable);
     }
 
@@ -142,7 +137,8 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
     protected function dbalExceptionManagement(Exception $DBALException): never
     {
         $previous = $DBALException->getPrevious();
-        $code = $previous instanceof \Throwable ? (string)$previous->getCode() : (string)$DBALException->getCode();
+        $code = $previous instanceof \Throwable ? (string)$previous->getCode()
+            : (string)$DBALException->getCode();
         switch ($code) {
             case '23000':
                 $this->createConflict($DBALException);
@@ -157,6 +153,7 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
             default:
                 break;
         }
+
         $this->createBadRequest($DBALException);
     }
 
@@ -243,8 +240,8 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
     /**
      * Setter for conflictMessage
      */
-    public function setConflictMessage(string $conflictMessage): DoctrineExceptionHandlerServiceInterface
-    {
+    public function setConflictMessage(string $conflictMessage
+    ): DoctrineExceptionHandlerServiceInterface {
         $this->conflictMessage = $conflictMessage;
         return $this;
     }
@@ -260,8 +257,8 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
     /**
      * Setter for databaseErrorMessage
      */
-    public function setDatabaseErrorMessage(string $databaseErrorMessage): DoctrineExceptionHandlerServiceInterface
-    {
+    public function setDatabaseErrorMessage(string $databaseErrorMessage
+    ): DoctrineExceptionHandlerServiceInterface {
         $this->databaseErrorMessage = $databaseErrorMessage;
         return $this;
     }

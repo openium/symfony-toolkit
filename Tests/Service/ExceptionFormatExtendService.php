@@ -4,13 +4,14 @@ namespace Openium\SymfonyToolKitBundle\Tests\Service;
 
 use Exception;
 use Openium\SymfonyToolKitBundle\Service\ExceptionFormatService;
+use PHPUnit\Framework\Attributes\CoversNothing;
 
 /**
  * Class ExceptionFormatServiceTest
  *
  * @package Openium\SymfonyToolKitBundle\Test\Service
  */
-#[\PHPUnit\Framework\Attributes\CodeCoverageIgnore]
+#[CoversNothing]
 class ExceptionFormatExtendService extends ExceptionFormatService
 {
     protected array $jsonKeys = [

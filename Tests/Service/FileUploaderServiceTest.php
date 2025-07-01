@@ -4,6 +4,7 @@ namespace Openium\SymfonyToolKitBundle\Tests\Service;
 
 use Openium\SymfonyToolKitBundle\Service\FileUploaderService;
 use Openium\SymfonyToolKitBundle\Tests\Fixtures\Entity\EntityWithUpload;
+use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -14,12 +15,12 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
  *
  * @package Openium\SymfonyToolKitBundle\Tests\Service
  */
-#[\PHPUnit\Framework\Attributes\CodeCoverageIgnore]
+#[CoversNothing]
 class FileUploaderServiceTest extends TestCase
 {
     protected MockObject&UploadedFile $file;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->file = $this->getMockBuilder(UploadedFile::class)
             ->disableOriginalConstructor()
@@ -46,9 +47,10 @@ class FileUploaderServiceTest extends TestCase
     {
         $this->file->expects(self::once())
             ->method('guessClientExtension')
-            ->will($this->returnValue('png'));
+            ->willReturn('png');
         $entity = new EntityWithUpload();
         $entity->setFile($this->file);
+
         $fileUploaderService = new FileUploaderService('/tmp', 'test');
         self::assertTrue($fileUploaderService instanceof FileUploaderService);
         $result = $fileUploaderService->prepareUploadPath($entity, "somename");
@@ -64,9 +66,10 @@ class FileUploaderServiceTest extends TestCase
         static::expectExceptionMessage("The file extension is empty.");
         $this->file->expects(self::once())
             ->method('guessClientExtension')
-            ->will($this->returnValue(null));
+            ->willReturn(null);
         $entity = new EntityWithUpload();
         $entity->setFile($this->file);
+
         $fileUploaderService = new FileUploaderService('/tmp', 'test');
         self::assertTrue($fileUploaderService instanceof FileUploaderService);
         $fileUploaderService->prepareUploadPath($entity, "somename");
@@ -79,9 +82,10 @@ class FileUploaderServiceTest extends TestCase
     {
         $this->file->expects(self::once())
             ->method('guessClientExtension')
-            ->will($this->returnValue('png'));
+            ->willReturn('png');
         $entity = new EntityWithUpload();
         $entity->setFile($this->file);
+
         $fileUploaderService = new FileUploaderService('/tmp', 'test');
         self::assertTrue($fileUploaderService instanceof FileUploaderService);
         $result = $fileUploaderService->prepareUploadPath($entity);
@@ -109,6 +113,7 @@ class FileUploaderServiceTest extends TestCase
         static::expectExceptionMessage("Call prepareUploadPath method on the entity before upload.");
         $entity = new EntityWithUpload();
         $entity->setFile($this->file);
+
         $fileUploaderService = new FileUploaderService('/tmp', 'test');
         self::assertTrue($fileUploaderService instanceof FileUploaderService);
         $fileUploaderService->uploadEntity($entity);
@@ -122,9 +127,10 @@ class FileUploaderServiceTest extends TestCase
         // Make File
         $this->file->expects(self::once())
             ->method('guessClientExtension')
-            ->will($this->returnValue('png'));
+            ->willReturn('png');
         $entity = new EntityWithUpload();
         $entity->setFile($this->file);
+
         $fileUploaderService = new FileUploaderService('/tmp', 'test');
         self::assertTrue($fileUploaderService instanceof FileUploaderService);
         $entity = $fileUploaderService->prepareUploadPath($entity);
