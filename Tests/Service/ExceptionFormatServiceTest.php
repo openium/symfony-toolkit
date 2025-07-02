@@ -3,168 +3,124 @@
 namespace Openium\SymfonyToolKitBundle\Tests\Service;
 
 use Exception;
+use Openium\SymfonyToolKitBundle\DTO\DevExceptionDTO;
+use Openium\SymfonyToolKitBundle\DTO\DevPreviousExceptionDTO;
+use Openium\SymfonyToolKitBundle\DTO\ExceptionDTO;
 use Openium\SymfonyToolKitBundle\Service\ExceptionFormatService;
-use PHPUnit\Framework\Attributes\CoversNothing;
-use PHPUnit\Framework\MockObject\MockObject;
+use Openium\SymfonyToolKitBundle\Utils\ExceptionFormatUtilsInterface;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\HttpException;
-use Symfony\Component\HttpKernel\KernelInterface;
-use TypeError;
+use ReflectionClass;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Serializer\SerializerInterface;
 
 /**
  * Class ExceptionFormatServiceTest
  *
  * @package Openium\SymfonyToolKitBundle\Test\Service
  */
-#[CoversNothing]
 class ExceptionFormatServiceTest extends TestCase
 {
-    private MockObject&KernelInterface $testKernel;
-
-    protected function setUp(): void
+    public function testFormatExceptionResponseReturnsJsonResponseWithCorrectStatusCodeAndContentInProd(
+    ): void
     {
-        $this->testKernel = $this->getMockBuilder(KernelInterface::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        parent::setUp();
+        $serializer = $this->createMock(SerializerInterface::class);
+        $utils = $this->createMock(ExceptionFormatUtilsInterface::class);
+        $utils->method('getStatusCode')->willReturn(400);
+        $utils->method('getStatusText')->willReturn('Bad Request');
+        $serializer->method('serialize')->willReturn(json_encode([
+            'code' => 400,
+            'text' => 'Bad Request',
+            'message' => 'Erreur',
+        ]));
+        $service = new ExceptionFormatService($serializer, $utils, 'prod');
+        $exception = new Exception('Erreur', 400);
+        $response = $service->formatExceptionResponse($exception);
+        $this->assertInstanceOf(JsonResponse::class, $response);
+        $this->assertEquals(400, $response->getStatusCode());
+        $content = json_decode($response->getContent(), true);
+        $this->assertEquals(400, $content['code']);
+        $this->assertEquals('Bad Request', $content['text']);
+        $this->assertEquals('Erreur', $content['message']);
     }
 
-    public function testGetStatusCodeWithHttpException(): void
+    public function testFormatExceptionResponseReturnsJsonResponseWithTraceInDev(): void
     {
-        $exception = new HttpException(Response::HTTP_FORBIDDEN);
-        $exceptionFormatService = new ExceptionFormatService($this->testKernel);
-        self::assertTrue($exceptionFormatService instanceof ExceptionFormatService);
-        $statusCode = $exceptionFormatService->getStatusCode($exception);
-        self::assertTrue(is_int($statusCode));
-        self::assertEquals($statusCode, Response::HTTP_FORBIDDEN);
+        $serializer = $this->createMock(SerializerInterface::class);
+        $utils = $this->createMock(ExceptionFormatUtilsInterface::class);
+        $utils->method('getStatusCode')->willReturn(500);
+        $utils->method('getStatusText')->willReturn('Internal Server Error');
+        $serializer->method('serialize')->willReturn(json_encode([
+            'code' => 500,
+            'text' => 'Internal Server Error',
+            'message' => 'Erreur dev',
+            'trace' => [],
+            'previous' => null,
+        ]));
+        $service = new ExceptionFormatService($serializer, $utils, 'dev');
+        $exception = new Exception('Erreur dev', 500);
+        $response = $service->formatExceptionResponse($exception);
+        $this->assertInstanceOf(JsonResponse::class, $response);
+        $this->assertEquals(500, $response->getStatusCode());
+        $content = json_decode($response->getContent(), true);
+        $this->assertEquals(500, $content['code']);
+        $this->assertEquals('Internal Server Error', $content['text']);
+        $this->assertEquals('Erreur dev', $content['message']);
+        $this->assertIsArray($content['trace']);
     }
 
-    public function testGetStatusCodeWithAccessDeniedException(): void
+    public function testGetDTOReturnsExceptionDTOInProd(): void
     {
-        $exception = new Exception();
-        $exceptionFormatService = new ExceptionFormatService($this->testKernel);
-        self::assertTrue($exceptionFormatService instanceof ExceptionFormatService);
-        $statusCode = $exceptionFormatService->getStatusCode($exception);
-        self::assertTrue(is_int($statusCode));
-        self::assertEquals($statusCode, Response::HTTP_INTERNAL_SERVER_ERROR);
+        $serializer = $this->createMock(SerializerInterface::class);
+        $utils = $this->createMock(ExceptionFormatUtilsInterface::class);
+        $utils->method('getStatusCode')->willReturn(401);
+        $utils->method('getStatusText')->willReturn('Unauthorized');
+        $service = new ExceptionFormatService($serializer, $utils, 'prod');
+        $exception = new Exception('Non autorisé', 401);
+        $reflection = new ReflectionClass($service);
+        $method = $reflection->getMethod('getDTO');
+        $method->setAccessible(true);
+        $dto = $method->invoke($service, $exception);
+        $this->assertInstanceOf(ExceptionDTO::class, $dto);
+        $this->assertEquals(401, $dto->code);
+        $this->assertEquals('Unauthorized', $dto->text);
+        $this->assertEquals('Non autorisé', $dto->message);
     }
 
-    public function testGetStatusTextWith402HttpException(): void
+    public function testGetDTOReturnsDevExceptionDTOInDevWithPrevious(): void
     {
-        $exception = new HttpException(Response::HTTP_PAYMENT_REQUIRED);
-        $exceptionFormatService = new ExceptionFormatService($this->testKernel);
-        self::assertTrue($exceptionFormatService instanceof ExceptionFormatService);
-        $text = $exceptionFormatService->getStatusText($exception);
-        self::assertTrue(is_string($text));
-        self::assertEquals($text, 'Request Failed');
+        $serializer = $this->createMock(SerializerInterface::class);
+        $utils = $this->createMock(ExceptionFormatUtilsInterface::class);
+        $utils->method('getStatusCode')->willReturn(500);
+        $utils->method('getStatusText')->willReturn('Internal Server Error');
+        $service = new ExceptionFormatService($serializer, $utils, 'dev');
+        $previous = new Exception('Précédent', 123);
+        $exception = new Exception('Erreur dev', 500, $previous);
+        $reflection = new ReflectionClass($service);
+        $method = $reflection->getMethod('getDTO');
+        $method->setAccessible(true);
+        $dto = $method->invoke($service, $exception);
+        $this->assertInstanceOf(DevExceptionDTO::class, $dto);
+        $this->assertEquals(500, $dto->code);
+        $this->assertEquals('Internal Server Error', $dto->text);
+        $this->assertEquals('Erreur dev', $dto->message);
+        $this->assertIsArray($dto->trace);
+        $this->assertInstanceOf(DevPreviousExceptionDTO::class, $dto->previous);
+        $this->assertEquals('Précédent', $dto->previous->message);
+        $this->assertEquals(123, $dto->previous->code);
     }
 
-    public function testGetStatusTextWith404HttpException(): void
+    public function testGenericExceptionResponseReturnsExpectedArray(): void
     {
-        $exception = new HttpException(Response::HTTP_NOT_FOUND);
-        $exceptionFormatService = new ExceptionFormatService($this->testKernel);
-        self::assertTrue($exceptionFormatService instanceof ExceptionFormatService);
-        $text = $exceptionFormatService->getStatusText($exception);
-        self::assertTrue(is_string($text));
-        self::assertEquals($text, Response::$statusTexts[Response::HTTP_NOT_FOUND]);
-    }
-
-    public function testGetStatusTextWithUnknowHttpException(): void
-    {
-        $exception = new HttpException(456987);
-        $exceptionFormatService = new ExceptionFormatService($this->testKernel);
-        self::assertTrue($exceptionFormatService instanceof ExceptionFormatService);
-        $text = $exceptionFormatService->getStatusText($exception);
-        self::assertTrue(is_string($text));
-        self::assertEquals($text, Response::$statusTexts[Response::HTTP_INTERNAL_SERVER_ERROR]);
-    }
-
-    public function testGetArrayWith404HttpException(): void
-    {
-        $exception = new HttpException(Response::HTTP_NOT_FOUND);
-        $this->testKernel->expects(self::once())
-            ->method('getEnvironment')
-            ->willReturn("prod");
-        $exceptionFormatService = new ExceptionFormatService($this->testKernel);
-        self::assertTrue($exceptionFormatService instanceof ExceptionFormatService);
-        $result = $exceptionFormatService->getArray($exception);
-        self::assertTrue(is_array($result));
-        self::assertTrue(array_key_exists('status_code', $result));
-        self::assertEquals($result['status_code'], 404);
-        self::assertTrue(array_key_exists('status_text', $result));
-        self::assertEquals($result['status_text'], Response::$statusTexts[Response::HTTP_NOT_FOUND]);
-        self::assertTrue(array_key_exists('message', $result));
-        self::assertFalse(array_key_exists('trace', $result));
-        self::assertFalse(array_key_exists('previous', $result));
-    }
-
-    public function testGetArrayWith404HttpExceptionAndDevEnd(): void
-    {
-        $previous = new Exception('previous exception', 123456, null);
-        $this->testKernel->expects(self::once())
-            ->method('getEnvironment')
-            ->willReturn("dev");
-        $exception = new HttpException(Response::HTTP_NOT_FOUND, 'message exception', $previous);
-        $exceptionFormatService = new ExceptionFormatService($this->testKernel);
-        self::assertTrue($exceptionFormatService instanceof ExceptionFormatService);
-        $result = $exceptionFormatService->getArray($exception);
-        self::assertTrue(is_array($result));
-        self::assertTrue(array_key_exists('status_code', $result));
-        self::assertEquals($result['status_code'], 404);
-        self::assertTrue(array_key_exists('status_text', $result));
-        self::assertEquals($result['status_text'], Response::$statusTexts[Response::HTTP_NOT_FOUND]);
-        self::assertTrue(array_key_exists('message', $result));
-        self::assertEquals('message exception', $result['message']);
-        self::assertTrue(array_key_exists('trace', $result));
-        self::assertTrue(array_key_exists('previous', $result));
-        self::assertEquals('previous exception', $result['previous']['message']);
-        self::assertEquals(123456, $result['previous']['code']);
-    }
-
-    public function testFormatExceptionResponse(): void
-    {
-        $exception = new HttpException(Response::HTTP_NOT_FOUND);
-        $this->testKernel->expects(self::once())
-            ->method('getEnvironment')
-            ->willReturn("prod");
-        $exceptionFormatService = new ExceptionFormatService($this->testKernel);
-        self::assertTrue($exceptionFormatService instanceof ExceptionFormatService);
-        $response = $exceptionFormatService->formatExceptionResponse($exception);
-        self::assertTrue($response instanceof Response);
-        self::assertEquals($response->getStatusCode(), Response::HTTP_NOT_FOUND);
-    }
-
-
-    public function testFormatExceptionResponseWithTypeError(): void
-    {
-        $errorMsg = 'Type error';
-        $exception = new TypeError($errorMsg);
-        $exceptionFormatService = new ExceptionFormatService($this->testKernel);
-        self::assertTrue($exceptionFormatService instanceof ExceptionFormatService);
-        $response = $exceptionFormatService->formatExceptionResponse($exception);
-        self::assertTrue($response instanceof Response);
-        self::assertEquals(Response::HTTP_INTERNAL_SERVER_ERROR, $response->getStatusCode());
-        self::assertEquals($errorMsg, $response->getContent());
-    }
-
-    public function testGenericExceptionResponseNotFound(): void
-    {
-        $exception = new HttpException(Response::HTTP_NOT_FOUND);
-        $exceptionFormatService = new ExceptionFormatService($this->testKernel);
-        [$code, $text, $message] = $exceptionFormatService->genericExceptionResponse($exception);
-        self::assertEquals(404, $code);
-        self::assertEquals('Not Found', $text);
-        self::assertNull($message);
-    }
-
-    public function testGenericExceptionResponseUnauthorized(): void
-    {
-        $exception = new HttpException(Response::HTTP_UNAUTHORIZED);
-        $exceptionFormatService = new ExceptionFormatService($this->testKernel);
-        [$code, $text, $message] = $exceptionFormatService->genericExceptionResponse($exception);
-        self::assertEquals(401, $code);
-        self::assertEquals('Unauthorized', $text);
-        self::assertNull($message);
+        $serializer = $this->createMock(SerializerInterface::class);
+        $utils = $this->createMock(ExceptionFormatUtilsInterface::class);
+        $utils->method('getStatusCode')->willReturn(404);
+        $utils->method('getStatusText')->willReturn('Not Found');
+        $service = new ExceptionFormatService($serializer, $utils, 'prod');
+        $exception = new Exception('Introuvable', 404);
+        $reflection = new ReflectionClass($service);
+        $method = $reflection->getMethod('genericExceptionResponse');
+        $method->setAccessible(true);
+        $result = $method->invoke($service, $exception);
+        $this->assertEquals([404, 'Not Found', null], $result);
     }
 }

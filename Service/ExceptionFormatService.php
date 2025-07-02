@@ -4,10 +4,14 @@ namespace Openium\SymfonyToolKitBundle\Service;
 
 use Exception;
 use InvalidArgumentException;
+use Openium\SymfonyToolKitBundle\DTO\DevExceptionDTO;
+use Openium\SymfonyToolKitBundle\DTO\DevPreviousExceptionDTO;
+use Openium\SymfonyToolKitBundle\DTO\ExceptionDTO;
+use Openium\SymfonyToolKitBundle\Utils\ExceptionFormatUtilsInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
-use Symfony\Component\HttpKernel\KernelInterface;
+use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\Serializer\SerializerInterface;
 use Throwable;
 
 /**
@@ -20,50 +24,33 @@ class ExceptionFormatService implements ExceptionFormatServiceInterface
     /**
      * ExceptionFormatService constructor.
      */
-    public function __construct(protected KernelInterface $kernel)
-    {
+    public function __construct(
+        protected readonly SerializerInterface $serializer,
+        protected readonly ExceptionFormatUtilsInterface $exceptionFormatUtils,
+        protected readonly string $env
+    ) {
     }
 
-    /** @var array{code: string, text: string, message: string} */
-    protected array $jsonKeys = [
-        'code' => 'status_code',
-        'text' => 'status_text',
-        'message' => 'message',
-    ];
-
-    /**
-     * formatExceptionResponse
-     *
-     * @throws InvalidArgumentException
-     */
     public function formatExceptionResponse(Throwable $exception): Response
     {
-        $response = new JsonResponse();
         if ($exception instanceof Exception) {
-            [$code, $text, $message] = $this->genericExceptionResponse($exception);
-            $error = $this->getArray($exception, $code, $text, $message);
-            $response->setStatusCode($code);
-            try {
-                $json = json_encode($error, JSON_THROW_ON_ERROR);
-                $response->setContent($json);
-            } catch (\JsonException) {
-                $response->setContent('');
-            }
+            $dto = $this->getDTO($exception);
+            return JsonResponse::fromJsonString(
+                $this->serializer->serialize($dto, 'json'),
+                $dto->code
+            );
         } else {
-            $response->setStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR);
-            $response->setContent($exception->getMessage());
+            return new Response($exception->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-
-        return $response;
     }
 
     /**
      * @return array{0: int, 1: string, 2:string|null} [code, text, message]
      */
-    public function genericExceptionResponse(Exception $exception): array
+    private function genericExceptionResponse(Exception $exception): array
     {
-        $code = $this->getStatusCode($exception);
-        $text = $this->getStatusText($exception);
+        $code = $this->exceptionFormatUtils->getStatusCode($exception);
+        $text = $this->exceptionFormatUtils->getStatusText($exception);
         $message = null;
         return [$code, $text, $message];
     }
@@ -71,68 +58,34 @@ class ExceptionFormatService implements ExceptionFormatServiceInterface
     /**
      * getArray
      *
-     * @return array<string, int|string|array<string|int, mixed>|null>
+     * @param Exception $exception
+     *
+     * @return ExceptionDTO|DevExceptionDTO
      */
-    public function getArray(
-        Exception $exception,
-        ?int $code = null,
-        ?string $text = null,
-        ?string $message = null
-    ): array {
+    private function getDTO(
+        Exception $exception
+    ): ExceptionDTO | DevExceptionDTO {
+        [$code, $text, $message] = $this->genericExceptionResponse($exception);
         /** @var array<string, int|string|array<string|int, mixed>|null> $error */
-        $error = [
-            $this->jsonKeys['code'] => $code ?? $this->getStatusCode($exception),
-            $this->jsonKeys['text'] => $text ?? $this->getStatusText($exception),
-            $this->jsonKeys['message'] => $message ?? $exception->getMessage(),
-        ];
-        $error = $this->addKeyToErrorArray($error, $exception);
-        if ($this->kernel->getEnvironment() !== 'prod') {
-            $error['trace'] = $exception->getTrace();
-            $error['previous'] = [];
-            if (!is_null($exception->getPrevious())) {
-                $error['previous']['message'] = $exception->getPrevious()->getMessage();
-                $error['previous']['code'] = $exception->getPrevious()->getCode();
-            }
-        }
-
-        return $error;
-    }
-
-    /**
-     * addKeyToErrorArray
-     *
-     * @param array<string, int|string|array<string|int, mixed>|null> $error
-     *
-     * @return array<string, int|string|array<string|int, mixed>|null>
-     */
-    public function addKeyToErrorArray(array $error, Exception $exception): array
-    {
-        return $error;
-    }
-
-    /**
-     * getStatusCode
-     */
-    public function getStatusCode(Exception $exception): int
-    {
-        return ($exception instanceof HttpExceptionInterface)
-            ? $exception->getStatusCode()
-            : Response::HTTP_INTERNAL_SERVER_ERROR;
-    }
-
-    /**
-     * getStatusText
-     */
-    public function getStatusText(Exception $exception): string
-    {
-        $code = $this->getStatusCode($exception);
-        if ($code == Response::HTTP_PAYMENT_REQUIRED) {
-            return 'Request Failed';
-        } else {
-            $isCodeExists = array_key_exists($code, Response::$statusTexts);
-            return ($isCodeExists)
-                ? Response::$statusTexts[$code]
-                : Response::$statusTexts[Response::HTTP_INTERNAL_SERVER_ERROR];
-        }
+        $codeValue = $code ?? $this->exceptionFormatUtils->getStatusCode($exception);
+        $textValue = $text ?? $this->exceptionFormatUtils->getStatusText($exception);
+        $messageValue = $message ?? $exception->getMessage();
+        return match ($this->env) {
+            'prod' => new ExceptionDTO(
+                $codeValue,
+                $textValue,
+                $messageValue
+            ),
+            default => new DevExceptionDTO(
+                $codeValue,
+                $textValue,
+                $messageValue,
+                $exception->getTrace(),
+                $exception->getPrevious() ? new DevPreviousExceptionDTO(
+                    $exception->getPrevious()->getCode(),
+                    $exception->getPrevious()->getMessage()
+                ) : null
+            ),
+        };
     }
 }
