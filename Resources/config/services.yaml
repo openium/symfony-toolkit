@@ -1,23 +1,27 @@
 parameters:
-    openium_symfony_toolkit.public_dir: '%kernel.project_dir%/public'
     openium_symfony_toolkit.uploads_dir_name: 'uploads'
-    openium_symfony_toolkit.kernel_exception_listener_enable: true
+    openium_symfony_toolkit.kernel_exception_listener_enable: false
     openium_symfony_toolkit.kernel_exception_listener_path: '/api'
     openium_symfony_toolkit.kernel_exception_listener_class: 'Openium\SymfonyToolKitBundle\EventListener\PathKernelExceptionListener'
 
 services:
+    openium_symfony_toolkit.exception_format_utils:
+        class: Openium\SymfonyToolKitBundle\Utils\ExceptionFormatUtils
+        public: true
 
     openium_symfony_toolkit.file_uploader:
         class: Openium\SymfonyToolKitBundle\Service\FileUploaderService
         arguments:
-            - '%openium_symfony_toolkit.public_dir%'
+            - '%kernel.project_dir%/public'
             - '%openium_symfony_toolkit.uploads_dir_name%'
         public: true
 
     openium_symfony_toolkit.exception_format:
         class: Openium\SymfonyToolKitBundle\Service\ExceptionFormatService
         arguments:
-            - '@kernel'
+            - '@serializer'
+            - '@openium_symfony_toolkit.exception_format_utils'
+            - '%kernel.environment%'
         public: true
 
     openium_symfony_toolkit.doctrine_exception_handler:
