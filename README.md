@@ -177,33 +177,20 @@ namespace App\Service;
 use Openium\SymfonyToolKitBundle\Service\ExceptionFormatService as BaseExceptionFormatService;
 use Openium\SymfonyToolKitBundle\Service\ExceptionFormatServiceInterface;
 
-class ExceptionFormatService extends BaseExceptionFormatService implements ExceptionFormatServiceInterface {
+class ExceptionFormatService implements ExceptionFormatServiceInterface {
 
-    protected array $jsonKeys = [
-        'code' => 'statusCode',
-        'text' => 'statusText',
-        'message' => 'message',
-    ];
-    
-    public function genericExceptionResponse(Exception $exception): array
+    public function formatExceptionResponse(Throwable $exception): Response
     {
-        // You define conditions and exceptions[ExceptionFormatExtendService.php](Tests%2FService%2FExceptionFormatExtendService.php) you want here 
-        if ($exception instanceof MyException) {
-            $code = 123;
-            $text = 'This is my custom exception text';
-            $message = $text;
-            return [$code, $text, $message];
-        }
-        // Or use the default method in the toolkit
-        return parent::genericExceptionResponse($exception);
-    }
-
-    public function addKeyToErrorArray(array $error, Exception $exception): array
-    {
-        if ($exception instanceof MyException) {
-            $error['MyNewKey'] = 'value';
-        }
-        return $error;
+        // You can use the parent method to format the exception
+        // don't forget to extend the base class
+        $response = parent::formatExceptionResponse($exception);
+        
+        // Or you can define your own response
+        // $response = new Response();
+        // $response->setContent(json_encode(['error' => 'Custom error message']));
+        // $response->setStatusCode(Response::HTTP_BAD_REQUEST);
+        
+        return $response;
     }
 }
 ```
@@ -213,23 +200,35 @@ This way you can handle a custom exception.
     $response = $this->exceptionFormat->formatExceptionResponse($exception);
 ~~~
 
+You can also override the service ExceptionFormatUtils who define the text, message and code of the exception.
+The new class must implement ExceptionFormatUtilsInterface.
+And add your own ExceptionFormatUtilsInterface service in your project.
+
+```yaml
+    openium_symfony_toolkit.exception_format_utils:
+      class: Openium\SymfonyToolKitBundle\Utils\ExceptionFormatUtils
+      public: true
+```
+
 ---
 
 ### PathExceptionListener
 
 The listener catch kernel exceptions and transform them into HttpException thanks to ExceptionFormatService.
 
-It is enabled by default and have this configuration :
+It is disabled by default and have this configuration :
 
 ~~~yaml
 parameters:
-  openium_symfony_toolkit.kernel_exception_listener_enable: true
+  openium_symfony_toolkit.kernel_exception_listener_enable: false
   openium_symfony_toolkit.kernel_exception_listener_path: '/api'
   openium_symfony_toolkit.kernel_exception_listener_class: 'Openium\SymfonyToolKitBundle\EventListener\PathExceptionListener'
 ~~~
 
 it use the ExceptionFormatService to format automatically the kernel exceptions
 only for the routes defined in exception_listener_path parameter
+
+Caution, this listener is enabled by default before version 4.3 of the bundle.
 
 ---
 
