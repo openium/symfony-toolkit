@@ -26,7 +26,7 @@ class ContentExtractorDateFormatException extends ContentExtractorException
         string $key = "",
         string $message = self::MESSAGE,
         int $code = self::CODE,
-        Exception $previous = null
+        ?Exception $previous = null
     ) {
         parent::__construct($key, $message, $code, $previous);
     }

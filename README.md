@@ -272,3 +272,28 @@ Two formats can be detected:
 
 If no format is detected, the method falls back to the `'Y-m-d'` format and return false if the string can't be parse as
 DateTime.
+
+### DebugUtils
+
+Provide static methods to help in debugging.
+
+#### Doctrine Query Debug
+
+Allow to log doctrine queries with parameters and types.
+
+Activate logging for Doctrine :
+~~~yaml
+doctrine:
+    dbal:
+        logging: '%kernel.debug%'
+~~~
+
+And in the repository, set the logger for the entity manager (at the beginning of the method for example) :
+~~~php
+    DebugUtils::setDoctrineQueryLogger($entityManager);
+~~~
+
+Then log the query (use it just before execute the query) :
+~~~php
+    DebugUtils::logDoctrineQuery($query);
+~~~
