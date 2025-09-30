@@ -27,14 +27,20 @@ class DebugUtilsTest extends TestCase
     public function testFormatSqlParamWithObjectHavingGetId()
     {
         $obj = new class {
-            public function getId() { return 42; }
+            public function getId()
+            {
+                return 42;
+            }
         };
         $this->assertSame('42', DebugUtils::formatSqlParam($obj));
     }
     public function testFormatSqlParamWithObjectHavingGetIdString()
     {
         $obj = new class {
-            public function getId() { return 'foo'; }
+            public function getId()
+            {
+                return 'foo';
+            }
         };
         $this->assertSame("'foo'", DebugUtils::formatSqlParam($obj));
     }

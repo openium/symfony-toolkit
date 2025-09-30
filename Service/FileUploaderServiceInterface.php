@@ -1,4 +1,5 @@
 <?php
+
 /**
  * FileUploaderServiceInterface
  * PHP Version >=8.0

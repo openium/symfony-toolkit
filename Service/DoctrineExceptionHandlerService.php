@@ -1,4 +1,5 @@
 <?php
+
 /**
  * DoctrineExceptionHandlerService
  * PHP Version >=8.0
@@ -87,21 +88,27 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
         switch ($throwable::class) {
             case TableNotFoundException::class:
                 $this->createBadRequest($throwable, $this->missingDatabaseTableMessage);
+                break;
             case DriverException::class:
             case TableExistsException::class:
             case NonUniqueFieldNameException::class:
                 $this->createBadRequest($throwable, $this->databaseSchemaErrorMessage);
+                break;
             case SyntaxErrorException::class:
                 $this->createBadRequest($throwable, $this->querySyntaxErrorMessage);
+                break;
             case UniqueConstraintViolationException::class:
             case ForeignKeyConstraintViolationException::class:
                 $this->createConflict($throwable, $this->conflictMessage);
+                break;
             case NotNullConstraintViolationException::class:
             case ORMInvalidArgumentException::class:
             case UnexpectedValueException::class:
                 $this->createBadRequest($throwable);
+                break;
             case Exception::class:
                 $this->dbalExceptionManagement($throwable);
+                break;
             default:
                 throw $throwable;
         }
@@ -116,7 +123,10 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
      */
     protected function createBadRequest(Throwable $throwable, ?string $message = null): never
     {
-        throw new BadRequestHttpException($message ?? $this->entityManagementErrorMessage, $throwable);
+        throw new BadRequestHttpException(
+            $message ?? $this->entityManagementErrorMessage,
+            $throwable
+        );
     }
 
     /**
@@ -144,18 +154,25 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
     protected function dbalExceptionManagement(Exception $DBALException): never
     {
         $previous = $DBALException->getPrevious();
-        $code = $previous instanceof \Throwable ? (string)$previous->getCode() : (string)$DBALException->getCode();
+        $code = $previous instanceof \Throwable
+            ? (string)$previous->getCode()
+            : (string)$DBALException->getCode();
         switch ($code) {
             case '23000':
                 $this->createConflict($DBALException);
+                break;
             case '42000':
                 $this->createBadRequest($DBALException, $this->databaseErrorMessage);
+                break;
             case '21000':
                 $this->createBadRequest($DBALException, $this->databaseRequestErrorMessage);
+                break;
             case '21S01':
                 $this->createBadRequest($DBALException, $this->missingPropertyErrorMessage);
+                break;
             case '42S02':
                 $this->createBadRequest($DBALException, $this->missingDatabaseTableMessage);
+                break;
             default:
                 break;
         }
@@ -245,8 +262,9 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
     /**
      * Setter for conflictMessage
      */
-    public function setConflictMessage(string $conflictMessage): DoctrineExceptionHandlerServiceInterface
-    {
+    public function setConflictMessage(
+        string $conflictMessage
+    ): DoctrineExceptionHandlerServiceInterface {
         $this->conflictMessage = $conflictMessage;
         return $this;
     }
@@ -262,8 +280,9 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
     /**
      * Setter for databaseErrorMessage
      */
-    public function setDatabaseErrorMessage(string $databaseErrorMessage): DoctrineExceptionHandlerServiceInterface
-    {
+    public function setDatabaseErrorMessage(
+        string $databaseErrorMessage
+    ): DoctrineExceptionHandlerServiceInterface {
         $this->databaseErrorMessage = $databaseErrorMessage;
         return $this;
     }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ExceptionFormatServiceInterface
  * PHP Version >=8.0
@@ -55,6 +56,7 @@ interface ExceptionFormatServiceInterface
      * @return array
      */
     public function addKeyToErrorArray(array $error, Exception $exception): array;
+
     /**
      * getStatusCode
      */
@@ -68,6 +70,7 @@ interface ExceptionFormatServiceInterface
     /**
      * genericExceptionResponse
      * must return array composed by error information returned to client
+     *
      * @return array<string|int> [code, text, message]
      */
     public function genericExceptionResponse(Exception $exception): array;

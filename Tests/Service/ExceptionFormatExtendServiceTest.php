@@ -71,5 +71,4 @@ class ExceptionFormatExtendServiceTest extends TestCase
         self::assertArrayHasKey('exception', $content);
         self::assertEquals(HttpException::class, $content['exception']);
     }
-
 }

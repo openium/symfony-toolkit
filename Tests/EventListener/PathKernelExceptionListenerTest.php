@@ -1,4 +1,5 @@
 <?php
+
 /**
  * PHP Version >=8.0
  *
@@ -59,7 +60,7 @@ class PathKernelExceptionListenerTest extends TestCase
         $kernel = $this->createMock(HttpKernelInterface::class);
         $request = Request::create('/api');
         $exc = new Exception("testError", 123);
-        $event = new ExceptionEvent($kernel, $request, HttpKernelInterface::MASTER_REQUEST, $exc);
+        $event = new ExceptionEvent($kernel, $request, HttpKernelInterface::MAIN_REQUEST, $exc);
         $listener->onKernelException($event);
         self::assertEquals($response, $event->getResponse());
     }
@@ -76,7 +77,7 @@ class PathKernelExceptionListenerTest extends TestCase
         $kernel = $this->createMock(HttpKernelInterface::class);
         $request = Request::create('/api');
         $exc = new Exception("testError", Response::HTTP_INTERNAL_SERVER_ERROR);
-        $event = new ExceptionEvent($kernel, $request, HttpKernelInterface::MASTER_REQUEST, $exc);
+        $event = new ExceptionEvent($kernel, $request, HttpKernelInterface::MAIN_REQUEST, $exc);
         $listener->onKernelException($event);
         self::assertEquals($response, $event->getResponse());
     }
@@ -93,7 +94,7 @@ class PathKernelExceptionListenerTest extends TestCase
         $kernel = $this->createMock(HttpKernelInterface::class);
         $request = Request::create('/api');
         $exc = new Exception("testError", Response::HTTP_UNAUTHORIZED);
-        $event = new ExceptionEvent($kernel, $request, HttpKernelInterface::MASTER_REQUEST, $exc);
+        $event = new ExceptionEvent($kernel, $request, HttpKernelInterface::MAIN_REQUEST, $exc);
         $listener->onKernelException($event);
         self::assertEquals($response, $event->getResponse());
     }
