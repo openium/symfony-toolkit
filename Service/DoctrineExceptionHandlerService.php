@@ -105,7 +105,7 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
      *
      * @throws BadRequestHttpException
      */
-    protected function createBadRequest(Throwable $throwable, string $message = null): never
+    protected function createBadRequest(Throwable $throwable, ?string $message = null): never
     {
         throw new BadRequestHttpException(
             $message ?? $this->entityManagementErrorMessage,

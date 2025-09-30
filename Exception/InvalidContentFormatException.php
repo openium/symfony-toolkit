@@ -13,7 +13,6 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 class InvalidContentFormatException extends BadRequestHttpException
 {
     final public const MESSAGE = "Incorrect content format";
-
     final public const CODE = 2_015_151_202;
 
     /**
@@ -22,7 +21,7 @@ class InvalidContentFormatException extends BadRequestHttpException
      * @param Exception|null $previous
      * @param array<string, string> $headers
      */
-    public function __construct(Exception $previous = null, array $headers = [])
+    public function __construct(?Exception $previous = null, array $headers = [])
     {
         parent::__construct(self::MESSAGE, $previous, self::CODE, $headers);
     }
