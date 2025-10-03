@@ -2,6 +2,9 @@
 
 namespace Openium\SymfonyToolKitBundle\Utils;
 
+use BackedEnum;
+use DateTimeInterface;
+use DateTimeZone;
 use Doctrine\DBAL\Logging\Middleware;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query;
@@ -10,6 +13,8 @@ use Monolog\Logger;
 
 class DebugUtils
 {
+    private static ?\DateTimeZone $utcTz = null;
+
     public static function setDoctrineQueryLogger(EntityManagerInterface $entityManager): void
     {
         $logger = new Logger('sql');
@@ -44,13 +49,32 @@ class DebugUtils
 
     public static function formatSqlParam($value): string
     {
+        if ($value === null) {
+            return 'NULL';
+        }
+        if ($value instanceof DateTimeInterface) {
+            if (self::$utcTz === null) {
+                self::$utcTz = new DateTimeZone('UTC');
+            }
+            $utc = (clone $value)->setTimezone(self::$utcTz);
+            return "'" . $utc->format('Y-m-d H:i:s') . "'";
+        }
+        if (is_bool($value)) {
+            return $value ? '1' : '0';
+        }
+        if ($value instanceof BackedEnum) {
+            return self::formatSqlParam($value->value);
+        }
         if (is_object($value) && method_exists($value, 'getId')) {
             return is_numeric($value->getId())
                 ? $value->getId()
                 : "'" . addslashes($value->getId()) . "'";
         }
-        if (is_array($value)) {
-            $items = array_map(fn($v) => self::formatSqlParam($v), $value);
+        if (is_array($value) || $value instanceof \Traversable) {
+            $items = array_map(
+                fn($v) => self::formatSqlParam($v),
+                is_array($value) ? $value : iterator_to_array($value)
+            );
             return implode(',', $items);
         }
         if (is_numeric($value)) {

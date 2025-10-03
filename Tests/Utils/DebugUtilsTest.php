@@ -24,6 +24,7 @@ class DebugUtilsTest extends TestCase
     {
         $this->assertSame("1,'a'", DebugUtils::formatSqlParam([1, 'a']));
     }
+
     public function testFormatSqlParamWithObjectHavingGetId()
     {
         $obj = new class {
@@ -34,6 +35,49 @@ class DebugUtilsTest extends TestCase
         };
         $this->assertSame('42', DebugUtils::formatSqlParam($obj));
     }
+
+    public function testFormatSqlParamWithDateTimeImmutable(): void
+    {
+        $dt = new \DateTimeImmutable('2025-10-01 14:30:00');
+        $this->assertSame(
+            "'2025-10-01 14:30:00'",
+            DebugUtils::formatSqlParam($dt)
+        );
+    }
+
+    public function testFormatSqlParamWithDateTime(): void
+    {
+        $dt = new \DateTime('2025-12-31 23:59:59');
+        $this->assertSame(
+            "'2025-12-31 23:59:59'",
+            DebugUtils::formatSqlParam($dt)
+        );
+    }
+
+    public function testFormatSqlParamWithDateTimeIgnoresTimezone(): void
+    {
+        $dt = new \DateTime('2025-10-01 14:30:00', new \DateTimeZone('UTC'));
+        $dtParis = $dt->setTimezone(new \DateTimeZone('Europe/Paris'));
+        // Le format Y-m-d H:i:s ne change pas, peu importe le timezone interne
+        $this->assertSame(
+            "'2025-10-01 14:30:00'",
+            DebugUtils::formatSqlParam($dt)
+        );
+        $this->assertSame(
+            "'2025-10-01 14:30:00'",
+            DebugUtils::formatSqlParam($dtParis)
+        );
+    }
+
+    public function testFormatSqlParamWithDateTimeDropsMicroseconds(): void
+    {
+        $dt = \DateTime::createFromFormat('Y-m-d H:i:s.u', '2025-10-01 14:30:00.123456');
+        $this->assertSame(
+            "'2025-10-01 14:30:00'",
+            DebugUtils::formatSqlParam($dt)
+        );
+    }
+
     public function testFormatSqlParamWithObjectHavingGetIdString()
     {
         $obj = new class {
@@ -45,26 +89,51 @@ class DebugUtilsTest extends TestCase
         $this->assertSame("'foo'", DebugUtils::formatSqlParam($obj));
     }
 
+    public function testFormatSqlParamWithNull(): void
+    {
+        $this->assertSame('NULL', DebugUtils::formatSqlParam(null));
+    }
+
+    public function testFormatSqlParamWithBoolean(): void
+    {
+        $this->assertSame('1', DebugUtils::formatSqlParam(true));
+        $this->assertSame('0', DebugUtils::formatSqlParam(false));
+    }
+
+    public function testFormatSqlParamWithEnum(): void
+    {
+        $this->assertSame("'foo'", DebugUtils::formatSqlParam(TestEnum::FOO));
+    }
+
+    public function testFormatSqlParamWithTraversable(): void
+    {
+        $coll = new \ArrayIterator([1, 'a']);
+        $this->assertSame("1,'a'", DebugUtils::formatSqlParam($coll));
+    }
+
+    public function testFormatSqlParamWithSpecialCharactersString(): void
+    {
+        $this->assertSame("'O\\'Reilly'", DebugUtils::formatSqlParam("O'Reilly"));
+    }
+
     public function testLogDoctrineQueryInjectsValues()
     {
         $queryMock = $this->createMock(Query::class);
         $queryMock->method('getSQL')->willReturn('SELECT * FROM user WHERE id = ? AND name = ?');
-        $queryMock->method('getDQL')->willReturn('SELECT u FROM User u WHERE u.id = :id AND u.name = :name');
-
+        $queryMock->method('getDQL')->willReturn(
+            'SELECT u FROM User u WHERE u.id = :id AND u.name = :name'
+        );
         $param1 = $this->getMockBuilder('Doctrine\ORM\Query\Parameter')
             ->disableOriginalConstructor()
             ->getMock();
         $param1->method('getName')->willReturn('id');
         $param1->method('getValue')->willReturn(5);
-
         $param2 = $this->getMockBuilder('Doctrine\ORM\Query\Parameter')
             ->disableOriginalConstructor()
             ->getMock();
         $param2->method('getName')->willReturn('name');
         $param2->method('getValue')->willReturn('Roger');
-
         $queryMock->method('getParameters')->willReturn(new ArrayCollection([$param1, $param2]));
-
         $result = DebugUtils::logDoctrineQuery($queryMock);
         $this->assertSame("SELECT * FROM user WHERE id = 5 AND name = 'Roger'", $result);
     }
@@ -78,11 +147,9 @@ class DebugUtilsTest extends TestCase
         $configurationMock = $this->getMockBuilder('Doctrine\DBAL\Configuration')
             ->disableOriginalConstructor()
             ->getMock();
-
         $entityManagerMock->method('getConnection')->willReturn($connectionMock);
         $connectionMock->method('getConfiguration')->willReturn($configurationMock);
         $configurationMock->expects($this->once())->method('setMiddlewares');
-
         DebugUtils::setDoctrineQueryLogger($entityManagerMock);
         $this->assertTrue(true); // Si aucune exception, le test passe
     }
