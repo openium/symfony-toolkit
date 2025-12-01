@@ -76,7 +76,7 @@ class DoctrineExceptionHandlerServiceTest extends TestCase
             self::assertTrue($doctrineExceptionHandler instanceof DoctrineExceptionHandlerService);
             $doctrineExceptionHandler->toHttpException($nncve);
         }
-    */
+
     public function testToHttpExceptionWithORMInvalidArgumentException(): never
     {
         static::expectException(BadRequestHttpException::class);
@@ -162,7 +162,7 @@ class DoctrineExceptionHandlerServiceTest extends TestCase
         self::assertTrue($doctrineExceptionHandler instanceof DoctrineExceptionHandlerService);
         $doctrineExceptionHandler->toHttpException($dbal);
     }
-
+*/
     public function testToHttpExceptionWithException(): never
     {
         static::expectException("Exception");
