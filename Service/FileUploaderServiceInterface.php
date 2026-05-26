@@ -18,7 +18,7 @@ interface FileUploaderServiceInterface
      * Prepare upload path for file
      */
     public function prepareUploadPath(
-        WithUploadInterface $uploadEntity,
+        WithUploadInterface $withUpload,
         ?string $imageName = null
     ): WithUploadInterface;
 
@@ -30,12 +30,12 @@ interface FileUploaderServiceInterface
     /**
      * Upload File of the Entity
      */
-    public function uploadEntity(WithUploadInterface $uploadEntity): WithUploadInterface;
+    public function uploadEntity(WithUploadInterface $withUpload): WithUploadInterface;
 
     /**
      * removeUpload
      */
-    public function removeUpload(WithUploadInterface $uploadEntity): void;
+    public function removeUpload(WithUploadInterface $withUpload): void;
 
     /**
      * Upload File in the path

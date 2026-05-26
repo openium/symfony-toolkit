@@ -17,6 +17,7 @@ class Configuration implements ConfigurationInterface
      *
      * @return TreeBuilder The tree builder
      */
+    #[\Override]
     public function getConfigTreeBuilder(): TreeBuilder
     {
         return new TreeBuilder('openium_symfony_toolkit');

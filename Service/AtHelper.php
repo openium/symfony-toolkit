@@ -24,6 +24,7 @@ class AtHelper implements AtHelperInterface
     /**
      * executeAndCaptureOutput
      */
+    #[\Override]
     public function executeAndCaptureOutput(string $cmd, int &$result): string | false
     {
         $res = 0;
@@ -47,6 +48,7 @@ class AtHelper implements AtHelperInterface
      * @throws InvalidArgumentException
      * @return false|string the output of at command
      */
+    #[\Override]
     public function createAtCommandFromPath(
         string $cmd,
         int $timestamp,
@@ -71,6 +73,7 @@ class AtHelper implements AtHelperInterface
      * @throws InvalidArgumentException
      * @return false|string the output of at command
      */
+    #[\Override]
     public function createAtCommand(string $cmd, int $timestamp, int &$result): false | string
     {
         $date = $this->formatTimestampForAt($timestamp);
@@ -99,6 +102,7 @@ class AtHelper implements AtHelperInterface
     /**
      * extractJobNumberFromAtOutput
      */
+    #[\Override]
     public function extractJobNumberFromAtOutput(string $output): ?string
     {
         $cleanOutput = preg_replace('/\s+/', ' ', $output);
@@ -122,6 +126,7 @@ class AtHelper implements AtHelperInterface
     /**
      * removeAtCommand
      */
+    #[\Override]
     public function removeAtCommand(string $atJobNumber): bool
     {
         $fullCmd = sprintf("atrm %s", $atJobNumber);
@@ -138,14 +143,15 @@ class AtHelper implements AtHelperInterface
      *
      * @throws InvalidArgumentException
      */
+    #[\Override]
     public function formatTimestampForAt(int $timestamp): string
     {
         if ($timestamp < 0) {
             throw new InvalidArgumentException('timestamp < 0');
         }
 
-        $timeZone = new DateTimeZone("Europe/Paris");
-        $date = new DateTime('now', $timeZone);
+        $dateTimeZone = new DateTimeZone("Europe/Paris");
+        $date = new DateTime('now', $dateTimeZone);
         return $date->setTimestamp($timestamp)->format('g:i A F j Y');
     }
 }

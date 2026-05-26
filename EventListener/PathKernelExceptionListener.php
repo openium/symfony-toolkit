@@ -20,7 +20,7 @@ class PathKernelExceptionListener implements PathKernelExceptionListenerInterfac
      * ExceptionListener constructor.
      */
     public function __construct(
-        protected ExceptionFormatServiceInterface $exceptionFormat,
+        protected ExceptionFormatServiceInterface $exceptionFormatService,
         protected string $path,
         private readonly bool $enable,
         private readonly LoggerInterface $logger
@@ -41,11 +41,12 @@ class PathKernelExceptionListener implements PathKernelExceptionListenerInterfac
      * @throws UnexpectedValueException
      * @throws InvalidArgumentException
      */
-    public function onKernelException(ExceptionEvent $event): void
+    #[\Override]
+    public function onKernelException(ExceptionEvent $exceptionEvent): void
     {
-        if ($this->isEnable() && str_contains($event->getRequest()->getRequestUri(), $this->path)) {
-            $exception = $event->getThrowable();
-            $response = $this->exceptionFormat->formatExceptionResponse($exception);
+        if ($this->isEnable() && str_contains($exceptionEvent->getRequest()->getRequestUri(), $this->path)) {
+            $exception = $exceptionEvent->getThrowable();
+            $response = $this->exceptionFormatService->formatExceptionResponse($exception);
             $code = $response->getStatusCode();
             $this->logger->debug(
                 sprintf(
@@ -62,7 +63,7 @@ class PathKernelExceptionListener implements PathKernelExceptionListenerInterfac
                 $this->logger->info($exception);
             }
 
-            $event->setResponse($response);
+            $exceptionEvent->setResponse($response);
         }
     }
 }

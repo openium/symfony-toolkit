@@ -17,20 +17,11 @@ use Psr\Log\LoggerInterface;
 #[CoversNothing]
 class AtHelperTest extends TestCase
 {
-    private MockObject&LoggerInterface $logger;
+    private LoggerInterface $logger;
 
     protected function setUp(): void
     {
-        $this->logger = $this->createMock(LoggerInterface::class);
-        $this->logger->expects(static::any())
-            ->method("debug")
-            ->will(
-                static::returnCallback(
-                    function ($subject): void {
-                        error_log($subject);
-                    }
-                )
-            );
+        $this->logger = $this->createStub(LoggerInterface::class);
         parent::setUp();
     }
 
@@ -44,8 +35,8 @@ class AtHelperTest extends TestCase
 
     public function testFormatTimestampForAtWhitNegativeTimestamp(): void
     {
-        static::expectException("InvalidArgumentException");
-        static::expectExceptionMessage("timestamp < 0");
+        self::expectException("InvalidArgumentException");
+        self::expectExceptionMessage("timestamp < 0");
         $atHelper = new AtHelper($this->logger);
         self::assertTrue($atHelper instanceof AtHelperInterface);
         $atHelper->formatTimestampForAt(-654987);
@@ -60,11 +51,11 @@ class AtHelperTest extends TestCase
         $output = $atHelper->createAtCommand("echo test", time() + 33600, $result);
         $atNumber = $atHelper->extractJobNumberFromAtOutput($output);
         // then
-        static::assertIsNumeric($atNumber);
-        static::assertEquals(0, $result);
+        self::assertIsNumeric($atNumber);
+        self::assertEquals(0, $result);
         // when
         $removeResult = $atHelper->removeAtCommand($atNumber);
-        static::assertTrue($removeResult);
+        self::assertTrue($removeResult);
     }
 
     public function testCreateAtCommandFromPath(): void
@@ -76,11 +67,11 @@ class AtHelperTest extends TestCase
         $output = $atHelper->createAtCommandFromPath("echo test", time() + 33600, __DIR__, $result);
         $atNumber = $atHelper->extractJobNumberFromAtOutput($output);
         // then
-        static::assertIsNumeric($atNumber);
-        static::assertEquals(0, $result);
+        self::assertIsNumeric($atNumber);
+        self::assertEquals(0, $result);
         // when
         $removeResult = $atHelper->removeAtCommand($atNumber);
-        static::assertTrue($removeResult);
+        self::assertTrue($removeResult);
     }
 
     public function testExtractJobNumberFromAtOutputWithRightOutput(): void
@@ -91,7 +82,7 @@ class AtHelperTest extends TestCase
         // when
         $jobNumber = $atHelper->extractJobNumberFromAtOutput($output);
         // then
-        static::assertEquals("130", $jobNumber);
+        self::assertEquals("130", $jobNumber);
     }
 
     public function testExtractJobNumberFromAtOutputWithSmallRightOutput(): void
@@ -102,7 +93,7 @@ class AtHelperTest extends TestCase
         // when
         $jobNumber = $atHelper->extractJobNumberFromAtOutput($output);
         // then
-        static::assertEquals("130", $jobNumber);
+        self::assertEquals("130", $jobNumber);
     }
 
     public function testExtractJobNumberFromAtOutputWithOutputSpecialChar(): void
@@ -113,7 +104,7 @@ class AtHelperTest extends TestCase
         // when
         $jobNumber = $atHelper->extractJobNumberFromAtOutput($output);
         // then
-        static::assertEquals("130", $jobNumber);
+        self::assertEquals("130", $jobNumber);
     }
 
     public function testExtractJobNumberFromAtOutputWithWrongOutput(): void
@@ -124,7 +115,7 @@ class AtHelperTest extends TestCase
         // when
         $jobNumber = $atHelper->extractJobNumberFromAtOutput($output);
         // then
-        static::assertNull($jobNumber);
+        self::assertNull($jobNumber);
     }
 
     public function testExtractJobNumberFromAtOutputWithEmptyOutput(): void
@@ -135,7 +126,7 @@ class AtHelperTest extends TestCase
         // when
         $jobNumber = $atHelper->extractJobNumberFromAtOutput($output);
         // then
-        static::assertNull($jobNumber);
+        self::assertNull($jobNumber);
     }
 
     public function testExtractJobNumberFromAtOutputPastMessageOutput(): void
@@ -146,6 +137,6 @@ class AtHelperTest extends TestCase
         // when
         $jobNumber = $atHelper->extractJobNumberFromAtOutput($output);
         // then
-        static::assertNull($jobNumber);
+        self::assertNull($jobNumber);
     }
 }

@@ -25,11 +25,10 @@ abstract class AbstractCommand extends Command
     /**
      * AbstractCommand constructor.
      *
-     * @param string|null $name
      *
      * @throws LogicException
      */
-    public function __construct(protected LoggerInterface $logger, string $name = null)
+    public function __construct(protected LoggerInterface $logger, ?string $name = null)
     {
         parent::__construct($name);
     }
@@ -39,6 +38,7 @@ abstract class AbstractCommand extends Command
      *
      * @throws InvalidArgumentException
      */
+    #[\Override]
     protected function configure(): void
     {
         $this->addOption('nl', null, InputOption::VALUE_NONE, 'Disable log');

@@ -51,6 +51,7 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
     /**
      * Log an exception information for debug
      */
+    #[\Override]
     public function log(Throwable $throwable): void
     {
         $this->logger->error(
@@ -70,6 +71,7 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
      * @throws ConflictHttpException
      * @throws Throwable if not a doctrine exception
      */
+    #[\Override]
     public function toHttpException(Throwable $throwable): never
     {
         // Call the logger
@@ -101,8 +103,6 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
     /**
      * createBadRequest
      *
-     * @param string|null $message
-     *
      * @throws BadRequestHttpException
      */
     protected function createBadRequest(Throwable $throwable, ?string $message = null): never
@@ -115,7 +115,6 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
 
     /**
      * createConflict
-     *
      *
      * @throws ConflictHttpException
      */
@@ -160,6 +159,7 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
     /**
      * Getter for missingDatabaseTableMessage
      */
+    #[\Override]
     public function getMissingDatabaseTableMessage(): string
     {
         return $this->missingDatabaseTableMessage;
@@ -168,6 +168,7 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
     /**
      * Setter for missingDatabaseTableMessage
      */
+    #[\Override]
     public function setMissingDatabaseTableMessage(
         string $missingDatabaseTableMessage
     ): DoctrineExceptionHandlerServiceInterface {
@@ -178,6 +179,7 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
     /**
      * Getter for databaseSchemaErrorMessage
      */
+    #[\Override]
     public function getDatabaseSchemaErrorMessage(): string
     {
         return $this->databaseSchemaErrorMessage;
@@ -186,6 +188,7 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
     /**
      * Setter for databaseSchemaErrorMessage
      */
+    #[\Override]
     public function setDatabaseSchemaErrorMessage(
         string $databaseSchemaErrorMessage
     ): DoctrineExceptionHandlerServiceInterface {
@@ -196,6 +199,7 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
     /**
      * Getter for querySyntaxErrorMessage
      */
+    #[\Override]
     public function getQuerySyntaxErrorMessage(): string
     {
         return $this->querySyntaxErrorMessage;
@@ -204,6 +208,7 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
     /**
      * Setter for querySyntaxErrorMessage
      */
+    #[\Override]
     public function setQuerySyntaxErrorMessage(
         string $querySyntaxErrorMessage
     ): DoctrineExceptionHandlerServiceInterface {
@@ -214,6 +219,7 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
     /**
      * Getter for entityManagementErrorMessage
      */
+    #[\Override]
     public function getEntityManagementErrorMessage(): string
     {
         return $this->entityManagementErrorMessage;
@@ -222,6 +228,7 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
     /**
      * Setter for entityManagementErrorMessage
      */
+    #[\Override]
     public function setEntityManagementErrorMessage(
         string $entityManagementErrorMessage
     ): DoctrineExceptionHandlerServiceInterface {
@@ -232,6 +239,7 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
     /**
      * Getter for conflictMessage
      */
+    #[\Override]
     public function getConflictMessage(): string
     {
         return $this->conflictMessage;
@@ -240,6 +248,7 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
     /**
      * Setter for conflictMessage
      */
+    #[\Override]
     public function setConflictMessage(string $conflictMessage
     ): DoctrineExceptionHandlerServiceInterface {
         $this->conflictMessage = $conflictMessage;
@@ -249,6 +258,7 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
     /**
      * Getter for databaseErrorMessage
      */
+    #[\Override]
     public function getDatabaseErrorMessage(): string
     {
         return $this->databaseErrorMessage;
@@ -257,6 +267,7 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
     /**
      * Setter for databaseErrorMessage
      */
+    #[\Override]
     public function setDatabaseErrorMessage(string $databaseErrorMessage
     ): DoctrineExceptionHandlerServiceInterface {
         $this->databaseErrorMessage = $databaseErrorMessage;
@@ -266,6 +277,7 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
     /**
      * Getter for databaseRequestErrorMessage
      */
+    #[\Override]
     public function getDatabaseRequestErrorMessage(): string
     {
         return $this->databaseRequestErrorMessage;
@@ -274,6 +286,7 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
     /**
      * Setter for databaseRequestErrorMessage
      */
+    #[\Override]
     public function setDatabaseRequestErrorMessage(
         string $databaseRequestErrorMessage
     ): DoctrineExceptionHandlerServiceInterface {
@@ -284,6 +297,7 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
     /**
      * Getter for missingPropertyErrorMessage
      */
+    #[\Override]
     public function getMissingPropertyErrorMessage(): string
     {
         return $this->missingPropertyErrorMessage;
@@ -292,6 +306,7 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
     /**
      * Setter for missingPropertyErrorMessage
      */
+    #[\Override]
     public function setMissingPropertyErrorMessage(
         string $missingPropertyErrorMessage
     ): DoctrineExceptionHandlerServiceInterface {

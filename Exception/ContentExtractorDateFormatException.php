@@ -11,16 +11,16 @@ use Exception;
  */
 class ContentExtractorDateFormatException extends ContentExtractorException
 {
-    final public const MESSAGE = "Wrong date format";
+    final public const string MESSAGE = "Wrong date format";
 
-    final public const CODE = 2_015_151_208;
+    final public const int CODE = 2_015_151_208;
 
     public function __construct(
         string $key = "",
         string $message = self::MESSAGE,
         int $code = self::CODE,
-        ?Exception $previous = null
+        ?Exception $exception = null
     ) {
-        parent::__construct($key, $message, $code, $previous);
+        parent::__construct($key, $message, $code, $exception);
     }
 }

@@ -2,17 +2,11 @@
 
 namespace Openium\SymfonyToolKitBundle\Tests\Service;
 
-use Doctrine\DBAL\Exception;
-use Doctrine\ORM\ORMInvalidArgumentException;
 use Openium\SymfonyToolKitBundle\Service\DoctrineExceptionHandlerService;
-use PDOException;
 use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
-use UnexpectedValueException;
 
 /**
  * Class DoctrineExceptionHandlerServiceTest
@@ -22,283 +16,168 @@ use UnexpectedValueException;
 #[CoversNothing]
 class DoctrineExceptionHandlerServiceTest extends TestCase
 {
-    private MockObject&LoggerInterface $logger;
-
-    protected function setUp(): void
-    {
-        $this->logger = $this->getMockBuilder(LoggerInterface::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        parent::setUp();
-    }
-
     public function testLog(): void
     {
-        $throwable = $this->getMockBuilder(\Exception::class)
+        $logger = $this->getMockBuilder(LoggerInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $this->logger->expects($this->exactly(5))->method('error');
+        $throwable = $this->createStub(\Exception::class);
+        $logger->expects($this->exactly(5))->method('error');
         // TODO correct test
         //$throwable->expects(self::once())->method('getMessage')->will($this->returnValue("test"));
         //$throwable->expects(self::once())->method('getTraceAsString')->will($this->returnValue("test"));
-        $doctrineExceptionHandler = new DoctrineExceptionHandlerService($this->logger);
-        self::assertTrue($doctrineExceptionHandler instanceof DoctrineExceptionHandlerService);
-        $doctrineExceptionHandler->log($throwable);
+        $doctrineExceptionHandlerService = new DoctrineExceptionHandlerService($logger);
+        self::assertTrue($doctrineExceptionHandlerService instanceof DoctrineExceptionHandlerService);
+        $doctrineExceptionHandlerService->log($throwable);
     }
 
-    /*
-        public function testToHttpExceptionWithUniqueConstraintViolationException(): void
-        {
-            static::expectException("Symfony\Component\HttpKernel\Exception\ConflictHttpException");
-            static::expectExceptionMessage("Conflict error");
-            $exc = new \PDOException();
-            $pdoExc = $this->createMock(Exception\DriverException::class)
-            ->expects(self::once())->method('getPrevious')->willReturn($exc);
-            $exceptionDE = new Exception\DriverException($pdoExc);
-            $ucve = new UniqueConstraintViolationException($exceptionDE, null);
-            $this->logger->expects($this->exactly(6))->method('error');
-            $doctrineExceptionHandler = new DoctrineExceptionHandlerService($this->logger);
-            self::assertTrue($doctrineExceptionHandler instanceof DoctrineExceptionHandlerService);
-            $doctrineExceptionHandler->toHttpException($ucve);
-        }
-
-        public function testToHttpExceptionWithNotNullConstraintViolationException(): void
-        {
-            static::expectException("Symfony\Component\HttpKernel\Exception\BadRequestHttpException");
-            static::expectExceptionMessage("Entity's management error");
-            $exc = new \PDOException();
-            $pdoExc = $this->createMock(Exception\DriverException::class)
-                ->expects(self::once())->method('getPrevious')->willReturn($exc);
-            $exceptionDE = new Exception\DriverException($pdoExc, null);
-            $nncve = new NotNullConstraintViolationException($exceptionDE, null);
-            $this->logger->expects($this->exactly(5))->method('error');
-            $doctrineExceptionHandler = new DoctrineExceptionHandlerService($this->logger);
-            self::assertTrue($doctrineExceptionHandler instanceof DoctrineExceptionHandlerService);
-            $doctrineExceptionHandler->toHttpException($nncve);
-        }
-
-    public function testToHttpExceptionWithORMInvalidArgumentException(): never
-    {
-        static::expectException(BadRequestHttpException::class);
-        static::expectExceptionMessage("Entity's management error");
-        $exc = new PDOException();
-        $pdoExc = new Exception($exc);
-        $exceptionDE = new Exception($pdoExc);
-        $ormiae = new ORMInvalidArgumentException("message", 0, $exceptionDE);
-        $this->logger->expects($this->exactly(5))->method('error');
-        $doctrineExceptionHandler = new DoctrineExceptionHandlerService($this->logger);
-        self::assertTrue($doctrineExceptionHandler instanceof DoctrineExceptionHandlerService);
-        $doctrineExceptionHandler->toHttpException($ormiae);
-    }
-
-    public function testToHttpExceptionWithUnexpectedValueException(): never
-    {
-        static::expectException(BadRequestHttpException::class);
-        static::expectExceptionMessage("Entity's management error");
-        $exc = new PDOException();
-        $pdoExc = new Exception($exc);
-        $exceptionDE = new Exception($pdoExc);
-        $uve = new UnexpectedValueException("message", 0, $exceptionDE);
-        $this->logger->expects($this->exactly(5))->method('error');
-        $doctrineExceptionHandler = new DoctrineExceptionHandlerService($this->logger);
-        self::assertTrue($doctrineExceptionHandler instanceof DoctrineExceptionHandlerService);
-        $doctrineExceptionHandler->toHttpException($uve);
-    }
-
-    public function testToHttpExceptionWith23000DBALException(): never
-    {
-        static::expectException(ConflictHttpException::class);
-        static::expectExceptionMessage("Conflict error");
-        $exception = new \Exception("test", 23000);
-        $dbal = new Exception("message", 0, $exception);
-        $this->logger->expects($this->exactly(6))->method('error');
-        $doctrineExceptionHandler = new DoctrineExceptionHandlerService($this->logger);
-        self::assertTrue($doctrineExceptionHandler instanceof DoctrineExceptionHandlerService);
-        $doctrineExceptionHandler->toHttpException($dbal);
-    }
-
-    public function testToHttpExceptionWith42000DBALException(): never
-    {
-        static::expectException(BadRequestHttpException::class);
-        static::expectExceptionMessage("Database error");
-        $exception = new \Exception("test", 42000);
-        $dbal = new Exception("message", 0, $exception);
-        $this->logger->expects($this->exactly(5))->method('error');
-        $doctrineExceptionHandler = new DoctrineExceptionHandlerService($this->logger);
-        self::assertTrue($doctrineExceptionHandler instanceof DoctrineExceptionHandlerService);
-        $doctrineExceptionHandler->toHttpException($dbal);
-    }
-
-    public function testToHttpExceptionWith21000DBALException(): never
-    {
-        static::expectException(BadRequestHttpException::class);
-        static::expectExceptionMessage("Database request error");
-        $exception = new \Exception("test", 21000);
-        $dbal = new Exception("message", 0, $exception);
-        $this->logger->expects($this->exactly(5))->method('error');
-        $doctrineExceptionHandler = new DoctrineExceptionHandlerService($this->logger);
-        self::assertTrue($doctrineExceptionHandler instanceof DoctrineExceptionHandlerService);
-        $doctrineExceptionHandler->toHttpException($dbal);
-    }
-
-    public function testToHttpExceptionWith21000DBALExceptionAndWithoutPreviousException(): never
-    {
-        static::expectException(BadRequestHttpException::class);
-        static::expectExceptionMessage("Database request error");
-        $dbal = new Exception("message", 21000, null);
-        $this->logger->expects($this->exactly(5))->method('error');
-        $doctrineExceptionHandler = new DoctrineExceptionHandlerService($this->logger);
-        self::assertTrue($doctrineExceptionHandler instanceof DoctrineExceptionHandlerService);
-        $doctrineExceptionHandler->toHttpException($dbal);
-    }
-
-    public function testToHttpExceptionWith0DBALExceptionAndWithoutPreviousException(): never
-    {
-        static::expectException(BadRequestHttpException::class);
-        static::expectExceptionMessage("Entity's management error");
-        $dbal = new Exception("message", 0, null);
-        $this->logger->expects($this->exactly(5))->method('error');
-        $doctrineExceptionHandler = new DoctrineExceptionHandlerService($this->logger);
-        self::assertTrue($doctrineExceptionHandler instanceof DoctrineExceptionHandlerService);
-        $doctrineExceptionHandler->toHttpException($dbal);
-    }
-*/
     public function testToHttpExceptionWithException(): never
     {
         static::expectException("Exception");
         static::expectExceptionMessage("message");
-        $dbal = new \Exception("message", 0, null);
-        $this->logger->expects($this->exactly(5))->method('error');
-        $doctrineExceptionHandler = new DoctrineExceptionHandlerService($this->logger);
-        self::assertTrue($doctrineExceptionHandler instanceof DoctrineExceptionHandlerService);
-        $doctrineExceptionHandler->toHttpException($dbal);
+        $logger = $this->getMockBuilder(LoggerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $exception = new \Exception("message", 0, null);
+        $logger->expects($this->exactly(5))->method('error');
+        $doctrineExceptionHandlerService = new DoctrineExceptionHandlerService($logger);
+        self::assertTrue($doctrineExceptionHandlerService instanceof DoctrineExceptionHandlerService);
+        $doctrineExceptionHandlerService->toHttpException($exception);
     }
 
     public function testMissingDatabaseTableMessage(): void
     {
         // given
+        $logger = $this->createStub(LoggerInterface::class);
         $message = "new error message";
-        $doctrineExceptionHandler = new DoctrineExceptionHandlerService($this->logger);
+        $doctrineExceptionHandlerService = new DoctrineExceptionHandlerService($logger);
         // then
         static::assertEquals(
             "Missing database table",
-            $doctrineExceptionHandler->getMissingDatabaseTableMessage()
+            $doctrineExceptionHandlerService->getMissingDatabaseTableMessage()
         );
         // when
-        $doctrineExceptionHandler->setMissingDatabaseTableMessage($message);
+        $doctrineExceptionHandlerService->setMissingDatabaseTableMessage($message);
         // then
-        static::assertEquals($message, $doctrineExceptionHandler->getMissingDatabaseTableMessage());
+        static::assertEquals($message, $doctrineExceptionHandlerService->getMissingDatabaseTableMessage());
     }
 
     public function testDatabaseSchemaErrorMessage(): void
     {
         // given
+        $logger = $this->createStub(LoggerInterface::class);
         $message = "new error message";
-        $doctrineExceptionHandler = new DoctrineExceptionHandlerService($this->logger);
+        $doctrineExceptionHandlerService = new DoctrineExceptionHandlerService($logger);
         // then
         static::assertEquals(
             "Database schema error",
-            $doctrineExceptionHandler->getDatabaseSchemaErrorMessage()
+            $doctrineExceptionHandlerService->getDatabaseSchemaErrorMessage()
         );
         // when
-        $doctrineExceptionHandler->setDatabaseSchemaErrorMessage($message);
+        $doctrineExceptionHandlerService->setDatabaseSchemaErrorMessage($message);
         // then
-        static::assertEquals($message, $doctrineExceptionHandler->getDatabaseSchemaErrorMessage());
+        static::assertEquals($message, $doctrineExceptionHandlerService->getDatabaseSchemaErrorMessage());
     }
 
     public function testQuerySyntaxErrorMessage(): void
     {
         // given
+        $logger = $this->createStub(LoggerInterface::class);
         $message = "new error message";
-        $doctrineExceptionHandler = new DoctrineExceptionHandlerService($this->logger);
+        $doctrineExceptionHandlerService = new DoctrineExceptionHandlerService($logger);
         // then
         static::assertEquals(
             "Query syntax error",
-            $doctrineExceptionHandler->getQuerySyntaxErrorMessage()
+            $doctrineExceptionHandlerService->getQuerySyntaxErrorMessage()
         );
         // when
-        $doctrineExceptionHandler->setQuerySyntaxErrorMessage($message);
+        $doctrineExceptionHandlerService->setQuerySyntaxErrorMessage($message);
         // then
-        static::assertEquals($message, $doctrineExceptionHandler->getQuerySyntaxErrorMessage());
+        static::assertEquals($message, $doctrineExceptionHandlerService->getQuerySyntaxErrorMessage());
     }
 
     public function testEntityManagementErrorMessage(): void
     {
         // given
+        $logger = $this->createStub(LoggerInterface::class);
         $message = "new error message";
-        $doctrineExceptionHandler = new DoctrineExceptionHandlerService($this->logger);
+        $doctrineExceptionHandlerService = new DoctrineExceptionHandlerService($logger);
         // then
         static::assertEquals(
             "Entity's management error",
-            $doctrineExceptionHandler->getEntityManagementErrorMessage()
+            $doctrineExceptionHandlerService->getEntityManagementErrorMessage()
         );
         // when
-        $doctrineExceptionHandler->setEntityManagementErrorMessage($message);
+        $doctrineExceptionHandlerService->setEntityManagementErrorMessage($message);
         // then
         static::assertEquals(
             $message,
-            $doctrineExceptionHandler->getEntityManagementErrorMessage()
+            $doctrineExceptionHandlerService->getEntityManagementErrorMessage()
         );
     }
 
     public function testConflictMessage(): void
     {
         // given
+        $logger = $this->createStub(LoggerInterface::class);
         $message = "new error message";
-        $doctrineExceptionHandler = new DoctrineExceptionHandlerService($this->logger);
+        $doctrineExceptionHandlerService = new DoctrineExceptionHandlerService($logger);
         // then
-        static::assertEquals("Conflict error", $doctrineExceptionHandler->getConflictMessage());
+        static::assertEquals("Conflict error", $doctrineExceptionHandlerService->getConflictMessage());
         // when
-        $doctrineExceptionHandler->setConflictMessage($message);
+        $doctrineExceptionHandlerService->setConflictMessage($message);
         // then
-        static::assertEquals($message, $doctrineExceptionHandler->getConflictMessage());
+        static::assertEquals($message, $doctrineExceptionHandlerService->getConflictMessage());
     }
 
     public function testDatabaseErrorMessage(): void
     {
         // given
+        $logger = $this->createStub(LoggerInterface::class);
         $message = "new error message";
-        $doctrineExceptionHandler = new DoctrineExceptionHandlerService($this->logger);
+        $doctrineExceptionHandlerService = new DoctrineExceptionHandlerService($logger);
         // then
         static::assertEquals(
             "Database error",
-            $doctrineExceptionHandler->getDatabaseErrorMessage()
+            $doctrineExceptionHandlerService->getDatabaseErrorMessage()
         );
         // when
-        $doctrineExceptionHandler->setDatabaseErrorMessage($message);
+        $doctrineExceptionHandlerService->setDatabaseErrorMessage($message);
         // then
-        static::assertEquals($message, $doctrineExceptionHandler->getDatabaseErrorMessage());
+        static::assertEquals($message, $doctrineExceptionHandlerService->getDatabaseErrorMessage());
     }
 
     public function testDatabaseRequestErrorMessage(): void
     {
         // given
+        $logger = $this->createStub(LoggerInterface::class);
         $message = "new error message";
-        $doctrineExceptionHandler = new DoctrineExceptionHandlerService($this->logger);
+        $doctrineExceptionHandlerService = new DoctrineExceptionHandlerService($logger);
         // then
         static::assertEquals(
             "Database request error",
-            $doctrineExceptionHandler->getDatabaseRequestErrorMessage()
+            $doctrineExceptionHandlerService->getDatabaseRequestErrorMessage()
         );
         // when
-        $doctrineExceptionHandler->setDatabaseRequestErrorMessage($message);
+        $doctrineExceptionHandlerService->setDatabaseRequestErrorMessage($message);
         // then
-        static::assertEquals($message, $doctrineExceptionHandler->getDatabaseRequestErrorMessage());
+        static::assertEquals($message, $doctrineExceptionHandlerService->getDatabaseRequestErrorMessage());
     }
 
     public function testMissingPropertyErrorMessage(): void
     {
         // given
+        $logger = $this->createStub(LoggerInterface::class);
         $message = "new error message";
-        $doctrineExceptionHandler = new DoctrineExceptionHandlerService($this->logger);
+        $doctrineExceptionHandlerService = new DoctrineExceptionHandlerService($logger);
         // then
         static::assertEquals(
             "Database schema error (Missing property)",
-            $doctrineExceptionHandler->getMissingPropertyErrorMessage()
+            $doctrineExceptionHandlerService->getMissingPropertyErrorMessage()
         );
         // when
-        $doctrineExceptionHandler->setMissingPropertyErrorMessage($message);
+        $doctrineExceptionHandlerService->setMissingPropertyErrorMessage($message);
         // then
-        static::assertEquals($message, $doctrineExceptionHandler->getMissingPropertyErrorMessage());
+        static::assertEquals($message, $doctrineExceptionHandlerService->getMissingPropertyErrorMessage());
     }
 }

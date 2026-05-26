@@ -16,9 +16,9 @@ abstract class ContentExtractorException extends Exception
         protected ?string $key = "",
         string $message = "",
         int $code = 0,
-        ?Throwable $previous = null
+        ?Throwable $throwable = null
     ) {
-        parent::__construct($message, $code, $previous);
+        parent::__construct($message, $code, $throwable);
     }
 
     public function getKey(): ?string

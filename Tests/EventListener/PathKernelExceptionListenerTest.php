@@ -20,97 +20,97 @@ use Symfony\Component\HttpKernel\HttpKernelInterface;
  */
 class PathKernelExceptionListenerTest extends TestCase
 {
-    private MockObject&LoggerInterface $logger;
-
-    protected function setUp(): void
-    {
-        $this->logger = $this->getMockBuilder(LoggerInterface::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        parent::setUp();
-    }
-
     public function testIsEnable(): void
     {
-        $exceptionFormat = $this->createMock(ExceptionFormatServiceInterface::class);
+        $logger = $this->createStub(LoggerInterface::class);
+        $exceptionFormat = $this->createStub(ExceptionFormatServiceInterface::class);
         $listener = new TestPathKernelExceptionListener(
             $exceptionFormat,
             '/api',
             true,
-            $this->logger
+            $logger
         );
         self::assertTrue($listener->getEnable());
         $listener = new TestPathKernelExceptionListener(
             $exceptionFormat,
             '/api',
             false,
-            $this->logger
+            $logger
         );
         self::assertFalse($listener->getEnable());
     }
 
     public function testOnKernelExceptionWithRandowError(): void
     {
+        $logger = $this->getMockBuilder(LoggerInterface::class)
+        ->disableOriginalConstructor()
+        ->getMock();
         $exceptionFormat = $this->createMock(ExceptionFormatServiceInterface::class);
         $response = new Response('test');
         $exceptionFormat->expects(self::once())
             ->method('formatExceptionResponse')
             ->willReturn($response);
-        $this->logger->expects(self::once())->method('error');
-        $listener = new TestPathKernelExceptionListener(
+        $logger->expects(self::once())->method('error');
+        $testPathKernelExceptionListener = new TestPathKernelExceptionListener(
             $exceptionFormat,
             '/api',
             true,
-            $this->logger
+            $logger
         );
-        $kernel = $this->createMock(HttpKernelInterface::class);
+        $kernel = $this->createStub(HttpKernelInterface::class);
         $request = Request::create('/api');
-        $exc = new Exception("testError", 123);
-        $event = new ExceptionEvent($kernel, $request, HttpKernelInterface::MAIN_REQUEST, $exc);
-        $listener->onKernelException($event);
-        self::assertEquals($response, $event->getResponse());
+        $exception = new Exception("testError", 123);
+        $exceptionEvent = new ExceptionEvent($kernel, $request, HttpKernelInterface::MAIN_REQUEST, $exception);
+        $testPathKernelExceptionListener->onKernelException($exceptionEvent);
+        self::assertEquals($response, $exceptionEvent->getResponse());
     }
 
     public function testOnKernelExceptionWithCritError(): void
     {
+        $logger = $this->getMockBuilder(LoggerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
         $exceptionFormat = $this->createMock(ExceptionFormatServiceInterface::class);
         $response = new Response('test', Response::HTTP_INTERNAL_SERVER_ERROR);
         $exceptionFormat->expects(self::once())
             ->method('formatExceptionResponse')
             ->willReturn($response);
-        $this->logger->expects(self::once())->method('critical');
-        $listener = new TestPathKernelExceptionListener(
+        $logger->expects(self::once())->method('critical');
+        $testPathKernelExceptionListener = new TestPathKernelExceptionListener(
             $exceptionFormat,
             '/api',
             true,
-            $this->logger
+            $logger
         );
-        $kernel = $this->createMock(HttpKernelInterface::class);
+        $kernel = $this->createStub(HttpKernelInterface::class);
         $request = Request::create('/api');
-        $exc = new Exception("testError", Response::HTTP_INTERNAL_SERVER_ERROR);
-        $event = new ExceptionEvent($kernel, $request, HttpKernelInterface::MAIN_REQUEST, $exc);
-        $listener->onKernelException($event);
-        self::assertEquals($response, $event->getResponse());
+        $exception = new Exception("testError", Response::HTTP_INTERNAL_SERVER_ERROR);
+        $exceptionEvent = new ExceptionEvent($kernel, $request, HttpKernelInterface::MAIN_REQUEST, $exception);
+        $testPathKernelExceptionListener->onKernelException($exceptionEvent);
+        self::assertEquals($response, $exceptionEvent->getResponse());
     }
 
     public function testOnKernelExceptionWithAuthError(): void
     {
+        $logger = $this->getMockBuilder(LoggerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
         $exceptionFormat = $this->createMock(ExceptionFormatServiceInterface::class);
         $response = new Response('test', Response::HTTP_UNAUTHORIZED);
         $exceptionFormat->expects(self::once())->method('formatExceptionResponse')
             ->willReturn($response);
-        $this->logger->expects(self::once())->method('info');
-        $listener = new TestPathKernelExceptionListener(
+        $logger->expects(self::once())->method('info');
+        $testPathKernelExceptionListener = new TestPathKernelExceptionListener(
             $exceptionFormat,
             '/api',
             true,
-            $this->logger
+            $logger
         );
-        $kernel = $this->createMock(HttpKernelInterface::class);
+        $kernel = $this->createStub(HttpKernelInterface::class);
         $request = Request::create('/api');
-        $exc = new Exception("testError", Response::HTTP_UNAUTHORIZED);
-        $event = new ExceptionEvent($kernel, $request, HttpKernelInterface::MAIN_REQUEST, $exc);
-        $listener->onKernelException($event);
-        self::assertEquals($response, $event->getResponse());
+        $exception = new Exception("testError", Response::HTTP_UNAUTHORIZED);
+        $exceptionEvent = new ExceptionEvent($kernel, $request, HttpKernelInterface::MAIN_REQUEST, $exception);
+        $testPathKernelExceptionListener->onKernelException($exceptionEvent);
+        self::assertEquals($response, $exceptionEvent->getResponse());
     }
 }
