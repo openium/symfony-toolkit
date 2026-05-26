@@ -25,7 +25,7 @@ class DebugUtilsTest extends TestCase
         $this->assertSame("1,'a'", DebugUtils::formatSqlParam([1, 'a']));
     }
 
-    public function testFormatSqlParamWithObjectHavingGetId()
+    public function testFormatSqlParamWithObjectHavingGetId(): void
     {
         $obj = new class {
             public function getId() { return 42; }
@@ -75,7 +75,7 @@ class DebugUtilsTest extends TestCase
         );
     }
 
-    public function testFormatSqlParamWithObjectHavingGetIdString()
+    public function testFormatSqlParamWithObjectHavingGetIdString(): void
     {
         $obj = new class {
             public function getId() { return 'foo'; }
@@ -110,40 +110,44 @@ class DebugUtilsTest extends TestCase
         $this->assertSame("'O\\'Reilly'", DebugUtils::formatSqlParam("O'Reilly"));
     }
 
-    public function testLogDoctrineQueryInjectsValues()
+    public function testLogDoctrineQueryInjectsValues(): void
     {
         $queryMock = $this->createMock(Query::class);
-        $queryMock->method('getSQL')->willReturn('SELECT * FROM user WHERE id = ? AND name = ?');
-        $queryMock->method('getDQL')->willReturn(
+        $queryMock->expects($this->once())->method('getSQL')->willReturn('SELECT * FROM user WHERE id = ? AND name = ?');
+        $queryMock->expects($this->once())->method('getDQL')->willReturn(
             'SELECT u FROM User u WHERE u.id = :id AND u.name = :name'
         );
-        $param1 = $this->getMockBuilder('Doctrine\ORM\Query\Parameter')
+        $param1 = $this->getMockBuilder(\Doctrine\ORM\Query\Parameter::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $param1->method('getName')->willReturn('id');
-        $param1->method('getValue')->willReturn(5);
-        $param2 = $this->getMockBuilder('Doctrine\ORM\Query\Parameter')
+        $param1->expects($this->once())->method('getName')->willReturn('id');
+        $param1->expects($this->once())->method('getValue')->willReturn(5);
+        $param2 = $this->getMockBuilder(\Doctrine\ORM\Query\Parameter::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $param2->method('getName')->willReturn('name');
-        $param2->method('getValue')->willReturn('Roger');
+        $param2->expects($this->once())->method('getName')->willReturn('name');
+        $param2->expects($this->once())->method('getValue')->willReturn('Roger');
         $queryMock->method('getParameters')->willReturn(new ArrayCollection([$param1, $param2]));
         $result = DebugUtils::logDoctrineQuery($queryMock);
         $this->assertSame("SELECT * FROM user WHERE id = 5 AND name = 'Roger'", $result);
     }
 
-    public function testSetDoctrineQueryLoggerDoesNotThrow()
+    public function testSetDoctrineQueryLoggerDoesNotThrow(): void
     {
+        $configurationMock = $this->getMockBuilder(\Doctrine\DBAL\Configuration::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $configurationMock->expects(self::once())->method('setMiddlewares');
+        $connectionMock = $this->getMockBuilder(\Doctrine\DBAL\Connection::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $connectionMock->expects(self::once())
+            ->method('getConfiguration')
+            ->willReturn($configurationMock);
         $entityManagerMock = $this->createMock(EntityManagerInterface::class);
-        $connectionMock = $this->getMockBuilder('Doctrine\DBAL\Connection')
-            ->disableOriginalConstructor()
-            ->getMock();
-        $configurationMock = $this->getMockBuilder('Doctrine\DBAL\Configuration')
-            ->disableOriginalConstructor()
-            ->getMock();
-        $entityManagerMock->method('getConnection')->willReturn($connectionMock);
-        $connectionMock->method('getConfiguration')->willReturn($configurationMock);
-        $configurationMock->expects($this->once())->method('setMiddlewares');
+        $entityManagerMock->expects(self::once())
+            ->method('getConnection')
+            ->willReturn($connectionMock);
         DebugUtils::setDoctrineQueryLogger($entityManagerMock);
         $this->assertTrue(true); // Si aucune exception, le test passe
     }

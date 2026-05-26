@@ -11,7 +11,7 @@ class ConfigurationTest extends TestCase
     public function testConfiguration(): void
     {
         $configuration = new Configuration();
-        $tree = $configuration->getConfigTreeBuilder();
-        self::assertTrue($tree instanceof TreeBuilder);
+        $treeBuilder = $configuration->getConfigTreeBuilder();
+        self::assertTrue($treeBuilder instanceof TreeBuilder);
     }
 }

@@ -27,6 +27,7 @@ class OpeniumSymfonyToolKitExtension extends Extension
      *
      * @throws Exception
      */
+    #[\Override]
     public function load(array $configs, ContainerBuilder $container): void
     {
         $configuration = $this->getConfiguration($configs, $container);
@@ -34,11 +35,11 @@ class OpeniumSymfonyToolKitExtension extends Extension
             $this->processConfiguration($configuration, $configs);
         }
 
-        $loader = new YamlFileLoader(
+        $yamlFileLoader = new YamlFileLoader(
             $container,
             new FileLocator(__DIR__ . '/../Resources/config')
         );
-        $loader->load('services.yaml');
+        $yamlFileLoader->load('services.yaml');
 
         $container->setAlias(
             FileUploaderServiceInterface::class,

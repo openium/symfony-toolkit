@@ -35,22 +35,23 @@ class FileUploaderService implements FileUploaderServiceInterface
      * @throws BadRequestHttpException
      * @throws LogicException
      */
+    #[\Override]
     public function prepareUploadPath(
-        WithUploadInterface $uploadEntity,
+        WithUploadInterface $withUpload,
         ?string $imageName = null
     ): WithUploadInterface {
-        $file = $uploadEntity->getFile();
+        $file = $withUpload->getFile();
         if (is_null($file)) {
-            return $uploadEntity;
+            return $withUpload;
         }
 
-        if ($uploadEntity->getImagePath() !== null) {
-            $this->removeUpload($uploadEntity);
+        if ($withUpload->getImagePath() !== null) {
+            $this->removeUpload($withUpload);
         }
 
-        $path = $this->getPath($file, $uploadEntity->getUploadsDir(), $imageName);
-        $uploadEntity->setImagePath($path);
-        return $uploadEntity;
+        $path = $this->getPath($file, $withUpload->getUploadsDir(), $imageName);
+        $withUpload->setImagePath($path);
+        return $withUpload;
     }
 
     /**
@@ -59,6 +60,7 @@ class FileUploaderService implements FileUploaderServiceInterface
      * @throws BadRequestHttpException
      * @throws LogicException
      */
+    #[\Override]
     public function getPath(File $file, string $dirName, ?string $imageName = null): string
     {
         if (is_null($imageName)) {
@@ -95,30 +97,32 @@ class FileUploaderService implements FileUploaderServiceInterface
      * @throws ConflictHttpException
      * @throws UnexpectedValueException
      */
-    public function uploadEntity(WithUploadInterface $uploadEntity): WithUploadInterface
+    #[\Override]
+    public function uploadEntity(WithUploadInterface $withUpload): WithUploadInterface
     {
         /** @var UploadedFile|null $file */
-        $file = $uploadEntity->getFile();
+        $file = $withUpload->getFile();
         if (!is_null($file)) {
-            if (is_null($uploadEntity->getImagePath())) {
+            if (is_null($withUpload->getImagePath())) {
                 throw new UnexpectedValueException(
                     "Call prepareUploadPath method on the entity before upload."
                 );
             }
 
-            $this->upload($file, $uploadEntity->getImagePath());
-            $uploadEntity->setFile(null);
+            $this->upload($file, $withUpload->getImagePath());
+            $withUpload->setFile(null);
         }
 
-        return $uploadEntity;
+        return $withUpload;
     }
 
     /**
      * removeUpload
      */
-    public function removeUpload(WithUploadInterface $uploadEntity): void
+    #[\Override]
+    public function removeUpload(WithUploadInterface $withUpload): void
     {
-        $path = $uploadEntity->getImagePath();
+        $path = $withUpload->getImagePath();
         if (!is_null($path)) {
             $this->removeFile($path);
         }
@@ -129,6 +133,7 @@ class FileUploaderService implements FileUploaderServiceInterface
      *
      * @throws ConflictHttpException
      */
+    #[\Override]
     public function upload(File $file, string $path): void
     {
         $uploadPath = explode('/', $path);
@@ -149,6 +154,7 @@ class FileUploaderService implements FileUploaderServiceInterface
     /**
      * removeFile
      */
+    #[\Override]
     public function removeFile(string $path): void
     {
         $file = $this->publicDirPath . DIRECTORY_SEPARATOR . $path;

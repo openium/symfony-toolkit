@@ -11,16 +11,16 @@ use Exception;
  */
 class ContentExtractorIntegerPropertyException extends ContentExtractorException
 {
-    final public const MESSAGE = "Property must be an integer";
+    final public const string MESSAGE = "Property must be an integer";
 
-    final public const CODE = 2_015_151_205;
+    final public const int CODE = 2_015_151_205;
 
     public function __construct(
         string $key = "",
         string $message = self::MESSAGE,
         int $code = self::CODE,
-        ?Exception $previous = null
+        ?Exception $exception = null
     ) {
-        parent::__construct($key, $message, $code, $previous);
+        parent::__construct($key, $message, $code, $exception);
     }
 }

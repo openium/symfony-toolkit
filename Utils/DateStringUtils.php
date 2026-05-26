@@ -16,7 +16,7 @@ class DateStringUtils
     public static function getDateTimeFromString(
         string $dateString,
         ?string $format = null,
-        ?DateTimeZone $timeZone = null
+        ?DateTimeZone $dateTimeZone = null
     ): DateTime | false {
         if (null === $format) {
             if (strlen($dateString) > 10) {
@@ -28,14 +28,14 @@ class DateStringUtils
             }
         }
 
-        if (!$timeZone instanceof \DateTimeZone) {
-            $timeZone = new DateTimeZone('Europe/Paris');
+        if (!$dateTimeZone instanceof \DateTimeZone) {
+            $dateTimeZone = new DateTimeZone('Europe/Paris');
         }
 
         return DateTime::createFromFormat(
             $format,
             $dateString,
-            $timeZone
+            $dateTimeZone
         );
     }
 }

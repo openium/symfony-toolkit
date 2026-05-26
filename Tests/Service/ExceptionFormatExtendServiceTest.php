@@ -18,21 +18,12 @@ use Symfony\Component\HttpKernel\KernelInterface;
 #[CoversNothing]
 class ExceptionFormatExtendServiceTest extends TestCase
 {
-    private MockObject&KernelInterface $testKernel;
-
-    protected function setUp(): void
-    {
-        $this->testKernel = $this->getMockBuilder(KernelInterface::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        parent::setUp();
-    }
-
     public function testGenericExceptionResponse(): void
     {
-        $exception = new HttpException(Response::HTTP_FORBIDDEN);
-        $exceptionFormatExtendService = new ExceptionFormatExtendService($this->testKernel);
-        [$code, $text, $message] = $exceptionFormatExtendService->genericExceptionResponse($exception);
+        $testKernel = $this->createStub(KernelInterface::class);
+        $httpException = new HttpException(Response::HTTP_FORBIDDEN);
+        $exceptionFormatExtendService = new ExceptionFormatExtendService($testKernel);
+        [$code, $text, $message] = $exceptionFormatExtendService->genericExceptionResponse($httpException);
         self::assertEquals(400, $code);
         self::assertEquals('bad request', $text);
         self::assertEquals('bad request', $message);
@@ -40,23 +31,27 @@ class ExceptionFormatExtendServiceTest extends TestCase
 
     public function testAddKeyToErrorArray(): void
     {
-        $exception = new HttpException(Response::HTTP_FORBIDDEN);
-        $exceptionFormatExtendService = new ExceptionFormatExtendService($this->testKernel);
+        $testKernel = $this->createStub(KernelInterface::class);
+        $httpException = new HttpException(Response::HTTP_FORBIDDEN);
+        $exceptionFormatExtendService = new ExceptionFormatExtendService($testKernel);
         $error = [];
-        $error = $exceptionFormatExtendService->addKeyToErrorArray($error, $exception);
+        $error = $exceptionFormatExtendService->addKeyToErrorArray($error, $httpException);
         self::assertArrayHasKey('exception', $error);
         self::assertEquals(HttpException::class, $error['exception']);
     }
 
     public function testFormatExceptionResponse(): void
     {
-        $exception = new HttpException(Response::HTTP_NOT_FOUND);
-        $this->testKernel->expects(self::once())
+        $httpException = new HttpException(Response::HTTP_NOT_FOUND);
+        $testKernel = $this->getMockBuilder(KernelInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $testKernel->expects(self::once())
             ->method('getEnvironment')
             ->willReturn("prod");
-        $exceptionFormatExtendService = new ExceptionFormatExtendService($this->testKernel);
+        $exceptionFormatExtendService = new ExceptionFormatExtendService($testKernel);
         self::assertTrue($exceptionFormatExtendService instanceof ExceptionFormatService);
-        $response = $exceptionFormatExtendService->formatExceptionResponse($exception);
+        $response = $exceptionFormatExtendService->formatExceptionResponse($httpException);
         self::assertTrue($response instanceof Response);
         self::assertEquals($response->getStatusCode(), Response::HTTP_BAD_REQUEST);
         $content = json_decode($response->getContent(), true);

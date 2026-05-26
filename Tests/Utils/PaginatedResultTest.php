@@ -8,7 +8,7 @@ use PHPUnit\Framework\TestCase;
 
 class PaginatedResultTest extends TestCase
 {
-    public function testPaginatedResult()
+    public function testPaginatedResult(): void
     {
         $fp1 = new FilterParameters(
             'search',

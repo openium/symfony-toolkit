@@ -18,12 +18,12 @@ class AbstractControllerTest extends TestCase
 {
     public function testAbstractController(): void
     {
-        $controller = new TestController();
-        self::assertTrue($controller instanceof AbstractController);
+        $testController = new TestController();
+        self::assertTrue($testController instanceof AbstractController);
         $contentArray = ["content" => 8];
         $content = json_encode(["content" => 8]);
         $request =  new Request(['query' => "5"], ['request' => 6], [], [], [], ["server" => 7], $content);
-        $result = $controller->test($request);
+        $result = $testController->test($request);
         self::assertTrue(is_array($result));
         self::assertEquals($contentArray, $result);
     }
@@ -32,19 +32,19 @@ class AbstractControllerTest extends TestCase
     {
         static::expectException(MissingContentException::class);
         static::expectExceptionMessage("Missing content");
-        $controller = new TestController();
-        self::assertInstanceOf(AbstractController::class, $controller);
+        $testController = new TestController();
+        self::assertInstanceOf(AbstractController::class, $testController);
         $request =  new Request(['query' => "5"], ['request' => 6], [], [], [], ["server" => 7]);
-        $controller->test($request);
+        $testController->test($request);
     }
 
     public function testAbstractControllerWithNonArrayContent(): void
     {
         static::expectException(InvalidContentFormatException::class);
         static::expectExceptionMessage("Incorrect content format");
-        $controller = new TestController();
-        self::assertInstanceOf(AbstractController::class, $controller);
+        $testController = new TestController();
+        self::assertInstanceOf(AbstractController::class, $testController);
         $request =  new Request(['query' => "5"], ['request' => 6], [], [], [], ["server" => 7], 8);
-        $controller->test($request);
+        $testController->test($request);
     }
 }

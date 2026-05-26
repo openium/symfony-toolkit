@@ -25,6 +25,7 @@ class ServerService implements ServerServiceInterface
      *
      * @throws SuspiciousOperationException
      */
+    #[\Override]
     public function getBasePath(): string
     {
         $request = $this->requestStack->getCurrentRequest();

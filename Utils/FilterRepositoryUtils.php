@@ -13,24 +13,22 @@ class FilterRepositoryUtils
 {
     /**
      * applyFilters
-     *
-     *
      */
     public static function applyFilters(
-        QueryBuilder $qb,
+        QueryBuilder $queryBuilder,
         string $alias,
         FilterParameters $filterParameters
     ): void {
         if ($filterParameters->getOrderBy() !== null) {
-            $qb->orderBy(
+            $queryBuilder->orderBy(
                 $alias . '.' . $filterParameters->getOrderBy(),
                 $filterParameters->getOrder()
             );
         }
 
         if ($filterParameters->getOffset() !== null) {
-            $qb->setMaxResults($filterParameters->getLimit());
-            $qb->setFirstResult($filterParameters->getOffset());
+            $queryBuilder->setMaxResults($filterParameters->getLimit());
+            $queryBuilder->setFirstResult($filterParameters->getOffset());
         }
     }
 }

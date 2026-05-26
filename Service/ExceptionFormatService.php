@@ -36,30 +36,32 @@ class ExceptionFormatService implements ExceptionFormatServiceInterface
      *
      * @throws InvalidArgumentException
      */
-    public function formatExceptionResponse(Throwable $exception): Response
+    #[\Override]
+    public function formatExceptionResponse(Throwable $throwable): Response
     {
-        $response = new JsonResponse();
-        if ($exception instanceof Exception) {
-            [$code, $text, $message] = $this->genericExceptionResponse($exception);
-            $error = $this->getArray($exception, $code, $text, $message);
-            $response->setStatusCode($code);
+        $jsonResponse = new JsonResponse();
+        if ($throwable instanceof Exception) {
+            [$code, $text, $message] = $this->genericExceptionResponse($throwable);
+            $error = $this->getArray($throwable, $code, $text, $message);
+            $jsonResponse->setStatusCode($code);
             try {
                 $json = json_encode($error, JSON_THROW_ON_ERROR);
-                $response->setContent($json);
+                $jsonResponse->setContent($json);
             } catch (\JsonException) {
-                $response->setContent('');
+                $jsonResponse->setContent('');
             }
         } else {
-            $response->setStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR);
-            $response->setContent($exception->getMessage());
+            $jsonResponse->setStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR);
+            $jsonResponse->setContent($throwable->getMessage());
         }
 
-        return $response;
+        return $jsonResponse;
     }
 
     /**
      * @return array{0: int, 1: string, 2:string|null} [code, text, message]
      */
+    #[\Override]
     public function genericExceptionResponse(Exception $exception): array
     {
         $code = $this->getStatusCode($exception);
@@ -73,6 +75,7 @@ class ExceptionFormatService implements ExceptionFormatServiceInterface
      *
      * @return array<string, int|string|array<string|int, mixed>|null>
      */
+    #[\Override]
     public function getArray(
         Exception $exception,
         ?int $code = null,
@@ -105,6 +108,7 @@ class ExceptionFormatService implements ExceptionFormatServiceInterface
      *
      * @return array<string, int|string|array<string|int, mixed>|null>
      */
+    #[\Override]
     public function addKeyToErrorArray(array $error, Exception $exception): array
     {
         return $error;
@@ -113,6 +117,7 @@ class ExceptionFormatService implements ExceptionFormatServiceInterface
     /**
      * getStatusCode
      */
+    #[\Override]
     public function getStatusCode(Exception $exception): int
     {
         return ($exception instanceof HttpExceptionInterface)
@@ -123,6 +128,7 @@ class ExceptionFormatService implements ExceptionFormatServiceInterface
     /**
      * getStatusText
      */
+    #[\Override]
     public function getStatusText(Exception $exception): string
     {
         $code = $this->getStatusCode($exception);

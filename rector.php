@@ -8,6 +8,7 @@ use Rector\PHPUnit\Set\PHPUnitSetList;
 use Rector\Set\ValueObject\LevelSetList;
 use Rector\Set\ValueObject\SetList;
 use Rector\Symfony\Set\SymfonySetList;
+use Rector\TypeDeclaration\Rector\ClassMethod\AddVoidReturnTypeWhereNoReturnRector;
 
 return RectorConfig::configure()
     ->withPaths([
@@ -21,14 +22,21 @@ return RectorConfig::configure()
         __DIR__ . '/Tests',
         __DIR__ . '/Utils',
     ])
-    ->withRules([InlineConstructorDefaultToPropertyRector::class])
-    ->withPhpSets(php82: true)
-    ->withPreparedSets(deadCode: true, codeQuality: true, codingStyle: true)
+    ->withRules([
+        InlineConstructorDefaultToPropertyRector::class,
+        AddVoidReturnTypeWhereNoReturnRector::class,
+    ])
+    ->withPhpSets(php84: true)
+    ->withPreparedSets(
+        deadCode: true,
+        codeQuality: true,
+        codingStyle: true,
+        naming: true,
+        symfonyCodeQuality: true,
+    )
     ->withAttributesSets(symfony: true, doctrine: true)
     ->withSets([
-        SymfonySetList::SYMFONY_70,
-        SymfonySetList::SYMFONY_CODE_QUALITY,
         SymfonySetList::SYMFONY_CONSTRUCTOR_INJECTION,
-        PHPUnitSetList::PHPUNIT_100,
+        PHPUnitSetList::PHPUNIT_110,
     ])
     ->withTypeCoverageLevel(0);

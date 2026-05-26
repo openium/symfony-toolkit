@@ -11,16 +11,16 @@ use Exception;
  */
 class ContentExtractorMissingParameterException extends ContentExtractorException
 {
-    final public const MESSAGE = "Wrong parameters, missing parameter(s)";
+    final public const string MESSAGE = "Wrong parameters, missing parameter(s)";
 
-    final public const CODE = 2_015_151_203;
+    final public const int CODE = 2_015_151_203;
 
     public function __construct(
         string $key = "",
         string $message = self::MESSAGE,
         int $code = self::CODE,
-        ?Exception $previous = null
+        ?Exception $exception = null
     ) {
-        parent::__construct($key, $message, $code, $previous);
+        parent::__construct($key, $message, $code, $exception);
     }
 }

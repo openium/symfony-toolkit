@@ -21,7 +21,7 @@ interface ExceptionFormatServiceInterface
      * @throws InvalidArgumentException
      * @throws UnexpectedValueException
      */
-    public function formatExceptionResponse(Throwable $exception): Response;
+    public function formatExceptionResponse(Throwable $throwable): Response;
 
     /**
      * getArray

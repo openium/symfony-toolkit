@@ -23,6 +23,7 @@ class ExceptionFormatExtendService extends ExceptionFormatService
     /**
      * @return array [code, text, message]
      */
+    #[\Override]
     public function genericExceptionResponse(Exception $exception): array
     {
         $code = 400;
@@ -31,6 +32,7 @@ class ExceptionFormatExtendService extends ExceptionFormatService
         return [$code, $text, $message];
     }
 
+    #[\Override]
     public function addKeyToErrorArray(array $error, Exception $exception): array
     {
         $error['exception'] = $exception::class;
