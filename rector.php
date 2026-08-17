@@ -37,6 +37,6 @@ return RectorConfig::configure()
     ->withAttributesSets(symfony: true, doctrine: true)
     ->withSets([
         SymfonySetList::SYMFONY_CONSTRUCTOR_INJECTION,
-        PHPUnitSetList::PHPUNIT_110,
+        PHPUnitSetList::COMPOSER_BASED,
     ])
     ->withTypeCoverageLevel(0);

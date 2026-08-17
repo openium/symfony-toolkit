@@ -1,0 +1,133 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Parameter \#1 \$json of method Openium\\SymfonyToolKitBundle\\Controller\\AbstractController\:\:extractObjectFromString\(\) expects string\|null, bool\|float\|int\|string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: Controller/AbstractController.php
+
+		-
+			message: '#^Return type \(Symfony\\Component\\Config\\Definition\\Builder\\TreeBuilder\) of method Openium\\SymfonyToolKitBundle\\DependencyInjection\\Configuration\:\:getConfigTreeBuilder\(\) should be covariant with return type \(Symfony\\Component\\Config\\Definition\\Builder\\TreeBuilder\<''array''\>\) of method Symfony\\Component\\Config\\Definition\\ConfigurationInterface\:\:getConfigTreeBuilder\(\)$#'
+			identifier: method.childReturnType
+			count: 1
+			path: DependencyInjection/Configuration.php
+
+		-
+			message: '#^Instanceof between Openium\\SymfonyToolKitBundle\\DependencyInjection\\Configuration and Symfony\\Component\\Config\\Definition\\ConfigurationInterface will always evaluate to true\.$#'
+			identifier: instanceof.alwaysTrue
+			count: 1
+			path: DependencyInjection/OpeniumSymfonyToolKitExtension.php
+
+		-
+			message: '#^Trait Openium\\SymfonyToolKitBundle\\Entity\\WithUploadTrait is used zero times and is not analysed\.$#'
+			identifier: trait.unused
+			count: 1
+			path: Entity/WithUploadTrait.php
+
+		-
+			message: '#^Loose comparison via "\!\=" is not allowed\.$#'
+			identifier: notEqual.notAllowed
+			count: 1
+			path: Service/AtHelper.php
+
+		-
+			message: '#^Method Openium\\SymfonyToolKitBundle\\Utils\\ContentExtractorUtils\:\:getArray\(\) should return array\|null but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: Utils/ContentExtractorUtils.php
+
+		-
+			message: '#^Parameter \#1 \$content of static method Openium\\SymfonyToolKitBundle\\Utils\\ContentExtractorUtils\:\:checkKeyIsArray\(\) expects array\<string, mixed\>, array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: Utils/ContentExtractorUtils.php
+
+		-
+			message: '#^Binary operation "\." between ''\\'''' and mixed results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: Utils/DebugUtils.php
+
+		-
+			message: '#^Call to an undefined method DateTimeInterface\:\:setTimezone\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: Utils/DebugUtils.php
+
+		-
+			message: '#^Cannot call method format\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: Utils/DebugUtils.php
+
+		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+			count: 2
+			path: Utils/DebugUtils.php
+
+		-
+			message: '#^Method Openium\\SymfonyToolKitBundle\\Utils\\DebugUtils\:\:formatSqlParam\(\) has parameter \$value with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: Utils/DebugUtils.php
+
+		-
+			message: '#^Method Openium\\SymfonyToolKitBundle\\Utils\\DebugUtils\:\:formatSqlParam\(\) should return string but returns float\|int\|string\.$#'
+			identifier: return.type
+			count: 2
+			path: Utils/DebugUtils.php
+
+		-
+			message: '#^Method Openium\\SymfonyToolKitBundle\\Utils\\DebugUtils\:\:logDoctrineQuery\(\) has parameter \$query with generic class Doctrine\\ORM\\Query but does not specify its types\: TKey, TResult$#'
+			identifier: missingType.generics
+			count: 1
+			path: Utils/DebugUtils.php
+
+		-
+			message: '#^Method Openium\\SymfonyToolKitBundle\\Utils\\DebugUtils\:\:logDoctrineQuery\(\) should return string but returns list\<string\>\|string\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: Utils/DebugUtils.php
+
+		-
+			message: '#^Parameter \#3 \$subject of function preg_replace expects array\<float\|int\|string\>\|string, list\<string\>\|string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: Utils/DebugUtils.php
+
+		-
+			message: '#^Property Openium\\SymfonyToolKitBundle\\Utils\\FilterParameters\:\:\$page \(int\|null\) is never assigned null so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: Utils/FilterParameters.php
+
+		-
+			message: '#^Invalid array key type float\.$#'
+			identifier: offsetAccess.invalidOffset
+			count: 1
+			path: Utils/MemoryUtils.php
+
+		-
+			message: '#^Method Openium\\SymfonyToolKitBundle\\Utils\\PaginatedResult\:\:__construct\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: Utils/PaginatedResult.php
+
+		-
+			message: '#^Method Openium\\SymfonyToolKitBundle\\Utils\\PaginatedResult\:\:getData\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: Utils/PaginatedResult.php
+
+		-
+			message: '#^Method Openium\\SymfonyToolKitBundle\\Utils\\PaginatedResult\:\:setData\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: Utils/PaginatedResult.php
+
+		-
+			message: '#^Property Openium\\SymfonyToolKitBundle\\Utils\\PaginatedResult\:\:\$totalPage \(int\) does not accept float\|int\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: Utils/PaginatedResult.php

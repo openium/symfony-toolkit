@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<ruleset name="OpeniumSymfonyToolKit">
+    <description>Coding standard for the Openium Symfony Toolkit bundle.</description>
+
+    <arg name="basepath" value="."/>
+    <arg name="colors"/>
+    <arg name="extensions" value="php"/>
+    <arg value="sp"/>
+
+    <file>Command</file>
+    <file>Controller</file>
+    <file>DependencyInjection</file>
+    <file>Entity</file>
+    <file>EventListener</file>
+    <file>Exception</file>
+    <file>Service</file>
+    <file>Utils</file>
+
+    <rule ref="PSR12"/>
+
+    <!--
+    Pre-existing style debt introduced before PHP_CodeSniffer was added (v6.0.0).
+    Left out of scope for this change; tracked as a follow-up cleanup.
+    -->
+    <exclude-pattern>Service/DoctrineExceptionHandlerService.php</exclude-pattern>
+    <exclude-pattern>Utils/ContentExtractorUtils.php</exclude-pattern>
+</ruleset>
