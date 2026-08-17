@@ -18,6 +18,10 @@ $ composer require openium/symfony-toolkit
 
 > For Symfony < 6 use the v2
 
+> Since 6.0.0, `ExceptionFormatService` has breaking changes (see the ExceptionFormatService
+> section below). If you rely on the pre-6.0 subclassing API (`getArray`, `addKeyToErrorArray`,
+> `$jsonKeys`, ...), use the v5 branch instead.
+
 Usage
 -----
 
@@ -148,65 +152,86 @@ Work fine with doctrine exceptions but not with other/custom exceptions
 
 ### ExceptionFormatService
 
-Transform exceptions to json Response.
-Exception's response is now generic, which means you can give your own code, text and message to the response.<br>
+Transform exceptions to a JSON `Response`, built from a typed DTO
+(`ExceptionDTO`/`DevExceptionDTO`) serialized through the Symfony Serializer:
 
-In the case which you want to add secific code, firstly override the service of the bundle. 
-You have to add your own service in config/services.yaml. 
+```json
+{
+    "status_code": 404,
+    "status_text": "Not Found",
+    "message": "..."
+}
+```
 
-For example:
-```yaml
-    openium_symfony_toolkit.exception_format:
-        class: App\Service\ExceptionFormatService
-        arguments:
-            - '@kernel'
-        public: true
-  ```
+Outside the `prod` environment, the response also includes `trace` and `previous`
+(the wrapped exception's code/message), **except** when the exception is a
+`Symfony\Component\Security\Core\Exception\AuthenticationException` (or wraps/is wrapped by
+one): in that case `previous` is always omitted, and the status code is forced to `401
+Unauthorized` instead of falling back to `500`. This avoids leaking whether a given account
+exists when Symfony's `AuthenticatorManager` wraps a `UserNotFoundException` inside a
+`BadCredentialsException`.
 
-Then, you need to create an ExceptionFormatService in your project and extends  the one in the bundle.
+#### Breaking changes since 6.0.0
 
-2 methods and one property can be override :
-- `genericExceptionResponse` which will be defining each part of the exception: `$code, $text, $message`.
-- `addKeyToErrorArray` which will add keys in final json object 
-- `$jsonKeys` to override final json keys
+`ExceptionFormatService` was rewritten to use DTOs and no longer supports being extended.
+The following public methods/property have been removed:
+`getArray`, `addKeyToErrorArray`, `getStatusCode`, `getStatusText`, `genericExceptionResponse`,
+`$jsonKeys`. `ExceptionFormatServiceInterface` now only exposes `formatExceptionResponse`.
+The constructor signature also changed: it now takes `SerializerInterface`,
+`ExceptionFormatUtilsInterface` and the kernel environment string, instead of the kernel.
+
+If you want to customize the code/text/message of the response, override the
+`ExceptionFormatUtils` service instead (see below) — that is now the supported extension
+point, replacing the old subclassing pattern.
+
 #### Example
+
+If you need full control over the response, implement `ExceptionFormatServiceInterface`
+yourself (`ExceptionFormatService` can no longer be extended — see breaking changes above)
+and override the `openium_symfony_toolkit.exception_format` service in your `services.yaml`:
+
 ```php
 <?php
 namespace App\Service;
 
-use Openium\SymfonyToolKitBundle\Service\ExceptionFormatService as BaseExceptionFormatService;
 use Openium\SymfonyToolKitBundle\Service\ExceptionFormatServiceInterface;
+use Symfony\Component\HttpFoundation\Response;
+use Throwable;
 
-class ExceptionFormatService implements ExceptionFormatServiceInterface {
-
+class ExceptionFormatService implements ExceptionFormatServiceInterface
+{
     public function formatExceptionResponse(Throwable $exception): Response
     {
-        // You can use the parent method to format the exception
-        // don't forget to extend the base class
-        $response = parent::formatExceptionResponse($exception);
-        
-        // Or you can define your own response
-        // $response = new Response();
-        // $response->setContent(json_encode(['error' => 'Custom error message']));
-        // $response->setStatusCode(Response::HTTP_BAD_REQUEST);
-        
+        // Define your own response entirely
+        $response = new Response();
+        $response->setContent(json_encode(['error' => 'Custom error message']));
+        $response->setStatusCode(Response::HTTP_BAD_REQUEST);
+
         return $response;
     }
 }
 ```
+
+```yaml
+    openium_symfony_toolkit.exception_format:
+        class: App\Service\ExceptionFormatService
+        public: true
+```
+
 The exception you formatted is going to be used in the method `formatExceptionResponse`.
 This way you can handle a custom exception.
 ~~~php
     $response = $this->exceptionFormat->formatExceptionResponse($exception);
 ~~~
 
-You can also override the service ExceptionFormatUtils who define the text, message and code of the exception.
-The new class must implement ExceptionFormatUtilsInterface.
-And add your own ExceptionFormatUtilsInterface service in your project.
+Most of the time you don't need to replace the whole service: override the
+`ExceptionFormatUtils` service instead, which only defines the text, message and code of the
+exception. The new class must implement `ExceptionFormatUtilsInterface`, and be registered
+under the same service id in your project:
 
 ```yaml
     openium_symfony_toolkit.exception_format_utils:
-      class: Openium\SymfonyToolKitBundle\Utils\ExceptionFormatUtils
+      class: App\Service\ExceptionFormatUtils
       public: true
 ```
 
@@ -228,7 +253,7 @@ parameters:
 it use the ExceptionFormatService to format automatically the kernel exceptions
 only for the routes defined in exception_listener_path parameter
 
-Caution, this listener is enabled by default before version 4.3 of the bundle.
+Caution, this listener was enabled by default before version 6.0 of the bundle.
 
 ---
 
