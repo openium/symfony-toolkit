@@ -253,7 +253,7 @@ parameters:
 it use the ExceptionFormatService to format automatically the kernel exceptions
 only for the routes defined in exception_listener_path parameter
 
-Caution, this listener was enabled by default before version 6.0 of the bundle.
+Caution, this listener was enabled by default before version 4.3 of the bundle.
 
 ---
 
