@@ -8,6 +8,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\HttpKernel\KernelInterface;
+use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Throwable;
 
 /**
@@ -88,10 +89,12 @@ class ExceptionFormatService implements ExceptionFormatServiceInterface
         $error = $this->addKeyToErrorArray($error, $exception);
         if ($this->kernel->getEnvironment() !== 'prod') {
             $error['trace'] = $exception->getTrace();
-            $error['previous'] = [];
-            if (!is_null($exception->getPrevious())) {
-                $error['previous']['message'] = $exception->getPrevious()->getMessage();
-                $error['previous']['code'] = $exception->getPrevious()->getCode();
+            if (!($exception instanceof AuthenticationException)) {
+                $error['previous'] = [];
+                if (!is_null($exception->getPrevious())) {
+                    $error['previous']['message'] = $exception->getPrevious()->getMessage();
+                    $error['previous']['code'] = $exception->getPrevious()->getCode();
+                }
             }
         }
 
@@ -115,9 +118,13 @@ class ExceptionFormatService implements ExceptionFormatServiceInterface
      */
     public function getStatusCode(Exception $exception): int
     {
-        return ($exception instanceof HttpExceptionInterface)
-            ? $exception->getStatusCode()
-            : Response::HTTP_INTERNAL_SERVER_ERROR;
+        if ($exception instanceof HttpExceptionInterface) {
+            return $exception->getStatusCode();
+        }
+        if ($exception instanceof AuthenticationException) {
+            return Response::HTTP_UNAUTHORIZED;
+        }
+        return Response::HTTP_INTERNAL_SERVER_ERROR;
     }
 
     /**

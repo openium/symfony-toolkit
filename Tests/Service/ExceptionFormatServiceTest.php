@@ -10,6 +10,8 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\KernelInterface;
+use Symfony\Component\Security\Core\Exception\BadCredentialsException;
+use Symfony\Component\Security\Core\Exception\UserNotFoundException;
 use TypeError;
 
 /**
@@ -166,5 +168,40 @@ class ExceptionFormatServiceTest extends TestCase
         self::assertEquals(401, $code);
         self::assertEquals('Unauthorized', $text);
         self::assertNull($message);
+    }
+
+    public function testGetStatusCodeWithBadCredentialsException(): void
+    {
+        $exception = new BadCredentialsException();
+        $exceptionFormatService = new ExceptionFormatService($this->testKernel);
+        $statusCode = $exceptionFormatService->getStatusCode($exception);
+        self::assertEquals(Response::HTTP_UNAUTHORIZED, $statusCode);
+    }
+
+    public function testGetArrayWithBadCredentialsExceptionDoesNotLeakPreviousInDev(): void
+    {
+        $previous = new UserNotFoundException('User "x@y.com" not found.');
+        $exception = new BadCredentialsException('Invalid credentials.', 0, $previous);
+        $this->testKernel->expects(self::once())
+            ->method('getEnvironment')
+            ->willReturn('dev');
+        $exceptionFormatService = new ExceptionFormatService($this->testKernel);
+        $result = $exceptionFormatService->getArray($exception);
+        self::assertEquals(Response::HTTP_UNAUTHORIZED, $result['status_code']);
+        self::assertTrue(array_key_exists('trace', $result));
+        self::assertFalse(array_key_exists('previous', $result));
+    }
+
+    public function testFormatExceptionResponseWithBadCredentialsException(): void
+    {
+        $previous = new UserNotFoundException('User "x@y.com" not found.');
+        $exception = new BadCredentialsException('Invalid credentials.', 0, $previous);
+        $this->testKernel->expects(self::once())
+            ->method('getEnvironment')
+            ->willReturn('dev');
+        $exceptionFormatService = new ExceptionFormatService($this->testKernel);
+        $response = $exceptionFormatService->formatExceptionResponse($exception);
+        self::assertEquals(Response::HTTP_UNAUTHORIZED, $response->getStatusCode());
+        self::assertStringNotContainsString('not found', (string) $response->getContent());
     }
 }
