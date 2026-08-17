@@ -1,5 +1,13 @@
 # Changelog
 
+## 5.1.1
+
+### Fixed
+
+- `ServerService::getBasePath` now includes the port when it differs from the scheme's
+  default (80 for `http`, 443 for `https`), e.g. `http://localhost:8080/` instead of
+  `http://localhost/`. Links built from a non-default port (common in local dev) now work.
+
 ## 5.1.0
 
 ### Security fix
