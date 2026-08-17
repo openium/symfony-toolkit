@@ -13,46 +13,46 @@ class ExceptionFormatUtilsTest extends TestCase
 {
     public function testGetStatusCodeReturnsStatusCodeForHttpException(): void
     {
-        $exception = new HttpException(Response::HTTP_NOT_FOUND, 'Not Found');
-        $utils = new ExceptionFormatUtils();
-        self::assertEquals(404, $utils->getStatusCode($exception));
+        $httpException = new HttpException(Response::HTTP_NOT_FOUND, 'Not Found');
+        $exceptionFormatUtils = new ExceptionFormatUtils();
+        self::assertEquals(404, $exceptionFormatUtils->getStatusCode($httpException));
     }
 
     public function testGetStatusCodeReturnsInternalServerErrorForGenericException(): void
     {
         $exception = new Exception('Erreur');
-        $utils = new ExceptionFormatUtils();
+        $exceptionFormatUtils = new ExceptionFormatUtils();
         self::assertEquals(
             Response::HTTP_INTERNAL_SERVER_ERROR,
-            $utils->getStatusCode($exception)
+            $exceptionFormatUtils->getStatusCode($exception)
         );
     }
 
     public function testGetStatusTextReturnsRequestFailedForPaymentRequired(): void
     {
-        $exception = new HttpException(Response::HTTP_PAYMENT_REQUIRED);
-        $utils = new ExceptionFormatUtils();
-        self::assertEquals('Request Failed', $utils->getStatusText($exception));
+        $httpException = new HttpException(Response::HTTP_PAYMENT_REQUIRED);
+        $exceptionFormatUtils = new ExceptionFormatUtils();
+        self::assertEquals('Request Failed', $exceptionFormatUtils->getStatusText($httpException));
     }
 
     public function testGetStatusTextReturnsStatusTextForKnownCode(): void
     {
-        $exception = new HttpException(Response::HTTP_FORBIDDEN);
-        $utils = new ExceptionFormatUtils();
-        self::assertEquals('Forbidden', $utils->getStatusText($exception));
+        $httpException = new HttpException(Response::HTTP_FORBIDDEN);
+        $exceptionFormatUtils = new ExceptionFormatUtils();
+        self::assertEquals('Forbidden', $exceptionFormatUtils->getStatusText($httpException));
     }
 
     public function testGetStatusTextReturnsInternalServerErrorForUnknownCode(): void
     {
-        $exception = new HttpException(599);
-        $utils = new ExceptionFormatUtils();
-        self::assertEquals('Internal Server Error', $utils->getStatusText($exception));
+        $httpException = new HttpException(599);
+        $exceptionFormatUtils = new ExceptionFormatUtils();
+        self::assertEquals('Internal Server Error', $exceptionFormatUtils->getStatusText($httpException));
     }
 
     public function testGetStatusCodeReturnsUnauthorizedForBadCredentialsException(): void
     {
-        $exception = new BadCredentialsException();
-        $utils = new ExceptionFormatUtils();
-        self::assertEquals(Response::HTTP_UNAUTHORIZED, $utils->getStatusCode($exception));
+        $badCredentialsException = new BadCredentialsException();
+        $exceptionFormatUtils = new ExceptionFormatUtils();
+        self::assertEquals(Response::HTTP_UNAUTHORIZED, $exceptionFormatUtils->getStatusCode($badCredentialsException));
     }
 }

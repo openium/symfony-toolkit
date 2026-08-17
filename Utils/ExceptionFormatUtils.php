@@ -17,9 +17,11 @@ class ExceptionFormatUtils implements ExceptionFormatUtilsInterface
         if ($exception instanceof HttpExceptionInterface) {
             return $exception->getStatusCode();
         }
+
         if ($exception instanceof AuthenticationException) {
             return Response::HTTP_UNAUTHORIZED;
         }
+
         return Response::HTTP_INTERNAL_SERVER_ERROR;
     }
 
@@ -29,13 +31,12 @@ class ExceptionFormatUtils implements ExceptionFormatUtilsInterface
     public function getStatusText(Exception $exception): string
     {
         $code = $this->getStatusCode($exception);
-        if ($code == Response::HTTP_PAYMENT_REQUIRED) {
+        if ($code === Response::HTTP_PAYMENT_REQUIRED) {
             return 'Request Failed';
-        } else {
-            $isCodeExists = array_key_exists($code, Response::$statusTexts);
-            return ($isCodeExists)
-                ? Response::$statusTexts[$code]
-                : Response::$statusTexts[Response::HTTP_INTERNAL_SERVER_ERROR];
         }
+        $isCodeExists = array_key_exists($code, Response::$statusTexts);
+        return ($isCodeExists)
+            ? Response::$statusTexts[$code]
+            : Response::$statusTexts[Response::HTTP_INTERNAL_SERVER_ERROR];
     }
 }

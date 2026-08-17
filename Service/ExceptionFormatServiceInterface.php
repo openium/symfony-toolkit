@@ -1,8 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Openium\SymfonyToolKitBundle\Service;
 
-use Exception;
 use InvalidArgumentException;
 use Symfony\Component\HttpFoundation\Response;
 use Throwable;
@@ -21,5 +22,5 @@ interface ExceptionFormatServiceInterface
      * @throws InvalidArgumentException
      * @throws UnexpectedValueException
      */
-    public function formatExceptionResponse(Throwable $exception): Response;
+    public function formatExceptionResponse(Throwable $throwable): Response;
 }

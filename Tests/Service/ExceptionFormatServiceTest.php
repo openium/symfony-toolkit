@@ -34,11 +34,11 @@ class ExceptionFormatServiceTest extends TestCase
             'text' => 'Bad Request',
             'message' => 'Erreur',
         ]));
-        $service = new ExceptionFormatService($serializer, $utils, 'prod');
+        $exceptionFormatService = new ExceptionFormatService($serializer, $utils, 'prod');
         $exception = new Exception('Erreur', 400);
-        $response = $service->formatExceptionResponse($exception);
+        $response = $exceptionFormatService->formatExceptionResponse($exception);
         $this->assertInstanceOf(JsonResponse::class, $response);
-        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertEquals(\Symfony\Component\HttpFoundation\Response::HTTP_BAD_REQUEST, $response->getStatusCode());
         $content = json_decode($response->getContent(), true);
         $this->assertEquals(400, $content['code']);
         $this->assertEquals('Bad Request', $content['text']);
@@ -58,11 +58,11 @@ class ExceptionFormatServiceTest extends TestCase
             'trace' => [],
             'previous' => null,
         ]));
-        $service = new ExceptionFormatService($serializer, $utils, 'dev');
+        $exceptionFormatService = new ExceptionFormatService($serializer, $utils, 'dev');
         $exception = new Exception('Erreur dev', 500);
-        $response = $service->formatExceptionResponse($exception);
+        $response = $exceptionFormatService->formatExceptionResponse($exception);
         $this->assertInstanceOf(JsonResponse::class, $response);
-        $this->assertEquals(500, $response->getStatusCode());
+        $this->assertEquals(\Symfony\Component\HttpFoundation\Response::HTTP_INTERNAL_SERVER_ERROR, $response->getStatusCode());
         $content = json_decode($response->getContent(), true);
         $this->assertEquals(500, $content['code']);
         $this->assertEquals('Internal Server Error', $content['text']);
@@ -72,16 +72,16 @@ class ExceptionFormatServiceTest extends TestCase
 
     public function testGetDTOReturnsExceptionDTOInProd(): void
     {
-        $serializer = $this->createMock(SerializerInterface::class);
+        $serializer = $this->createStub(SerializerInterface::class);
         $utils = $this->createMock(ExceptionFormatUtilsInterface::class);
         $utils->method('getStatusCode')->willReturn(401);
         $utils->method('getStatusText')->willReturn('Unauthorized');
-        $service = new ExceptionFormatService($serializer, $utils, 'prod');
+        $exceptionFormatService = new ExceptionFormatService($serializer, $utils, 'prod');
         $exception = new Exception('Non autorisé', 401);
-        $reflection = new ReflectionClass($service);
-        $method = $reflection->getMethod('getDTO');
-        $method->setAccessible(true);
-        $dto = $method->invoke($service, $exception);
+        $reflectionClass = new ReflectionClass($exceptionFormatService);
+        $reflectionMethod = $reflectionClass->getMethod('getDTO');
+
+        $dto = $reflectionMethod->invoke($exceptionFormatService, $exception);
         $this->assertInstanceOf(ExceptionDTO::class, $dto);
         $this->assertEquals(401, $dto->code);
         $this->assertEquals('Unauthorized', $dto->text);
@@ -90,17 +90,17 @@ class ExceptionFormatServiceTest extends TestCase
 
     public function testGetDTOReturnsDevExceptionDTOInDevWithPrevious(): void
     {
-        $serializer = $this->createMock(SerializerInterface::class);
+        $serializer = $this->createStub(SerializerInterface::class);
         $utils = $this->createMock(ExceptionFormatUtilsInterface::class);
         $utils->method('getStatusCode')->willReturn(500);
         $utils->method('getStatusText')->willReturn('Internal Server Error');
-        $service = new ExceptionFormatService($serializer, $utils, 'dev');
+        $exceptionFormatService = new ExceptionFormatService($serializer, $utils, 'dev');
         $previous = new Exception('Précédent', 123);
         $exception = new Exception('Erreur dev', 500, $previous);
-        $reflection = new ReflectionClass($service);
-        $method = $reflection->getMethod('getDTO');
-        $method->setAccessible(true);
-        $dto = $method->invoke($service, $exception);
+        $reflectionClass = new ReflectionClass($exceptionFormatService);
+        $reflectionMethod = $reflectionClass->getMethod('getDTO');
+
+        $dto = $reflectionMethod->invoke($exceptionFormatService, $exception);
         $this->assertInstanceOf(DevExceptionDTO::class, $dto);
         $this->assertEquals(500, $dto->code);
         $this->assertEquals('Internal Server Error', $dto->text);
@@ -113,32 +113,32 @@ class ExceptionFormatServiceTest extends TestCase
 
     public function testGenericExceptionResponseReturnsExpectedArray(): void
     {
-        $serializer = $this->createMock(SerializerInterface::class);
+        $serializer = $this->createStub(SerializerInterface::class);
         $utils = $this->createMock(ExceptionFormatUtilsInterface::class);
         $utils->method('getStatusCode')->willReturn(404);
         $utils->method('getStatusText')->willReturn('Not Found');
-        $service = new ExceptionFormatService($serializer, $utils, 'prod');
+        $exceptionFormatService = new ExceptionFormatService($serializer, $utils, 'prod');
         $exception = new Exception('Introuvable', 404);
-        $reflection = new ReflectionClass($service);
-        $method = $reflection->getMethod('genericExceptionResponse');
-        $method->setAccessible(true);
-        $result = $method->invoke($service, $exception);
+        $reflectionClass = new ReflectionClass($exceptionFormatService);
+        $reflectionMethod = $reflectionClass->getMethod('genericExceptionResponse');
+
+        $result = $reflectionMethod->invoke($exceptionFormatService, $exception);
         $this->assertEquals([404, 'Not Found', null], $result);
     }
 
     public function testGetDTOReturnsDevExceptionDTOWithoutPreviousForAuthenticationException(): void
     {
-        $serializer = $this->createMock(SerializerInterface::class);
+        $serializer = $this->createStub(SerializerInterface::class);
         $utils = $this->createMock(ExceptionFormatUtilsInterface::class);
         $utils->method('getStatusCode')->willReturn(401);
         $utils->method('getStatusText')->willReturn('Unauthorized');
-        $service = new ExceptionFormatService($serializer, $utils, 'dev');
-        $previous = new UserNotFoundException('User "x@y.com" not found.');
-        $exception = new BadCredentialsException('Invalid credentials.', 0, $previous);
-        $reflection = new ReflectionClass($service);
-        $method = $reflection->getMethod('getDTO');
-        $method->setAccessible(true);
-        $dto = $method->invoke($service, $exception);
+        $exceptionFormatService = new ExceptionFormatService($serializer, $utils, 'dev');
+        $userNotFoundException = new UserNotFoundException('User "x@y.com" not found.');
+        $badCredentialsException = new BadCredentialsException('Invalid credentials.', 0, $userNotFoundException);
+        $reflectionClass = new ReflectionClass($exceptionFormatService);
+        $reflectionMethod = $reflectionClass->getMethod('getDTO');
+
+        $dto = $reflectionMethod->invoke($exceptionFormatService, $badCredentialsException);
         $this->assertInstanceOf(DevExceptionDTO::class, $dto);
         $this->assertEquals(401, $dto->code);
         $this->assertNull($dto->previous);
@@ -159,13 +159,30 @@ class ExceptionFormatServiceTest extends TestCase
         $utils = $this->createMock(ExceptionFormatUtilsInterface::class);
         $utils->method('getStatusCode')->willReturn(401);
         $utils->method('getStatusText')->willReturn('Unauthorized');
-        $service = new ExceptionFormatService($serializer, $utils, 'dev');
-        $previous = new UserNotFoundException('User "x@y.com" not found.');
-        $exception = new BadCredentialsException('Invalid credentials.', 0, $previous);
-        $response = $service->formatExceptionResponse($exception);
-        $this->assertEquals(401, $response->getStatusCode());
+        $exceptionFormatService = new ExceptionFormatService($serializer, $utils, 'dev');
+        $userNotFoundException = new UserNotFoundException('User "x@y.com" not found.');
+        $badCredentialsException = new BadCredentialsException('Invalid credentials.', 0, $userNotFoundException);
+        $response = $exceptionFormatService->formatExceptionResponse($badCredentialsException);
+        $this->assertEquals(\Symfony\Component\HttpFoundation\Response::HTTP_UNAUTHORIZED, $response->getStatusCode());
         $content = json_decode($response->getContent(), true);
         $this->assertNull($content['previous']);
         $this->assertStringNotContainsString('not found', (string) $response->getContent());
+    }
+
+    public function testGetDTODoesNotLeakPreviousWhenAuthenticationExceptionIsEncapsulated(): void
+    {
+        $serializer = $this->createStub(SerializerInterface::class);
+        $utils = $this->createMock(ExceptionFormatUtilsInterface::class);
+        $utils->method('getStatusCode')->willReturn(500);
+        $utils->method('getStatusText')->willReturn('Internal Server Error');
+        $exceptionFormatService = new ExceptionFormatService($serializer, $utils, 'dev');
+        $userNotFoundException = new UserNotFoundException('User "x@y.com" not found.');
+        $exception = new Exception('Erreur inattendue', 500, $userNotFoundException);
+        $reflectionClass = new ReflectionClass($exceptionFormatService);
+        $reflectionMethod = $reflectionClass->getMethod('getDTO');
+
+        $dto = $reflectionMethod->invoke($exceptionFormatService, $exception);
+        $this->assertInstanceOf(DevExceptionDTO::class, $dto);
+        $this->assertNull($dto->previous);
     }
 }

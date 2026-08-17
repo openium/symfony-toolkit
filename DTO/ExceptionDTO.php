@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Openium\SymfonyToolKitBundle\DTO;
 
 use Symfony\Component\Serializer\Attribute\SerializedName;

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Openium\SymfonyToolKitBundle\Service;
 
 use Exception;
@@ -10,7 +12,6 @@ use Openium\SymfonyToolKitBundle\DTO\ExceptionDTO;
 use Openium\SymfonyToolKitBundle\Utils\ExceptionFormatUtilsInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Serializer\SerializerInterface;
 use Throwable;
@@ -32,17 +33,16 @@ class ExceptionFormatService implements ExceptionFormatServiceInterface
     ) {
     }
 
-    public function formatExceptionResponse(Throwable $exception): Response
+    public function formatExceptionResponse(Throwable $throwable): Response
     {
-        if ($exception instanceof Exception) {
-            $dto = $this->getDTO($exception);
+        if ($throwable instanceof Exception) {
+            $dto = $this->getDTO($throwable);
             return JsonResponse::fromJsonString(
                 $this->serializer->serialize($dto, 'json'),
                 $dto->code
             );
-        } else {
-            return new Response($exception->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
+        return new Response($throwable->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
     }
 
     /**
@@ -57,37 +57,48 @@ class ExceptionFormatService implements ExceptionFormatServiceInterface
     }
 
     /**
-     * getArray
+     * getDTO
      *
-     * @param Exception $exception
      *
-     * @return ExceptionDTO|DevExceptionDTO
      */
     private function getDTO(
         Exception $exception
     ): ExceptionDTO | DevExceptionDTO {
         [$code, $text, $message] = $this->genericExceptionResponse($exception);
-        /** @var array<string, int|string|array<string|int, mixed>|null> $error */
-        $codeValue = $code ?? $this->exceptionFormatUtils->getStatusCode($exception);
-        $textValue = $text ?? $this->exceptionFormatUtils->getStatusText($exception);
         $messageValue = $message ?? $exception->getMessage();
         return match ($this->env) {
             'prod' => new ExceptionDTO(
-                $codeValue,
-                $textValue,
+                $code,
+                $text,
                 $messageValue
             ),
             default => new DevExceptionDTO(
-                $codeValue,
-                $textValue,
+                $code,
+                $text,
                 $messageValue,
                 $exception->getTrace(),
-                ($exception->getPrevious() && !($exception instanceof AuthenticationException))
-                    ? new DevPreviousExceptionDTO(
-                        $exception->getPrevious()->getCode(),
-                        $exception->getPrevious()->getMessage()
-                    ) : null
+                $this->buildPreviousDTO($exception)
             ),
         };
+    }
+
+    /**
+     * Builds the previous-exception DTO, unless either the exception itself or its previous
+     * is an AuthenticationException: Symfony's AuthenticatorManager intentionally wraps a
+     * UserNotFoundException inside a BadCredentialsException to avoid revealing whether an
+     * account exists, and re-exposing that message here would defeat that protection.
+     */
+    private function buildPreviousDTO(Exception $exception): ?DevPreviousExceptionDTO
+    {
+        $previous = $exception->getPrevious();
+        if (
+            !$previous instanceof \Throwable
+            || $exception instanceof AuthenticationException
+            || $previous instanceof AuthenticationException
+        ) {
+            return null;
+        }
+
+        return new DevPreviousExceptionDTO($previous->getCode(), $previous->getMessage());
     }
 }
