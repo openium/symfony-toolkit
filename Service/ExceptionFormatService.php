@@ -11,6 +11,7 @@ use Openium\SymfonyToolKitBundle\Utils\ExceptionFormatUtilsInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Serializer\SerializerInterface;
 use Throwable;
 
@@ -81,10 +82,11 @@ class ExceptionFormatService implements ExceptionFormatServiceInterface
                 $textValue,
                 $messageValue,
                 $exception->getTrace(),
-                $exception->getPrevious() ? new DevPreviousExceptionDTO(
-                    $exception->getPrevious()->getCode(),
-                    $exception->getPrevious()->getMessage()
-                ) : null
+                ($exception->getPrevious() && !($exception instanceof AuthenticationException))
+                    ? new DevPreviousExceptionDTO(
+                        $exception->getPrevious()->getCode(),
+                        $exception->getPrevious()->getMessage()
+                    ) : null
             ),
         };
     }

@@ -5,6 +5,7 @@ namespace Openium\SymfonyToolKitBundle\Utils;
 use Exception;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
+use Symfony\Component\Security\Core\Exception\AuthenticationException;
 
 class ExceptionFormatUtils implements ExceptionFormatUtilsInterface
 {
@@ -13,9 +14,13 @@ class ExceptionFormatUtils implements ExceptionFormatUtilsInterface
      */
     public function getStatusCode(Exception $exception): int
     {
-        return ($exception instanceof HttpExceptionInterface)
-            ? $exception->getStatusCode()
-            : Response::HTTP_INTERNAL_SERVER_ERROR;
+        if ($exception instanceof HttpExceptionInterface) {
+            return $exception->getStatusCode();
+        }
+        if ($exception instanceof AuthenticationException) {
+            return Response::HTTP_UNAUTHORIZED;
+        }
+        return Response::HTTP_INTERNAL_SERVER_ERROR;
     }
 
     /**

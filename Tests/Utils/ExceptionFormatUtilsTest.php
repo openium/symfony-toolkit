@@ -7,6 +7,7 @@ use Openium\SymfonyToolKitBundle\Utils\ExceptionFormatUtils;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 
 class ExceptionFormatUtilsTest extends TestCase
 {
@@ -46,5 +47,12 @@ class ExceptionFormatUtilsTest extends TestCase
         $exception = new HttpException(599);
         $utils = new ExceptionFormatUtils();
         self::assertEquals('Internal Server Error', $utils->getStatusText($exception));
+    }
+
+    public function testGetStatusCodeReturnsUnauthorizedForBadCredentialsException(): void
+    {
+        $exception = new BadCredentialsException();
+        $utils = new ExceptionFormatUtils();
+        self::assertEquals(Response::HTTP_UNAUTHORIZED, $utils->getStatusCode($exception));
     }
 }

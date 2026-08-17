@@ -11,6 +11,8 @@ use Openium\SymfonyToolKitBundle\Utils\ExceptionFormatUtilsInterface;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Security\Core\Exception\BadCredentialsException;
+use Symfony\Component\Security\Core\Exception\UserNotFoundException;
 use Symfony\Component\Serializer\SerializerInterface;
 
 /**
@@ -122,5 +124,48 @@ class ExceptionFormatServiceTest extends TestCase
         $method->setAccessible(true);
         $result = $method->invoke($service, $exception);
         $this->assertEquals([404, 'Not Found', null], $result);
+    }
+
+    public function testGetDTOReturnsDevExceptionDTOWithoutPreviousForAuthenticationException(): void
+    {
+        $serializer = $this->createMock(SerializerInterface::class);
+        $utils = $this->createMock(ExceptionFormatUtilsInterface::class);
+        $utils->method('getStatusCode')->willReturn(401);
+        $utils->method('getStatusText')->willReturn('Unauthorized');
+        $service = new ExceptionFormatService($serializer, $utils, 'dev');
+        $previous = new UserNotFoundException('User "x@y.com" not found.');
+        $exception = new BadCredentialsException('Invalid credentials.', 0, $previous);
+        $reflection = new ReflectionClass($service);
+        $method = $reflection->getMethod('getDTO');
+        $method->setAccessible(true);
+        $dto = $method->invoke($service, $exception);
+        $this->assertInstanceOf(DevExceptionDTO::class, $dto);
+        $this->assertEquals(401, $dto->code);
+        $this->assertNull($dto->previous);
+    }
+
+    public function testFormatExceptionResponseDoesNotLeakPreviousForBadCredentialsExceptionInDev(): void
+    {
+        $serializer = $this->createMock(SerializerInterface::class);
+        $serializer->method('serialize')->willReturnCallback(
+            fn ($dto) => json_encode([
+                'code' => $dto->code,
+                'text' => $dto->text,
+                'message' => $dto->message,
+                'trace' => $dto->trace,
+                'previous' => $dto->previous,
+            ])
+        );
+        $utils = $this->createMock(ExceptionFormatUtilsInterface::class);
+        $utils->method('getStatusCode')->willReturn(401);
+        $utils->method('getStatusText')->willReturn('Unauthorized');
+        $service = new ExceptionFormatService($serializer, $utils, 'dev');
+        $previous = new UserNotFoundException('User "x@y.com" not found.');
+        $exception = new BadCredentialsException('Invalid credentials.', 0, $previous);
+        $response = $service->formatExceptionResponse($exception);
+        $this->assertEquals(401, $response->getStatusCode());
+        $content = json_decode($response->getContent(), true);
+        $this->assertNull($content['previous']);
+        $this->assertStringNotContainsString('not found', (string) $response->getContent());
     }
 }
