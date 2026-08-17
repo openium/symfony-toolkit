@@ -38,6 +38,9 @@ class ServerServiceTest extends TestCase
         $request->expects(self::once())
             ->method('isSecure')
             ->willReturn(true);
+        $request->expects(self::once())
+            ->method('getPort')
+            ->willReturn(443);
         $this->requestStack->expects(self::once())
             ->method('getCurrentRequest')
             ->willReturn($request);
@@ -58,6 +61,9 @@ class ServerServiceTest extends TestCase
         $request->expects(self::once())
             ->method('isSecure')
             ->willReturn(false);
+        $request->expects(self::once())
+            ->method('getPort')
+            ->willReturn(80);
         $this->requestStack->expects(self::once())
             ->method('getCurrentRequest')
             ->willReturn($request);
@@ -65,6 +71,52 @@ class ServerServiceTest extends TestCase
         $result = $serverService->getBasePath();
         self::assertNotNull($result);
         self::assertEquals($result, 'http://127.0.0.2/');
+    }
+
+    public function testGetBasePathWithRequestNonDefaultPort(): void
+    {
+        $request = $this->getMockBuilder(Request::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $request->expects(self::once())
+            ->method('getHost')
+            ->willReturn('localhost');
+        $request->expects(self::once())
+            ->method('isSecure')
+            ->willReturn(false);
+        $request->expects(self::once())
+            ->method('getPort')
+            ->willReturn(8080);
+        $this->requestStack->expects(self::once())
+            ->method('getCurrentRequest')
+            ->willReturn($request);
+        $serverService = new ServerService($this->requestStack);
+        $result = $serverService->getBasePath();
+        self::assertNotNull($result);
+        self::assertEquals($result, 'http://localhost:8080/');
+    }
+
+    public function testGetBasePathWithRequestNonDefaultPortSecure(): void
+    {
+        $request = $this->getMockBuilder(Request::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $request->expects(self::once())
+            ->method('getHost')
+            ->willReturn('localhost');
+        $request->expects(self::once())
+            ->method('isSecure')
+            ->willReturn(true);
+        $request->expects(self::once())
+            ->method('getPort')
+            ->willReturn(8443);
+        $this->requestStack->expects(self::once())
+            ->method('getCurrentRequest')
+            ->willReturn($request);
+        $serverService = new ServerService($this->requestStack);
+        $result = $serverService->getBasePath();
+        self::assertNotNull($result);
+        self::assertEquals($result, 'https://localhost:8443/');
     }
 
     public function testGetBasePathWithoutRequest(): void

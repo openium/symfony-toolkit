@@ -32,8 +32,14 @@ class ServerService implements ServerServiceInterface
             return '';
         }
 
-        $prefix = $request->isSecure() ? 'https://' : 'http://';
+        $isSecure = $request->isSecure();
+        $prefix = $isSecure ? 'https://' : 'http://';
         $host = $request->getHost();
-        return $prefix . $host . '/';
+        $port = $request->getPort();
+        $defaultPort = $isSecure ? 443 : 80;
+
+        $portSuffix = ($port !== null && $port !== $defaultPort) ? ':' . $port : '';
+
+        return $prefix . $host . $portSuffix . '/';
     }
 }
