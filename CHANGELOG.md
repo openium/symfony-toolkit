@@ -1,6 +1,6 @@
 # Changelog
 
-## 7.0.0 (unreleased)
+## 7.0.0
 
 ### Fixed
 
