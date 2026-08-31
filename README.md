@@ -50,6 +50,16 @@ openium_symfony_toolkit:
 - `uploads.public_dir` / `uploads.dir_name`: used by `FileUploaderService` (see below).
 - `kernel_exception_listener.*`: used by `PathExceptionListener` (see below).
 
+### AbstractCommand
+
+> **Deprecated since 7.0, will be removed in 8.0.** The `--nl` option reimplements what Symfony's
+> console component already provides natively: use the standard `-q`/`--quiet` flag and
+> `OutputInterface::isQuiet()` instead of `prepareExecute()`/`writeMessage()`.
+
+Base class for commands, adding a `--nl` option to disable log output and a `writeMessage()`
+helper that respects it. Call `prepareExecute($input, $output)` at the start of `execute()`, then
+use `writeMessage()` instead of `$output->writeln()`.
+
 ### AbstractController
 
 Add 2 protected methods for controllers :

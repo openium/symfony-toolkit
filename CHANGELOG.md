@@ -2,6 +2,13 @@
 
 ## 7.0.0
 
+### Deprecated
+
+- `AbstractCommand` is deprecated and will be removed in 8.0. Its `--nl` option and
+  `writeMessage()` helper only duplicate the standard `-q`/`--quiet` console flag and
+  `OutputInterface::isQuiet()`. Instantiating a command extending it triggers a deprecation
+  notice.
+
 ### BREAKING CHANGE
 
 - `DoctrineExceptionHandlerService`'s constructor now requires a
