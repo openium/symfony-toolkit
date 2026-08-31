@@ -56,7 +56,12 @@ class AtHelper implements AtHelperInterface
         int &$result
     ): false | string {
         $date = $this->formatTimestampForAt($timestamp);
-        $fullCmd = sprintf('cd %s; echo "%s" | at %s 2>&1 ; let \!PIPESTATUS', $path, $cmd, $date);
+        $fullCmd = sprintf(
+            'cd %s; echo %s | at %s 2>&1 ; let \!PIPESTATUS',
+            escapeshellarg($path),
+            escapeshellarg($cmd),
+            $date
+        );
         return $this->atCommand($fullCmd, $result);
     }
 
@@ -77,7 +82,7 @@ class AtHelper implements AtHelperInterface
     public function createAtCommand(string $cmd, int $timestamp, int &$result): false | string
     {
         $date = $this->formatTimestampForAt($timestamp);
-        $fullCmd = sprintf('echo "%s" | at %s 2>&1 ; let \!PIPESTATUS', $cmd, $date);
+        $fullCmd = sprintf('echo %s | at %s 2>&1 ; let \!PIPESTATUS', escapeshellarg($cmd), $date);
         return $this->atCommand($fullCmd, $result);
     }
 

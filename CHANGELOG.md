@@ -2,6 +2,14 @@
 
 ## 7.0.0 (unreleased)
 
+### Security fix
+
+- `AtHelper::createAtCommand()` / `createAtCommandFromPath()` now pass `$cmd` and `$path` through
+  `escapeshellarg()` before building the shell command executed via `passthru()`. Previously
+  these values were interpolated unescaped, allowing shell command injection if either came from
+  untrusted input. `$cmd` is now treated as literal data given to `at`, not as a shell snippet —
+  see the README's AtHelper section for the BC impact.
+
 ### BREAKING CHANGE
 
 - The bundle now exposes a real semantic configuration tree under the `openium_symfony_toolkit`

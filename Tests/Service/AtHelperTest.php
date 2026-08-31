@@ -74,6 +74,68 @@ class AtHelperTest extends TestCase
         self::assertTrue($removeResult);
     }
 
+    public function testCreateAtCommandEscapesShellMetacharacters(): void
+    {
+        // given
+        $timestamp = time() + 33600;
+        $maliciousCmd = 'echo hi"; rm -rf /tmp/pwned #';
+        $atHelper = new class ($this->logger) extends AtHelper {
+            public ?string $capturedCmd = null;
+
+            #[\Override]
+            public function executeAndCaptureOutput(string $cmd, int &$result): string|false
+            {
+                $this->capturedCmd = $cmd;
+                $result = 0;
+                return 'job 1 at Wed Jan  1 00:00:00 2020';
+            }
+        };
+        $result = -1;
+        // when
+        $atHelper->createAtCommand($maliciousCmd, $timestamp, $result);
+        // then
+        self::assertSame(
+            sprintf(
+                'echo %s | at %s 2>&1 ; let \!PIPESTATUS',
+                escapeshellarg($maliciousCmd),
+                $atHelper->formatTimestampForAt($timestamp)
+            ),
+            $atHelper->capturedCmd
+        );
+    }
+
+    public function testCreateAtCommandFromPathEscapesShellMetacharacters(): void
+    {
+        // given
+        $timestamp = time() + 33600;
+        $maliciousCmd = 'echo hi"; rm -rf /tmp/pwned #';
+        $maliciousPath = '/tmp/some path"; rm -rf /tmp/pwned #';
+        $atHelper = new class ($this->logger) extends AtHelper {
+            public ?string $capturedCmd = null;
+
+            #[\Override]
+            public function executeAndCaptureOutput(string $cmd, int &$result): string|false
+            {
+                $this->capturedCmd = $cmd;
+                $result = 0;
+                return 'job 1 at Wed Jan  1 00:00:00 2020';
+            }
+        };
+        $result = -1;
+        // when
+        $atHelper->createAtCommandFromPath($maliciousCmd, $timestamp, $maliciousPath, $result);
+        // then
+        self::assertSame(
+            sprintf(
+                'cd %s; echo %s | at %s 2>&1 ; let \!PIPESTATUS',
+                escapeshellarg($maliciousPath),
+                escapeshellarg($maliciousCmd),
+                $atHelper->formatTimestampForAt($timestamp)
+            ),
+            $atHelper->capturedCmd
+        );
+    }
+
     public function testExtractJobNumberFromAtOutputWithRightOutput(): void
     {
         // given

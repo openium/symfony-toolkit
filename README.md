@@ -129,6 +129,13 @@ Finally, use the service like that :
 
 Allow you to execute some commands with Unix AT command.
 
+> Since 7.0.0, `$cmd` and `$path` are passed through `escapeshellarg()` before being interpolated
+> into the shell command run by `createAtCommand()` / `createAtCommandFromPath()` (previously,
+> unescaped values allowed shell command injection). `$cmd` is treated as literal data given to
+> `at`, not as a shell snippet: if you relied on shell metacharacters (`;`, `|`, `` ` ``, `$(...)`,
+> quotes, ...) in `$cmd` being interpreted by the shell, wrap your command in `sh -c '...'`
+> yourself before passing it in.
+
 - To create a new AT job :
 
 ~~~php
