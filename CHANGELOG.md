@@ -2,6 +2,8 @@
 
 ## 7.0.0
 
+See [migrate-v6-to-v7.md](migrate-v6-to-v7.md) for an actionable, step-by-step upgrade guide.
+
 ### Added
 
 - `UploadFilenameGeneratorInterface` / `RandomUploadFilenameGenerator`: the filename generation
@@ -89,6 +91,8 @@
   `http://localhost/`. Links built from a non-default port (common in local dev) now work.
 
 ## 6.0.0
+
+See [migrate-v5-to-v6.md](migrate-v5-to-v6.md) for an actionable, step-by-step upgrade guide.
 
 ### BREAKING CHANGE
 

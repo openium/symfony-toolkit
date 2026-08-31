@@ -12,21 +12,29 @@ Open a command console, enter your project directory and execute:
 $ composer require openium/symfony-toolkit
 ```
 
-> For Symfony 7 use the v4
+### Version compatibility
 
-> For Symfony 6 use the v3
+| Bundle version | Symfony | PHP    | Migration guide |
+|----------------|---------|--------|------------------|
+| v7 (current)   | ^8.1    | ^8.4   | [migrate-v6-to-v7.md](migrate-v6-to-v7.md) |
+| v6             | ^8.1    | ^8.4   | [migrate-v5-to-v6.md](migrate-v5-to-v6.md) |
+| v5             | ^8.0    | ^8.4   | - |
+| v4             | ^7.0    | ^8.2   | - |
+| v3             | ^6.0    | ^8.1   | [migrate-v2-to-v3.md](migrate-v2-to-v3.md) |
+| v2             | ^6.0    | ^8.0   | - |
+| v1             | ^4.3 \|\| ^5.0 | ^7.1 | - |
 
-> For Symfony < 6 use the v2
+v3/v4/v5 have no dedicated migration guide: each only bumped the minimum Symfony/PHP version
+(enforced by Composer itself) with cosmetic code changes, no consumer-facing API change.
 
-> Since 6.0.0, `ExceptionFormatService` has breaking changes (see the ExceptionFormatService
-> section below). If you rely on the pre-6.0 subclassing API (`getArray`, `addKeyToErrorArray`,
-> `$jsonKeys`, ...), use the v5 branch instead.
+> Since 6.0.0, `ExceptionFormatService` has breaking changes and no longer supports being
+> extended — see [migrate-v5-to-v6.md](migrate-v5-to-v6.md). If you rely on the pre-6.0
+> subclassing API (`getArray`, `addKeyToErrorArray`, `$jsonKeys`, ...), use the v5 branch instead.
 
 > Since 7.0.0, the bundle exposes a real semantic configuration tree under the
-> `openium_symfony_toolkit` key (see the Configuration section below). Raw `parameters:`
-> overrides of `openium_symfony_toolkit.public_dir`, `openium_symfony_toolkit.uploads_dir_name`,
-> `openium_symfony_toolkit.kernel_exception_listener_*` from a pre-7.0 project no longer have any
-> effect and must be migrated to the new `openium_symfony_toolkit:` config block.
+> `openium_symfony_toolkit` key (see the Configuration section below), and several classes are
+> deprecated — see [migrate-v6-to-v7.md](migrate-v6-to-v7.md) for the full list and what to do
+> about each.
 
 Usage
 -----
