@@ -57,7 +57,8 @@
         "symfony/console": "^8.1",
         "symfony/security-http": "^8.1",
         "symfony/serializer": "^8.1",
-        "symfony/doctrine-bridge": "^8.1"
+        "symfony/doctrine-bridge": "^8.1",
+        "symfony/yaml": "^8.1"
     },
     "require-dev": {
         "phpstan/extension-installer": "^1.4",

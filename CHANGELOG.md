@@ -1,5 +1,18 @@
 # Changelog
 
+## 7.0.0 (unreleased)
+
+### BREAKING CHANGE
+
+- The bundle now exposes a real semantic configuration tree under the `openium_symfony_toolkit`
+  key (`uploads.public_dir`, `uploads.dir_name`, `kernel_exception_listener.enabled`,
+  `kernel_exception_listener.path`, `kernel_exception_listener.class`). Previously,
+  `DependencyInjection/Configuration` was an empty tree and the actual values were plain
+  `parameters:` hardcoded in `Resources/config/services.yaml`; overriding them from a consuming
+  project relied on redefining those raw parameters. Any such raw `parameters:` override no
+  longer has any effect and must be migrated to the new `openium_symfony_toolkit:` config block
+  (see the README's Configuration section).
+
 ## 6.0.1
 
 ### Fixed

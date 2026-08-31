@@ -31,9 +31,25 @@ class OpeniumSymfonyToolKitExtension extends Extension
     public function load(array $configs, ContainerBuilder $container): void
     {
         $configuration = $this->getConfiguration($configs, $container);
-        if ($configuration instanceof ConfigurationInterface) {
-            $this->processConfiguration($configuration, $configs);
-        }
+        $config = $configuration instanceof ConfigurationInterface
+            ? $this->processConfiguration($configuration, $configs)
+            : [];
+
+        /** @var array{uploads: array{public_dir: string, dir_name: string}, kernel_exception_listener: array{enabled: bool, path: string, class: string}} $config */
+        $container->setParameter('openium_symfony_toolkit.public_dir', $config['uploads']['public_dir']);
+        $container->setParameter('openium_symfony_toolkit.uploads_dir_name', $config['uploads']['dir_name']);
+        $container->setParameter(
+            'openium_symfony_toolkit.kernel_exception_listener_enable',
+            $config['kernel_exception_listener']['enabled']
+        );
+        $container->setParameter(
+            'openium_symfony_toolkit.kernel_exception_listener_path',
+            $config['kernel_exception_listener']['path']
+        );
+        $container->setParameter(
+            'openium_symfony_toolkit.kernel_exception_listener_class',
+            $config['kernel_exception_listener']['class']
+        );
 
         $yamlFileLoader = new YamlFileLoader(
             $container,

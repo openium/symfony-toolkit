@@ -22,8 +22,33 @@ $ composer require openium/symfony-toolkit
 > section below). If you rely on the pre-6.0 subclassing API (`getArray`, `addKeyToErrorArray`,
 > `$jsonKeys`, ...), use the v5 branch instead.
 
+> Since 7.0.0, the bundle exposes a real semantic configuration tree under the
+> `openium_symfony_toolkit` key (see the Configuration section below). Raw `parameters:`
+> overrides of `openium_symfony_toolkit.public_dir`, `openium_symfony_toolkit.uploads_dir_name`,
+> `openium_symfony_toolkit.kernel_exception_listener_*` from a pre-7.0 project no longer have any
+> effect and must be migrated to the new `openium_symfony_toolkit:` config block.
+
 Usage
 -----
+
+### Configuration
+
+All bundle options are declared under the `openium_symfony_toolkit` key. Every key below shows
+its default value:
+
+~~~yaml
+openium_symfony_toolkit:
+    uploads:
+        public_dir: '%kernel.project_dir%/public'
+        dir_name: 'uploads'
+    kernel_exception_listener:
+        enabled: false
+        path: '/api'
+        class: 'Openium\SymfonyToolKitBundle\EventListener\PathKernelExceptionListener'
+~~~
+
+- `uploads.public_dir` / `uploads.dir_name`: used by `FileUploaderService` (see below).
+- `kernel_exception_listener.*`: used by `PathExceptionListener` (see below).
 
 ### AbstractController
 
@@ -241,17 +266,18 @@ under the same service id in your project:
 
 The listener catch kernel exceptions and transform them into HttpException thanks to ExceptionFormatService.
 
-It is disabled by default and have this configuration :
+It is disabled by default and have this configuration (see the Configuration section above) :
 
 ~~~yaml
-parameters:
-  openium_symfony_toolkit.kernel_exception_listener_enable: false
-  openium_symfony_toolkit.kernel_exception_listener_path: '/api'
-  openium_symfony_toolkit.kernel_exception_listener_class: 'Openium\SymfonyToolKitBundle\EventListener\PathExceptionListener'
+openium_symfony_toolkit:
+    kernel_exception_listener:
+        enabled: false
+        path: '/api'
+        class: 'Openium\SymfonyToolKitBundle\EventListener\PathExceptionListener'
 ~~~
 
 it use the ExceptionFormatService to format automatically the kernel exceptions
-only for the routes defined in exception_listener_path parameter
+only for the routes defined in the `kernel_exception_listener.path` option
 
 Caution, this listener was enabled by default before version 4.3 of the bundle.
 
