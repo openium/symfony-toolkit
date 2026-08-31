@@ -2,6 +2,20 @@
 
 ## 7.0.0
 
+### Added
+
+- `UploadFilenameGeneratorInterface` / `RandomUploadFilenameGenerator`: the filename generation
+  previously hardcoded in `FileUploaderService::getPath()` is now delegated to an overridable
+  service (`openium_symfony_toolkit.upload_filename_generator`), inspired by
+  VichUploaderBundle's namers. The default implementation reproduces the pre-7.0 behavior exactly.
+  `FileUploaderService`'s constructor gains an optional third argument for it; existing
+  `new FileUploaderService($publicDir, $uploadDir)` call sites keep working unchanged.
+- `MultiUploadInterface` / `MultiUploadTrait` and `FileUploaderService::prepareMultiUploadPath()`
+  / `uploadMultiEntity()` / `removeMultiUpload()`: an additive alternative to
+  `WithUploadInterface`/`WithUploadTrait` for entities that need more than one upload property,
+  each identified by a `$field` key, inspired by VichUploaderBundle's named mappings.
+  `WithUploadInterface`/`WithUploadTrait` are untouched; this is purely additive.
+
 ### Deprecated
 
 - `DateStringUtils` is deprecated and will be removed in 8.0. Its format guess based on string

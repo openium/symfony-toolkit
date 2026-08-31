@@ -8,6 +8,7 @@ use Openium\SymfonyToolKitBundle\Service\DoctrineExceptionHandlerServiceInterfac
 use Openium\SymfonyToolKitBundle\Service\ExceptionFormatServiceInterface;
 use Openium\SymfonyToolKitBundle\Service\FileUploaderServiceInterface;
 use Openium\SymfonyToolKitBundle\Service\ServerServiceInterface;
+use Openium\SymfonyToolKitBundle\Service\UploadFilenameGeneratorInterface;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Alias;
@@ -76,6 +77,10 @@ class OpeniumSymfonyToolKitExtension extends Extension
         $container->setAlias(
             AtHelperInterface::class,
             new Alias('openium_symfony_toolkit.at_helper')
+        );
+        $container->setAlias(
+            UploadFilenameGeneratorInterface::class,
+            new Alias('openium_symfony_toolkit.upload_filename_generator')
         );
     }
 }

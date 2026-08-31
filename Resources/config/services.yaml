@@ -3,11 +3,16 @@ services:
         class: Openium\SymfonyToolKitBundle\Utils\ExceptionFormatUtils
         public: true
 
+    openium_symfony_toolkit.upload_filename_generator:
+        class: Openium\SymfonyToolKitBundle\Service\RandomUploadFilenameGenerator
+        public: true
+
     openium_symfony_toolkit.file_uploader:
         class: Openium\SymfonyToolKitBundle\Service\FileUploaderService
         arguments:
             - '%openium_symfony_toolkit.public_dir%'
             - '%openium_symfony_toolkit.uploads_dir_name%'
+            - '@openium_symfony_toolkit.upload_filename_generator'
         public: true
 
     openium_symfony_toolkit.exception_format:

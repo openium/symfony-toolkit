@@ -109,7 +109,7 @@ Add ServerServiceInterface with dependencies injection and use the method `getBa
 ### FileUploaderService
 
 This service help you to manage an entity with a uploaded **file reference.
-Caution, this service allow only one upload property**.
+Caution, this service (in its single-field form below) allow only one upload property**.
 
 First, implements your entity with WithUploadInterface.
 
@@ -125,10 +125,10 @@ Finally, use the service like that :
     $fileUploaderService->prepareUploadPath($entity);
 ~~~
 
-- _upload_ postPersist and postUpdate to move upload to right directory
+- _uploadEntity_ postPersist and postUpdate to move upload to right directory
 
 ~~~php
-    $fileUploaderService->upload($entity);
+    $fileUploaderService->uploadEntity($entity);
 ~~~
 
 - _removeUpload_ postPersist and postRemove to delete upload file
@@ -136,6 +136,49 @@ Finally, use the service like that :
 ~~~php
     $fileUploaderService->removeUpload($entity);
 ~~~
+
+#### Custom filename generation
+
+Since 7.0.0, the filename generation (previously hardcoded in `FileUploaderService::getPath()`) is
+delegated to an overridable `UploadFilenameGeneratorInterface` service, inspired by
+VichUploaderBundle's namers. The default `RandomUploadFilenameGenerator` reproduces the pre-7.0
+behavior (a random 32-char basename, or the given `$imageName`, suffixed with the guessed
+extension). To use a custom naming strategy, implement the interface and override the
+`openium_symfony_toolkit.upload_filename_generator` service, the same way as
+`ExceptionFormatUtils` (see the ExceptionFormatService section):
+
+```yaml
+    openium_symfony_toolkit.upload_filename_generator:
+        class: App\Service\MyUploadFilenameGenerator
+        public: true
+```
+
+#### Multiple upload fields per entity
+
+Since 7.0.0, an entity that needs more than one upload property is no longer limited to
+`WithUploadInterface`'s single fixed pair of properties. Implement the additive
+`MultiUploadInterface` (with the `MultiUploadTrait` helper) instead: every method takes a
+`$field` key identifying which upload slot it operates on. `WithUploadInterface`/`WithUploadTrait`
+are untouched and remain the right choice for an entity with a single upload property.
+
+~~~php
+class Product implements MultiUploadInterface
+{
+    use MultiUploadTrait;
+
+    public function getUploadsDir(string $field): string
+    {
+        return match ($field) {
+            'thumbnail' => 'products/thumbnails',
+            'gallery' => 'products/gallery',
+        };
+    }
+}
+~~~
+
+Use `prepareMultiUploadPath($entity, $field)` / `uploadMultiEntity($entity, $field)` /
+`removeMultiUpload($entity, $field)` instead of their single-field counterparts, once per field,
+in the same lifecycle hooks.
 
 ---
 

@@ -19,6 +19,12 @@ parameters:
 			path: DependencyInjection/OpeniumSymfonyToolKitExtension.php
 
 		-
+			message: '#^Trait Openium\\SymfonyToolKitBundle\\Entity\\MultiUploadTrait is used zero times and is not analysed\.$#'
+			identifier: trait.unused
+			count: 1
+			path: Entity/MultiUploadTrait.php
+
+		-
 			message: '#^Trait Openium\\SymfonyToolKitBundle\\Entity\\WithUploadTrait is used zero times and is not analysed\.$#'
 			identifier: trait.unused
 			count: 1
