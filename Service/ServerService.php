@@ -3,12 +3,17 @@
 namespace Openium\SymfonyToolKitBundle\Service;
 
 use Symfony\Component\HttpFoundation\Exception\SuspiciousOperationException;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * Class ServerService
  *
  * @package Openium\SymfonyToolKitBundle\Service
+ *
+ * @deprecated since 7.0, will be removed in 8.0. Use
+ *             {@see Request::getSchemeAndHttpHost()} instead (append '/' to match
+ *             the trailing slash returned by getBasePath()).
  */
 class ServerService implements ServerServiceInterface
 {
@@ -17,6 +22,13 @@ class ServerService implements ServerServiceInterface
      */
     public function __construct(private readonly RequestStack $requestStack)
     {
+        trigger_deprecation(
+            'openium/symfony-toolkit',
+            '7.0',
+            'The "%s" class is deprecated and will be removed in 8.0, use "%s::getSchemeAndHttpHost()" instead.',
+            self::class,
+            Request::class
+        );
     }
 
     /**
@@ -33,14 +45,6 @@ class ServerService implements ServerServiceInterface
             return '';
         }
 
-        $isSecure = $request->isSecure();
-        $prefix = $isSecure ? 'https://' : 'http://';
-        $host = $request->getHost();
-        $port = $request->getPort();
-        $defaultPort = $isSecure ? 443 : 80;
-
-        $portSuffix = ($port !== null && $port !== $defaultPort) ? ':' . $port : '';
-
-        return $prefix . $host . $portSuffix . '/';
+        return $request->getSchemeAndHttpHost() . '/';
     }
 }

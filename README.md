@@ -77,6 +77,10 @@ The PaginatedResult allow you to have a formatted result for endpoints who used 
 
 ### ServerService
 
+> **Deprecated since 7.0, will be removed in 8.0.** `getBasePath()` only ever duplicated
+> Symfony's own `Request::getSchemeAndHttpHost()`. Inject `RequestStack` (or `Request` directly)
+> and call `$request->getSchemeAndHttpHost() . '/'` instead.
+
 This service provide a way to get the actual server url.
 
 Add ServerServiceInterface with dependencies injection and use the method `getBasePath()` from it.

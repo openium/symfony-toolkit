@@ -2,6 +2,13 @@
 
 ## 7.0.0 (unreleased)
 
+### Deprecated
+
+- `ServerService` / `ServerServiceInterface` are deprecated and will be removed in 8.0.
+  `getBasePath()` only duplicated `Symfony\Component\HttpFoundation\Request::getSchemeAndHttpHost()`;
+  the service now delegates to it internally. Instantiating `ServerService` triggers a
+  deprecation notice. Use `Request::getSchemeAndHttpHost() . '/'` directly instead.
+
 ### Security fix
 
 - `AtHelper::createAtCommand()` / `createAtCommandFromPath()` now pass `$cmd` and `$path` through
