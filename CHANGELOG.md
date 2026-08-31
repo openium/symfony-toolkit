@@ -2,6 +2,17 @@
 
 ## 7.0.0 (unreleased)
 
+### Fixed
+
+- `DoctrineExceptionHandlerService::toHttpException()` used `switch ($throwable::class)`, which
+  only ever matches an exact class, never a subclass. Two consequences: any project-specific or
+  future Doctrine exception subclassing one of the handled types (e.g. a custom subclass of
+  `TableNotFoundException`) fell through to `default: throw $throwable;` instead of being
+  converted to an HTTP exception, and the `case Exception::class:` branch (`Doctrine\DBAL\Exception`
+  is an interface) could never match anything, making `dbalExceptionManagement()` dead code.
+  Replaced with `instanceof` checks ordered from most to least specific, so subclasses are now
+  handled correctly and the SQLSTATE-based fallback is reachable again.
+
 ### Deprecated
 
 - `ServerService` / `ServerServiceInterface` are deprecated and will be removed in 8.0.

@@ -2,11 +2,17 @@
 
 namespace Openium\SymfonyToolKitBundle\Tests\Service;
 
+use Doctrine\DBAL\Driver\Exception as DriverExceptionInterface;
+use Doctrine\DBAL\Exception as DBALException;
+use Doctrine\DBAL\Exception\DriverException;
+use Doctrine\DBAL\Exception\TableNotFoundException;
 use Openium\SymfonyToolKitBundle\Service\DoctrineExceptionHandlerService;
 use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 
 /**
  * Class DoctrineExceptionHandlerServiceTest
@@ -43,6 +49,64 @@ class DoctrineExceptionHandlerServiceTest extends TestCase
         $doctrineExceptionHandlerService = new DoctrineExceptionHandlerService($logger);
         self::assertTrue($doctrineExceptionHandlerService instanceof DoctrineExceptionHandlerService);
         $doctrineExceptionHandlerService->toHttpException($exception);
+    }
+
+    public function testToHttpExceptionHandlesSubclassOfKnownException(): void
+    {
+        // given
+        $logger = $this->createStub(LoggerInterface::class);
+        $driverStub = new class extends \Exception implements DriverExceptionInterface {
+            #[\Override]
+            public function getSQLState(): ?string
+            {
+                return null;
+            }
+        };
+        // a subclass of TableNotFoundException that switch($throwable::class) could never match
+        $throwable = new class ($driverStub, null) extends TableNotFoundException {
+        };
+        $doctrineExceptionHandlerService = new DoctrineExceptionHandlerService($logger);
+        // then
+        self::expectException(BadRequestHttpException::class);
+        self::expectExceptionMessage('Missing database table');
+        // when
+        $doctrineExceptionHandlerService->toHttpException($throwable);
+    }
+
+    public function testToHttpExceptionHandlesGenericDriverExceptionAsBadRequest(): void
+    {
+        // given
+        $logger = $this->createStub(LoggerInterface::class);
+        $driverStub = new class extends \Exception implements DriverExceptionInterface {
+            #[\Override]
+            public function getSQLState(): ?string
+            {
+                return null;
+            }
+        };
+        // a plain DriverException, matching none of the more specific subclasses
+        $throwable = new DriverException($driverStub, null);
+        $doctrineExceptionHandlerService = new DoctrineExceptionHandlerService($logger);
+        // then
+        self::expectException(BadRequestHttpException::class);
+        self::expectExceptionMessage('Database schema error');
+        // when
+        $doctrineExceptionHandlerService->toHttpException($throwable);
+    }
+
+    public function testToHttpExceptionHandlesGenericDbalExceptionViaSqlState(): void
+    {
+        // given
+        $logger = $this->createStub(LoggerInterface::class);
+        // a Doctrine\DBAL\Exception implementor that does not extend DriverException:
+        // switch($throwable::class) could never match Exception::class since it's an interface.
+        $throwable = new class ('conflict', 23000) extends \Exception implements DBALException {
+        };
+        $doctrineExceptionHandlerService = new DoctrineExceptionHandlerService($logger);
+        // then
+        self::expectException(ConflictHttpException::class);
+        // when
+        $doctrineExceptionHandlerService->toHttpException($throwable);
     }
 
     public function testMissingDatabaseTableMessage(): void

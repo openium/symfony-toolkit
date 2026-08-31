@@ -171,6 +171,10 @@ In most cases, the exception will be a BadRequestHttpException.
 
 But if the database error refers to a conflict, the method will throw a ConflictHttpException.
 
+> Since 7.0.0, exception matching uses `instanceof` instead of an exact-class comparison, so a
+> subclass of any handled Doctrine exception is now recognized too (it previously fell through
+> and was rethrown as-is).
+
 To use it, you need to inject DoctrineExceptionHandlerServiceInterface service.
 
 ~~~php

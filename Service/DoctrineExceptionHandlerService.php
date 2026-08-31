@@ -76,28 +76,32 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
     {
         // Call the logger
         $this->log($throwable);
-        // Select the process
-        switch ($throwable::class) {
-            case TableNotFoundException::class:
-                $this->createBadRequest($throwable, $this->missingDatabaseTableMessage);
-            case DriverException::class:
-            case TableExistsException::class:
-            case NonUniqueFieldNameException::class:
-                $this->createBadRequest($throwable, $this->databaseSchemaErrorMessage);
-            case SyntaxErrorException::class:
-                $this->createBadRequest($throwable, $this->querySyntaxErrorMessage);
-            case UniqueConstraintViolationException::class:
-            case ForeignKeyConstraintViolationException::class:
-                $this->createConflict($throwable, $this->conflictMessage);
-            case NotNullConstraintViolationException::class:
-            case ORMInvalidArgumentException::class:
-            case UnexpectedValueException::class:
-                $this->createBadRequest($throwable);
-            case Exception::class:
-                $this->dbalExceptionManagement($throwable);
-            default:
-                throw $throwable;
-        }
+        // Select the process. Ordered from the most specific type to the most generic one:
+        // instanceof matches subclasses too, unlike the previous switch($throwable::class),
+        // which silently missed any subclass not explicitly listed (e.g. it never matched
+        // Exception::class, an interface no concrete throwable's ::class can ever equal).
+        match (true) {
+            $throwable instanceof TableNotFoundException
+                => $this->createBadRequest($throwable, $this->missingDatabaseTableMessage),
+            $throwable instanceof TableExistsException,
+            $throwable instanceof NonUniqueFieldNameException
+                => $this->createBadRequest($throwable, $this->databaseSchemaErrorMessage),
+            $throwable instanceof SyntaxErrorException
+                => $this->createBadRequest($throwable, $this->querySyntaxErrorMessage),
+            $throwable instanceof UniqueConstraintViolationException,
+            $throwable instanceof ForeignKeyConstraintViolationException
+                => $this->createConflict($throwable, $this->conflictMessage),
+            $throwable instanceof NotNullConstraintViolationException,
+            $throwable instanceof ORMInvalidArgumentException,
+            $throwable instanceof UnexpectedValueException
+                => $this->createBadRequest($throwable),
+            // Generic driver-level exception not matched by a more specific case above.
+            $throwable instanceof DriverException
+                => $this->createBadRequest($throwable, $this->databaseSchemaErrorMessage),
+            $throwable instanceof Exception
+                => $this->dbalExceptionManagement($throwable),
+            default => throw $throwable,
+        };
     }
 
     /**
