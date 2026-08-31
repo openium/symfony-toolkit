@@ -2,7 +2,6 @@
 
 namespace Openium\SymfonyToolKitBundle\Controller;
 
-use InvalidArgumentException;
 use JsonException;
 use Openium\SymfonyToolKitBundle\Exception\InvalidContentFormatException;
 use Openium\SymfonyToolKitBundle\Exception\MissingContentException;
@@ -37,9 +36,7 @@ class AbstractController extends BaseController
      *
      * @throws BadRequestException
      * @throws InvalidContentFormatException
-     * @throws JsonException
      * @throws MissingContentException
-     * @throws InvalidArgumentException
      * @return array<string, mixed>|array<int, mixed>
      */
     protected function getMultipartContent(Request $request, string $key = 'json'): array
@@ -54,7 +51,7 @@ class AbstractController extends BaseController
     /**
      * extractObjectFromString
      *
-     * @param string $json
+     * @param string|null $json
      *
      * @throws InvalidContentFormatException
      * @throws MissingContentException
@@ -75,11 +72,6 @@ class AbstractController extends BaseController
         return $content;
     }
 
-    /**
-     * getFilterParameters
-     *
-     *
-     */
     protected function getFilterParameters(Request $request): FilterParameters
     {
         return FilterUtils::generateFromRequest($request);

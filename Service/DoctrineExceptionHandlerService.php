@@ -15,6 +15,7 @@ use Doctrine\ORM\ORMInvalidArgumentException;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Contracts\Translation\TranslatorInterface;
 use Throwable;
 use UnexpectedValueException;
 
@@ -25,27 +26,31 @@ use UnexpectedValueException;
  */
 class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerServiceInterface
 {
-    private string $missingDatabaseTableMessage = "Missing database table";
+    private const TRANSLATION_DOMAIN = 'openium_symfony_toolkit';
 
-    private string $databaseSchemaErrorMessage = "Database schema error";
+    private string $missingDatabaseTableMessage = 'doctrine_exception.missing_database_table';
 
-    private string $querySyntaxErrorMessage = "Query syntax error";
+    private string $databaseSchemaErrorMessage = 'doctrine_exception.database_schema_error';
 
-    private string $entityManagementErrorMessage = "Entity's management error";
+    private string $querySyntaxErrorMessage = 'doctrine_exception.query_syntax_error';
 
-    private string $conflictMessage = "Conflict error";
+    private string $entityManagementErrorMessage = 'doctrine_exception.entity_management_error';
 
-    private string $databaseErrorMessage = "Database error";
+    private string $conflictMessage = 'doctrine_exception.conflict';
 
-    private string $databaseRequestErrorMessage = "Database request error";
+    private string $databaseErrorMessage = 'doctrine_exception.database_error';
 
-    private string $missingPropertyErrorMessage = "Database schema error (Missing property)";
+    private string $databaseRequestErrorMessage = 'doctrine_exception.database_request_error';
+
+    private string $missingPropertyErrorMessage = 'doctrine_exception.missing_property_error';
 
     /**
      * ExceptionHandlerService constructor.
      */
-    public function __construct(protected LoggerInterface $logger)
-    {
+    public function __construct(
+        protected LoggerInterface $logger,
+        private readonly TranslatorInterface $translator
+    ) {
     }
 
     /**
@@ -76,28 +81,32 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
     {
         // Call the logger
         $this->log($throwable);
-        // Select the process
-        switch ($throwable::class) {
-            case TableNotFoundException::class:
-                $this->createBadRequest($throwable, $this->missingDatabaseTableMessage);
-            case DriverException::class:
-            case TableExistsException::class:
-            case NonUniqueFieldNameException::class:
-                $this->createBadRequest($throwable, $this->databaseSchemaErrorMessage);
-            case SyntaxErrorException::class:
-                $this->createBadRequest($throwable, $this->querySyntaxErrorMessage);
-            case UniqueConstraintViolationException::class:
-            case ForeignKeyConstraintViolationException::class:
-                $this->createConflict($throwable, $this->conflictMessage);
-            case NotNullConstraintViolationException::class:
-            case ORMInvalidArgumentException::class:
-            case UnexpectedValueException::class:
-                $this->createBadRequest($throwable);
-            case Exception::class:
-                $this->dbalExceptionManagement($throwable);
-            default:
-                throw $throwable;
-        }
+        // Select the process. Ordered from the most specific type to the most generic one:
+        // instanceof matches subclasses too, unlike the previous switch($throwable::class),
+        // which silently missed any subclass not explicitly listed (e.g. it never matched
+        // Exception::class, an interface no concrete throwable's ::class can ever equal).
+        match (true) {
+            $throwable instanceof TableNotFoundException
+                => $this->createBadRequest($throwable, $this->missingDatabaseTableMessage),
+            $throwable instanceof TableExistsException,
+            $throwable instanceof NonUniqueFieldNameException
+                => $this->createBadRequest($throwable, $this->databaseSchemaErrorMessage),
+            $throwable instanceof SyntaxErrorException
+                => $this->createBadRequest($throwable, $this->querySyntaxErrorMessage),
+            $throwable instanceof UniqueConstraintViolationException,
+            $throwable instanceof ForeignKeyConstraintViolationException
+                => $this->createConflict($throwable, $this->conflictMessage),
+            $throwable instanceof NotNullConstraintViolationException,
+            $throwable instanceof ORMInvalidArgumentException,
+            $throwable instanceof UnexpectedValueException
+                => $this->createBadRequest($throwable),
+            // Generic driver-level exception not matched by a more specific case above.
+            $throwable instanceof DriverException
+                => $this->createBadRequest($throwable, $this->databaseSchemaErrorMessage),
+            $throwable instanceof Exception
+                => $this->dbalExceptionManagement($throwable),
+            default => throw $throwable,
+        };
     }
 
     /**
@@ -108,7 +117,7 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
     protected function createBadRequest(Throwable $throwable, ?string $message = null): never
     {
         throw new BadRequestHttpException(
-            $message ?? $this->entityManagementErrorMessage,
+            $this->translate($message ?? $this->entityManagementErrorMessage),
             $throwable
         );
     }
@@ -124,7 +133,19 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
             $this->logger->error($throwable->getPrevious()->getCode());
         }
 
-        throw new ConflictHttpException($message ?? $this->conflictMessage, $throwable);
+        throw new ConflictHttpException($this->translate($message ?? $this->conflictMessage), $throwable);
+    }
+
+    /**
+     * Translates a message key through the "openium_symfony_toolkit" domain.
+     *
+     * Falls back to returning the input unchanged when it is not a known translation id
+     * (e.g. a literal message set via one of the setters below), matching Translator's own
+     * fallback behavior.
+     */
+    private function translate(string $message): string
+    {
+        return $this->translator->trans($message, [], self::TRANSLATION_DOMAIN);
     }
 
     /**

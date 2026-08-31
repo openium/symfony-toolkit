@@ -12,18 +12,61 @@ Open a command console, enter your project directory and execute:
 $ composer require openium/symfony-toolkit
 ```
 
-> For Symfony 7 use the v4
+### Version compatibility
 
-> For Symfony 6 use the v3
+| Bundle version | Symfony | PHP    | Migration guide |
+|----------------|---------|--------|------------------|
+| v7 (current)   | ^8.1    | ^8.4   | [migrate-v6-to-v7.md](migrate-v6-to-v7.md) |
+| v6             | ^8.1    | ^8.4   | [migrate-v5-to-v6.md](migrate-v5-to-v6.md) |
+| v5             | ^8.0    | ^8.4   | - |
+| v4             | ^7.0    | ^8.2   | - |
+| v3             | ^6.0    | ^8.1   | [migrate-v2-to-v3.md](migrate-v2-to-v3.md) |
+| v2             | ^6.0    | ^8.0   | - |
+| v1             | ^4.3 \|\| ^5.0 | ^7.1 | - |
 
-> For Symfony < 6 use the v2
+v3/v4/v5 have no dedicated migration guide: each only bumped the minimum Symfony/PHP version
+(enforced by Composer itself) with cosmetic code changes, no consumer-facing API change.
 
-> Since 6.0.0, `ExceptionFormatService` has breaking changes (see the ExceptionFormatService
-> section below). If you rely on the pre-6.0 subclassing API (`getArray`, `addKeyToErrorArray`,
-> `$jsonKeys`, ...), use the v5 branch instead.
+> Since 6.0.0, `ExceptionFormatService` has breaking changes and no longer supports being
+> extended — see [migrate-v5-to-v6.md](migrate-v5-to-v6.md). If you rely on the pre-6.0
+> subclassing API (`getArray`, `addKeyToErrorArray`, `$jsonKeys`, ...), use the v5 branch instead.
+
+> Since 7.0.0, the bundle exposes a real semantic configuration tree under the
+> `openium_symfony_toolkit` key (see the Configuration section below), and several classes are
+> deprecated — see [migrate-v6-to-v7.md](migrate-v6-to-v7.md) for the full list and what to do
+> about each.
 
 Usage
 -----
+
+### Configuration
+
+All bundle options are declared under the `openium_symfony_toolkit` key. Every key below shows
+its default value:
+
+~~~yaml
+openium_symfony_toolkit:
+    uploads:
+        public_dir: '%kernel.project_dir%/public'
+        dir_name: 'uploads'
+    kernel_exception_listener:
+        enabled: false
+        path: '/api'
+        class: 'Openium\SymfonyToolKitBundle\EventListener\PathKernelExceptionListener'
+~~~
+
+- `uploads.public_dir` / `uploads.dir_name`: used by `FileUploaderService` (see below).
+- `kernel_exception_listener.*`: used by `PathExceptionListener` (see below).
+
+### AbstractCommand
+
+> **Deprecated since 7.0, will be removed in 8.0.** The `--nl` option reimplements what Symfony's
+> console component already provides natively: use the standard `-q`/`--quiet` flag and
+> `OutputInterface::isQuiet()` instead of `prepareExecute()`/`writeMessage()`.
+
+Base class for commands, adding a `--nl` option to disable log output and a `writeMessage()`
+helper that respects it. Call `prepareExecute($input, $output)` at the start of `execute()`, then
+use `writeMessage()` instead of `$output->writeln()`.
 
 ### AbstractController
 
@@ -52,6 +95,10 @@ The PaginatedResult allow you to have a formatted result for endpoints who used 
 
 ### ServerService
 
+> **Deprecated since 7.0, will be removed in 8.0.** `getBasePath()` only ever duplicated
+> Symfony's own `Request::getSchemeAndHttpHost()`. Inject `RequestStack` (or `Request` directly)
+> and call `$request->getSchemeAndHttpHost() . '/'` instead.
+
 This service provide a way to get the actual server url.
 
 Add ServerServiceInterface with dependencies injection and use the method `getBasePath()` from it.
@@ -70,7 +117,7 @@ Add ServerServiceInterface with dependencies injection and use the method `getBa
 ### FileUploaderService
 
 This service help you to manage an entity with a uploaded **file reference.
-Caution, this service allow only one upload property**.
+Caution, this service (in its single-field form below) allow only one upload property**.
 
 First, implements your entity with WithUploadInterface.
 
@@ -86,10 +133,10 @@ Finally, use the service like that :
     $fileUploaderService->prepareUploadPath($entity);
 ~~~
 
-- _upload_ postPersist and postUpdate to move upload to right directory
+- _uploadEntity_ postPersist and postUpdate to move upload to right directory
 
 ~~~php
-    $fileUploaderService->upload($entity);
+    $fileUploaderService->uploadEntity($entity);
 ~~~
 
 - _removeUpload_ postPersist and postRemove to delete upload file
@@ -98,11 +145,61 @@ Finally, use the service like that :
     $fileUploaderService->removeUpload($entity);
 ~~~
 
+#### Custom filename generation
+
+Since 7.0.0, the filename generation (previously hardcoded in `FileUploaderService::getPath()`) is
+delegated to an overridable `UploadFilenameGeneratorInterface` service, inspired by
+VichUploaderBundle's namers. The default `RandomUploadFilenameGenerator` reproduces the pre-7.0
+behavior (a random 32-char basename, or the given `$imageName`, suffixed with the guessed
+extension). To use a custom naming strategy, implement the interface and override the
+`openium_symfony_toolkit.upload_filename_generator` service, the same way as
+`ExceptionFormatUtils` (see the ExceptionFormatService section):
+
+```yaml
+    openium_symfony_toolkit.upload_filename_generator:
+        class: App\Service\MyUploadFilenameGenerator
+        public: true
+```
+
+#### Multiple upload fields per entity
+
+Since 7.0.0, an entity that needs more than one upload property is no longer limited to
+`WithUploadInterface`'s single fixed pair of properties. Implement the additive
+`MultiUploadInterface` (with the `MultiUploadTrait` helper) instead: every method takes a
+`$field` key identifying which upload slot it operates on. `WithUploadInterface`/`WithUploadTrait`
+are untouched and remain the right choice for an entity with a single upload property.
+
+~~~php
+class Product implements MultiUploadInterface
+{
+    use MultiUploadTrait;
+
+    public function getUploadsDir(string $field): string
+    {
+        return match ($field) {
+            'thumbnail' => 'products/thumbnails',
+            'gallery' => 'products/gallery',
+        };
+    }
+}
+~~~
+
+Use `prepareMultiUploadPath($entity, $field)` / `uploadMultiEntity($entity, $field)` /
+`removeMultiUpload($entity, $field)` instead of their single-field counterparts, once per field,
+in the same lifecycle hooks.
+
 ---
 
 ### AtHelper
 
 Allow you to execute some commands with Unix AT command.
+
+> Since 7.0.0, `$cmd` and `$path` are passed through `escapeshellarg()` before being interpolated
+> into the shell command run by `createAtCommand()` / `createAtCommandFromPath()` (previously,
+> unescaped values allowed shell command injection). `$cmd` is treated as literal data given to
+> `at`, not as a shell snippet: if you relied on shell metacharacters (`;`, `|`, `` ` ``, `$(...)`,
+> quotes, ...) in `$cmd` being interpreted by the shell, wrap your command in `sh -c '...'`
+> yourself before passing it in.
 
 - To create a new AT job :
 
@@ -134,6 +231,20 @@ Transform doctrine exceptions into HttpException.
 In most cases, the exception will be a BadRequestHttpException.
 
 But if the database error refers to a conflict, the method will throw a ConflictHttpException.
+
+> Since 7.0.0, exception matching uses `instanceof` instead of an exact-class comparison, so a
+> subclass of any handled Doctrine exception is now recognized too (it previously fell through
+> and was rethrown as-is).
+
+> Since 7.0.0, the constructor also requires a `Symfony\Contracts\Translation\TranslatorInterface`
+> (the bundle's `openium_symfony_toolkit.doctrine_exception_handler` service definition already
+> passes `@translator`, so consumers using the service via DI need no change). The default
+> messages are now translation ids resolved from the `openium_symfony_toolkit` domain (English and
+> French catalogs are shipped in `Resources/translations/`). The `set*Message()` setters still
+> accept a literal string as before: `trans()` falls back to returning an unknown id unchanged, so
+> a custom message set that way is used verbatim regardless of the current locale. If you
+> instantiate `DoctrineExceptionHandlerService` directly (not via the container), update the call
+> site to pass a translator.
 
 To use it, you need to inject DoctrineExceptionHandlerServiceInterface service.
 
@@ -241,17 +352,18 @@ under the same service id in your project:
 
 The listener catch kernel exceptions and transform them into HttpException thanks to ExceptionFormatService.
 
-It is disabled by default and have this configuration :
+It is disabled by default and have this configuration (see the Configuration section above) :
 
 ~~~yaml
-parameters:
-  openium_symfony_toolkit.kernel_exception_listener_enable: false
-  openium_symfony_toolkit.kernel_exception_listener_path: '/api'
-  openium_symfony_toolkit.kernel_exception_listener_class: 'Openium\SymfonyToolKitBundle\EventListener\PathExceptionListener'
+openium_symfony_toolkit:
+    kernel_exception_listener:
+        enabled: false
+        path: '/api'
+        class: 'Openium\SymfonyToolKitBundle\EventListener\PathExceptionListener'
 ~~~
 
 it use the ExceptionFormatService to format automatically the kernel exceptions
-only for the routes defined in exception_listener_path parameter
+only for the routes defined in the `kernel_exception_listener.path` option
 
 Caution, this listener was enabled by default before version 4.3 of the bundle.
 
@@ -270,6 +382,10 @@ $phpMemory = MemoryUtils::getMemoryUsage();
 ~~~
 
 ### ContentExtractorService
+
+> **Deprecated since 7.0, will be removed in 8.0.** Validate request payloads with a typed DTO
+> and Symfony's Validator instead (e.g. via `#[MapRequestPayload]`), rather than manually pulling
+> and type-checking individual keys out of an array.
 
 Use to extract types data from array with specific key
 
@@ -307,6 +423,11 @@ Methods checkKeyIs{type} use checkKeyExists().
 All the methods in this class are static.
 
 ### DateStringUtils
+
+> **Deprecated since 7.0, will be removed in 8.0.** The format guess based on string
+> length/suffix is fragile. Use Symfony Serializer's `DateTimeNormalizer`, or plain
+> `new DateTimeImmutable($dateString)` (which already parses ATOM/ISO8601 and most common
+> formats), instead.
 
 Provide a static method to get date from string :
 

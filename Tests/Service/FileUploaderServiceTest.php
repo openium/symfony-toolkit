@@ -3,6 +3,7 @@
 namespace Openium\SymfonyToolKitBundle\Tests\Service;
 
 use Openium\SymfonyToolKitBundle\Service\FileUploaderService;
+use Openium\SymfonyToolKitBundle\Tests\Fixtures\Entity\EntityWithMultipleUploads;
 use Openium\SymfonyToolKitBundle\Tests\Fixtures\Entity\EntityWithUpload;
 use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -139,5 +140,71 @@ class FileUploaderServiceTest extends TestCase
         $entity = $fileUploaderService->prepareUploadPath($entity);
         $entity = $fileUploaderService->uploadEntity($entity);
         self::assertNull($entity->getFile());
+    }
+
+    /**
+     * Test prepareMultiUploadPath method with file. Prepare image path for the given field.
+     */
+    public function testPrepareMultiUploadPathWithFile(): void
+    {
+        $file = $this->getMockBuilder(UploadedFile::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $file->expects(self::once())
+            ->method('guessClientExtension')
+            ->willReturn('png');
+        $entity = new EntityWithMultipleUploads();
+        $entity->setFile('avatar', $file);
+
+        $fileUploaderService = new FileUploaderService('/tmp', 'test');
+        $withUpload = $fileUploaderService->prepareMultiUploadPath($entity, 'avatar', 'somename');
+        self::assertEquals('test/multiUpload/avatar/somename.png', $withUpload->getImagePath('avatar'));
+        self::assertNull($withUpload->getImagePath('other'));
+    }
+
+    /**
+     * Test prepareMultiUploadPath method without file for the given field.
+     */
+    public function testPrepareMultiUploadPathWithoutFile(): void
+    {
+        $entity = new EntityWithMultipleUploads();
+        $fileUploaderService = new FileUploaderService('/tmp', 'test');
+        $withUpload = $fileUploaderService->prepareMultiUploadPath($entity, 'avatar');
+        self::assertEquals($entity, $withUpload);
+    }
+
+    /**
+     * Test uploadMultiEntity method with file and the upload path configured beforehand.
+     */
+    public function testUploadMultiEntityWithFilePreuploaded(): void
+    {
+        $file = $this->getMockBuilder(UploadedFile::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $file->expects(self::once())
+            ->method('guessClientExtension')
+            ->willReturn('png');
+        $entity = new EntityWithMultipleUploads();
+        $entity->setFile('avatar', $file);
+
+        $fileUploaderService = new FileUploaderService('/tmp', 'test');
+        $entity = $fileUploaderService->prepareMultiUploadPath($entity, 'avatar');
+        $entity = $fileUploaderService->uploadMultiEntity($entity, 'avatar');
+        self::assertNull($entity->getFile('avatar'));
+    }
+
+    /**
+     * Test uploadMultiEntity method with a file for the given field but not pre-uploaded.
+     */
+    public function testUploadMultiEntityWithFileButNotPreUploaded(): void
+    {
+        static::expectException("UnexpectedValueException");
+        static::expectExceptionMessage("Call prepareMultiUploadPath method on the entity before upload.");
+        $file = $this->createStub(UploadedFile::class);
+        $entity = new EntityWithMultipleUploads();
+        $entity->setFile('avatar', $file);
+
+        $fileUploaderService = new FileUploaderService('/tmp', 'test');
+        $fileUploaderService->uploadMultiEntity($entity, 'avatar');
     }
 }

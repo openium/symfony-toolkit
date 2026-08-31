@@ -1,0 +1,9 @@
+doctrine_exception:
+    missing_database_table: 'Missing database table'
+    database_schema_error: 'Database schema error'
+    query_syntax_error: 'Query syntax error'
+    entity_management_error: "Entity's management error"
+    conflict: 'Conflict error'
+    database_error: 'Database error'
+    database_request_error: 'Database request error'
+    missing_property_error: 'Database schema error (Missing property)'

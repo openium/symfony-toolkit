@@ -1,0 +1,9 @@
+doctrine_exception:
+    missing_database_table: 'Table de base de données manquante'
+    database_schema_error: 'Erreur de schéma de base de données'
+    query_syntax_error: 'Erreur de syntaxe de la requête'
+    entity_management_error: "Erreur de gestion de l'entité"
+    conflict: 'Erreur de conflit'
+    database_error: 'Erreur de base de données'
+    database_request_error: 'Erreur de requête en base de données'
+    missing_property_error: 'Erreur de schéma de base de données (propriété manquante)'

@@ -3,11 +3,11 @@
 namespace Openium\SymfonyToolKitBundle\Service;
 
 use LogicException;
+use Openium\SymfonyToolKitBundle\Entity\MultiUploadInterface;
 use Openium\SymfonyToolKitBundle\Entity\WithUploadInterface;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 use UnexpectedValueException;
@@ -24,8 +24,11 @@ class FileUploaderService implements FileUploaderServiceInterface
     /**
      * ThumbnailFileUploaderService constructor.
      */
-    public function __construct(protected string $publicDirPath, protected string $uploadDirName)
-    {
+    public function __construct(
+        protected string $publicDirPath,
+        protected string $uploadDirName,
+        private readonly UploadFilenameGeneratorInterface $filenameGenerator = new RandomUploadFilenameGenerator()
+    ) {
         $this->uploadDirPath = $publicDirPath . DIRECTORY_SEPARATOR . $uploadDirName;
     }
 
@@ -55,40 +58,45 @@ class FileUploaderService implements FileUploaderServiceInterface
     }
 
     /**
-     * getPath
+     * Additive equivalent of prepareUploadPath() for entities with more than one upload
+     * property, implementing MultiUploadInterface instead of WithUploadInterface.
      *
      * @throws BadRequestHttpException
      * @throws LogicException
      */
+    public function prepareMultiUploadPath(
+        MultiUploadInterface $withUpload,
+        string $field,
+        ?string $imageName = null
+    ): MultiUploadInterface {
+        $file = $withUpload->getFile($field);
+        if (is_null($file)) {
+            return $withUpload;
+        }
+
+        if ($withUpload->getImagePath($field) !== null) {
+            $this->removeMultiUpload($withUpload, $field);
+        }
+
+        $path = $this->getPath($file, $withUpload->getUploadsDir($field), $imageName);
+        $withUpload->setImagePath($field, $path);
+        return $withUpload;
+    }
+
+    /**
+     * getPath
+     *
+     * @throws BadRequestHttpException
+     */
     #[\Override]
     public function getPath(File $file, string $dirName, ?string $imageName = null): string
     {
-        if (is_null($imageName)) {
-            $randString = sha1(uniqid((string)random_int(0, mt_getrandmax()), true));
-            $fileName = substr($randString, 0, 32);
-        } else {
-            $fileName = $imageName;
-        }
-
-        $fileExtension = null;
-        if ($file instanceof UploadedFile) {
-            $fileExtension = strtolower($file->guessClientExtension() ?? '');
-        } else {
-            $fileNameParts = explode('.', $file->getFilename());
-            if (count($fileNameParts) > 1) {
-                $fileExtension = trim($fileNameParts[count($fileNameParts) - 1]);
-            }
-        }
-
-        if (is_null($fileExtension) || $fileExtension === '') {
-            throw new BadRequestHttpException(
-                'The file extension is empty.',
-                null,
-                Response::HTTP_UNSUPPORTED_MEDIA_TYPE
-            );
-        }
-
-        return sprintf("%s/%s/%s.%s", $this->uploadDirName, $dirName, $fileName, $fileExtension);
+        return sprintf(
+            '%s/%s/%s',
+            $this->uploadDirName,
+            $dirName,
+            $this->filenameGenerator->generate($file, $imageName)
+        );
     }
 
     /**
@@ -117,12 +125,47 @@ class FileUploaderService implements FileUploaderServiceInterface
     }
 
     /**
+     * Additive equivalent of uploadEntity() for entities implementing MultiUploadInterface.
+     *
+     * @throws ConflictHttpException
+     * @throws UnexpectedValueException
+     */
+    public function uploadMultiEntity(MultiUploadInterface $withUpload, string $field): MultiUploadInterface
+    {
+        /** @var UploadedFile|null $file */
+        $file = $withUpload->getFile($field);
+        if (!is_null($file)) {
+            if (is_null($withUpload->getImagePath($field))) {
+                throw new UnexpectedValueException(
+                    "Call prepareMultiUploadPath method on the entity before upload."
+                );
+            }
+
+            $this->upload($file, $withUpload->getImagePath($field));
+            $withUpload->setFile($field, null);
+        }
+
+        return $withUpload;
+    }
+
+    /**
      * removeUpload
      */
     #[\Override]
     public function removeUpload(WithUploadInterface $withUpload): void
     {
         $path = $withUpload->getImagePath();
+        if (!is_null($path)) {
+            $this->removeFile($path);
+        }
+    }
+
+    /**
+     * Additive equivalent of removeUpload() for entities implementing MultiUploadInterface.
+     */
+    public function removeMultiUpload(MultiUploadInterface $withUpload, string $field): void
+    {
+        $path = $withUpload->getImagePath($field);
         if (!is_null($path)) {
             $this->removeFile($path);
         }

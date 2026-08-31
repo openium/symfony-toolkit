@@ -2,6 +2,7 @@
 
 namespace Openium\SymfonyToolKitBundle\DependencyInjection;
 
+use Openium\SymfonyToolKitBundle\EventListener\PathKernelExceptionListener;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
@@ -20,8 +21,41 @@ class Configuration implements ConfigurationInterface
     #[\Override]
     public function getConfigTreeBuilder(): TreeBuilder
     {
-        return new TreeBuilder('openium_symfony_toolkit');
-        //$rootNode = method_exists(TreeBuilder::class, 'getRootNode') ?
-        // $treeBuilder->getRootNode() :
+        $treeBuilder = new TreeBuilder('openium_symfony_toolkit');
+        $rootNode = $treeBuilder->getRootNode();
+        $rootNode
+            ->children()
+                ->arrayNode('uploads')
+                    ->addDefaultsIfNotSet()
+                    ->children()
+                        ->scalarNode('public_dir')
+                            ->defaultValue('%kernel.project_dir%/public')
+                            ->cannotBeEmpty()
+                        ->end()
+                        ->scalarNode('dir_name')
+                            ->defaultValue('uploads')
+                            ->cannotBeEmpty()
+                        ->end()
+                    ->end()
+                ->end()
+                ->arrayNode('kernel_exception_listener')
+                    ->addDefaultsIfNotSet()
+                    ->children()
+                        ->booleanNode('enabled')
+                            ->defaultFalse()
+                        ->end()
+                        ->scalarNode('path')
+                            ->defaultValue('/api')
+                            ->cannotBeEmpty()
+                        ->end()
+                        ->scalarNode('class')
+                            ->defaultValue(PathKernelExceptionListener::class)
+                            ->cannotBeEmpty()
+                        ->end()
+                    ->end()
+                ->end()
+            ->end();
+
+        return $treeBuilder;
     }
 }

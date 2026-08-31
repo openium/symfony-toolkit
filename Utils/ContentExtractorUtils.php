@@ -15,9 +15,23 @@ use Openium\SymfonyToolKitBundle\Exception\ContentExtractorStringPropertyExcepti
  * Class ContentExtractorUtils
  *
  * @package Openium\SymfonyToolKitBundle\Utils
+ *
+ * @deprecated since 7.0, will be removed in 8.0. Validate request payloads with a typed DTO and
+ *             Symfony's Validator (e.g. via "#[MapRequestPayload]") instead.
  */
 class ContentExtractorUtils
 {
+    private static function deprecate(): void
+    {
+        trigger_deprecation(
+            'openium/symfony-toolkit',
+            '7.0',
+            'The "%s" class is deprecated and will be removed in 8.0, validate request payloads'
+            . ' with a typed DTO and Symfony\'s Validator (e.g. via "#[MapRequestPayload]") instead.',
+            self::class
+        );
+    }
+
     /**
      * checkKeyExists
      *
@@ -27,6 +41,7 @@ class ContentExtractorUtils
      */
     public static function checkKeyExists(array $content, string $key, bool $nullable = false): void
     {
+        self::deprecate();
         if (
             !array_key_exists($key, $content)
             || (!$nullable && $content[$key] === null)
@@ -48,6 +63,7 @@ class ContentExtractorUtils
         string $key,
         bool $nullable = false
     ): void {
+        self::deprecate();
         self::checkKeyExists($content, $key, $nullable);
         if (
             array_key_exists($key, $content)
@@ -70,6 +86,7 @@ class ContentExtractorUtils
      */
     public static function checkKeyIsBoolean(array $content, string $key): void
     {
+        self::deprecate();
         self::checkKeyExists($content, $key);
         if (!is_bool($content[$key])) {
             throw new ContentExtractorBooleanPropertyException($key);
@@ -86,6 +103,7 @@ class ContentExtractorUtils
      */
     public static function checkKeyIsInt(array $content, string $key, bool $nullable = false): void
     {
+        self::deprecate();
         self::checkKeyExists($content, $key, $nullable);
         if (
             array_key_exists($key, $content)
@@ -111,6 +129,7 @@ class ContentExtractorUtils
         string $key,
         bool $nullable = false
     ): void {
+        self::deprecate();
         self::checkKeyExists($content, $key, $nullable);
         if (
             array_key_exists($key, $content)
@@ -136,6 +155,7 @@ class ContentExtractorUtils
         string $key,
         bool $allowEmpty = false
     ): void {
+        self::deprecate();
         if (
             !array_key_exists($key, $content)
             || $content[$key] === null
@@ -167,6 +187,7 @@ class ContentExtractorUtils
         bool $nullable = false,
         bool $convertToString = false
     ): ?string {
+        self::deprecate();
         try {
             self::checkKeyIsString($content, $key, $nullable);
         } catch (ContentExtractorMissingParameterException $exception) {
@@ -199,6 +220,7 @@ class ContentExtractorUtils
         bool $required = true,
         ?bool $default = true
     ): ?bool {
+        self::deprecate();
         try {
             self::checkKeyIsBoolean($content, $key);
         } catch (ContentExtractorMissingParameterException $contentExtractorMissingParameterException) {
@@ -228,6 +250,7 @@ class ContentExtractorUtils
         ?int $default = 0,
         bool $nullable = false
     ): ?int {
+        self::deprecate();
         try {
             self::checkKeyIsInt($content, $key, $nullable);
         } catch (ContentExtractorMissingParameterException $contentExtractorMissingParameterException) {
@@ -258,6 +281,7 @@ class ContentExtractorUtils
         bool $nullable = false,
         bool $acceptInt = false
     ): ?float {
+        self::deprecate();
         try {
             self::checkKeyIsFloat($content, $key, $nullable);
         } catch (ContentExtractorMissingParameterException $exception) {
@@ -298,6 +322,7 @@ class ContentExtractorUtils
         ?DateTimeInterface $default = null,
         bool $nullable = false
     ): ?DateTimeInterface {
+        self::deprecate();
         try {
             self::checkKeyExists($content, $key, $nullable);
         } catch (ContentExtractorMissingParameterException $contentExtractorMissingParameterException) {
@@ -344,6 +369,7 @@ class ContentExtractorUtils
         ?array $default = [],
         bool $allowEmpty = true
     ): ?array {
+        self::deprecate();
         try {
             self::checkKeyIsArray($content, $key, $allowEmpty);
         } catch (ContentExtractorMissingParameterException | ContentExtractorArrayPropertyException $exception) {

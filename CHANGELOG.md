@@ -1,5 +1,87 @@
 # Changelog
 
+## 7.0.0
+
+See [migrate-v6-to-v7.md](migrate-v6-to-v7.md) for an actionable, step-by-step upgrade guide.
+
+### Added
+
+- `UploadFilenameGeneratorInterface` / `RandomUploadFilenameGenerator`: the filename generation
+  previously hardcoded in `FileUploaderService::getPath()` is now delegated to an overridable
+  service (`openium_symfony_toolkit.upload_filename_generator`), inspired by
+  VichUploaderBundle's namers. The default implementation reproduces the pre-7.0 behavior exactly.
+  `FileUploaderService`'s constructor gains an optional third argument for it; existing
+  `new FileUploaderService($publicDir, $uploadDir)` call sites keep working unchanged.
+- `MultiUploadInterface` / `MultiUploadTrait` and `FileUploaderService::prepareMultiUploadPath()`
+  / `uploadMultiEntity()` / `removeMultiUpload()`: an additive alternative to
+  `WithUploadInterface`/`WithUploadTrait` for entities that need more than one upload property,
+  each identified by a `$field` key, inspired by VichUploaderBundle's named mappings.
+  `WithUploadInterface`/`WithUploadTrait` are untouched; this is purely additive.
+
+### Deprecated
+
+- `DateStringUtils` is deprecated and will be removed in 8.0. Its format guess based on string
+  length/suffix is fragile; use Symfony Serializer's `DateTimeNormalizer` or plain
+  `new DateTimeImmutable($dateString)` instead. `getDateTimeFromString()` now triggers a
+  deprecation notice when called.
+- `ContentExtractorUtils` is deprecated and will be removed in 8.0. It reimplements, by hand and
+  per-field, what a typed DTO validated through Symfony's Validator (e.g. via
+  `#[MapRequestPayload]`) already provides. All 12 public static methods now trigger a
+  deprecation notice when called.
+- `AbstractCommand` is deprecated and will be removed in 8.0. Its `--nl` option and
+  `writeMessage()` helper only duplicate the standard `-q`/`--quiet` console flag and
+  `OutputInterface::isQuiet()`. Instantiating a command extending it triggers a deprecation
+  notice.
+
+### BREAKING CHANGE
+
+- `DoctrineExceptionHandlerService`'s constructor now requires a
+  `Symfony\Contracts\Translation\TranslatorInterface` as a second argument. The bundle's own
+  `openium_symfony_toolkit.doctrine_exception_handler` service definition already passes
+  `@translator`, so this only affects code instantiating the class directly instead of injecting
+  it. The default error messages (previously hardcoded English strings) are now translation ids
+  resolved through the new `openium_symfony_toolkit` translation domain, shipped with English and
+  French catalogs in `Resources/translations/`. The `set*Message()` setters are unaffected: a
+  literal string passed to them is returned unchanged by the translator's fallback for unknown
+  ids, so existing custom-message overrides keep working as-is.
+
+### Fixed
+
+- `DoctrineExceptionHandlerService::toHttpException()` used `switch ($throwable::class)`, which
+  only ever matches an exact class, never a subclass. Two consequences: any project-specific or
+  future Doctrine exception subclassing one of the handled types (e.g. a custom subclass of
+  `TableNotFoundException`) fell through to `default: throw $throwable;` instead of being
+  converted to an HTTP exception, and the `case Exception::class:` branch (`Doctrine\DBAL\Exception`
+  is an interface) could never match anything, making `dbalExceptionManagement()` dead code.
+  Replaced with `instanceof` checks ordered from most to least specific, so subclasses are now
+  handled correctly and the SQLSTATE-based fallback is reachable again.
+
+### Deprecated
+
+- `ServerService` / `ServerServiceInterface` are deprecated and will be removed in 8.0.
+  `getBasePath()` only duplicated `Symfony\Component\HttpFoundation\Request::getSchemeAndHttpHost()`;
+  the service now delegates to it internally. Instantiating `ServerService` triggers a
+  deprecation notice. Use `Request::getSchemeAndHttpHost() . '/'` directly instead.
+
+### Security fix
+
+- `AtHelper::createAtCommand()` / `createAtCommandFromPath()` now pass `$cmd` and `$path` through
+  `escapeshellarg()` before building the shell command executed via `passthru()`. Previously
+  these values were interpolated unescaped, allowing shell command injection if either came from
+  untrusted input. `$cmd` is now treated as literal data given to `at`, not as a shell snippet —
+  see the README's AtHelper section for the BC impact.
+
+### BREAKING CHANGE
+
+- The bundle now exposes a real semantic configuration tree under the `openium_symfony_toolkit`
+  key (`uploads.public_dir`, `uploads.dir_name`, `kernel_exception_listener.enabled`,
+  `kernel_exception_listener.path`, `kernel_exception_listener.class`). Previously,
+  `DependencyInjection/Configuration` was an empty tree and the actual values were plain
+  `parameters:` hardcoded in `Resources/config/services.yaml`; overriding them from a consuming
+  project relied on redefining those raw parameters. Any such raw `parameters:` override no
+  longer has any effect and must be migrated to the new `openium_symfony_toolkit:` config block
+  (see the README's Configuration section).
+
 ## 6.0.1
 
 ### Fixed
@@ -9,6 +91,8 @@
   `http://localhost/`. Links built from a non-default port (common in local dev) now work.
 
 ## 6.0.0
+
+See [migrate-v5-to-v6.md](migrate-v5-to-v6.md) for an actionable, step-by-step upgrade guide.
 
 ### BREAKING CHANGE
 
