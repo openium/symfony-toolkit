@@ -175,6 +175,16 @@ But if the database error refers to a conflict, the method will throw a Conflict
 > subclass of any handled Doctrine exception is now recognized too (it previously fell through
 > and was rethrown as-is).
 
+> Since 7.0.0, the constructor also requires a `Symfony\Contracts\Translation\TranslatorInterface`
+> (the bundle's `openium_symfony_toolkit.doctrine_exception_handler` service definition already
+> passes `@translator`, so consumers using the service via DI need no change). The default
+> messages are now translation ids resolved from the `openium_symfony_toolkit` domain (English and
+> French catalogs are shipped in `Resources/translations/`). The `set*Message()` setters still
+> accept a literal string as before: `trans()` falls back to returning an unknown id unchanged, so
+> a custom message set that way is used verbatim regardless of the current locale. If you
+> instantiate `DoctrineExceptionHandlerService` directly (not via the container), update the call
+> site to pass a translator.
+
 To use it, you need to inject DoctrineExceptionHandlerServiceInterface service.
 
 ~~~php

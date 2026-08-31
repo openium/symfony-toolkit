@@ -50,6 +50,7 @@
         "symfony/monolog-bridge": "^8.1",
         "symfony/event-dispatcher": "^8.1",
         "symfony/translation": "^8.1",
+        "symfony/translation-contracts": "^3.7",
         "symfony/monolog-bundle": "^4.0",
         "symfony/security-core": "^8.1",
         "symfony/finder": "^8.1",

@@ -15,6 +15,7 @@ use Doctrine\ORM\ORMInvalidArgumentException;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Contracts\Translation\TranslatorInterface;
 use Throwable;
 use UnexpectedValueException;
 
@@ -25,27 +26,31 @@ use UnexpectedValueException;
  */
 class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerServiceInterface
 {
-    private string $missingDatabaseTableMessage = "Missing database table";
+    private const TRANSLATION_DOMAIN = 'openium_symfony_toolkit';
 
-    private string $databaseSchemaErrorMessage = "Database schema error";
+    private string $missingDatabaseTableMessage = 'doctrine_exception.missing_database_table';
 
-    private string $querySyntaxErrorMessage = "Query syntax error";
+    private string $databaseSchemaErrorMessage = 'doctrine_exception.database_schema_error';
 
-    private string $entityManagementErrorMessage = "Entity's management error";
+    private string $querySyntaxErrorMessage = 'doctrine_exception.query_syntax_error';
 
-    private string $conflictMessage = "Conflict error";
+    private string $entityManagementErrorMessage = 'doctrine_exception.entity_management_error';
 
-    private string $databaseErrorMessage = "Database error";
+    private string $conflictMessage = 'doctrine_exception.conflict';
 
-    private string $databaseRequestErrorMessage = "Database request error";
+    private string $databaseErrorMessage = 'doctrine_exception.database_error';
 
-    private string $missingPropertyErrorMessage = "Database schema error (Missing property)";
+    private string $databaseRequestErrorMessage = 'doctrine_exception.database_request_error';
+
+    private string $missingPropertyErrorMessage = 'doctrine_exception.missing_property_error';
 
     /**
      * ExceptionHandlerService constructor.
      */
-    public function __construct(protected LoggerInterface $logger)
-    {
+    public function __construct(
+        protected LoggerInterface $logger,
+        private readonly TranslatorInterface $translator
+    ) {
     }
 
     /**
@@ -112,7 +117,7 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
     protected function createBadRequest(Throwable $throwable, ?string $message = null): never
     {
         throw new BadRequestHttpException(
-            $message ?? $this->entityManagementErrorMessage,
+            $this->translate($message ?? $this->entityManagementErrorMessage),
             $throwable
         );
     }
@@ -128,7 +133,19 @@ class DoctrineExceptionHandlerService implements DoctrineExceptionHandlerService
             $this->logger->error($throwable->getPrevious()->getCode());
         }
 
-        throw new ConflictHttpException($message ?? $this->conflictMessage, $throwable);
+        throw new ConflictHttpException($this->translate($message ?? $this->conflictMessage), $throwable);
+    }
+
+    /**
+     * Translates a message key through the "openium_symfony_toolkit" domain.
+     *
+     * Falls back to returning the input unchanged when it is not a known translation id
+     * (e.g. a literal message set via one of the setters below), matching Translator's own
+     * fallback behavior.
+     */
+    private function translate(string $message): string
+    {
+        return $this->translator->trans($message, [], self::TRANSLATION_DOMAIN);
     }
 
     /**

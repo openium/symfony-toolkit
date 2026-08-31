@@ -2,6 +2,18 @@
 
 ## 7.0.0
 
+### BREAKING CHANGE
+
+- `DoctrineExceptionHandlerService`'s constructor now requires a
+  `Symfony\Contracts\Translation\TranslatorInterface` as a second argument. The bundle's own
+  `openium_symfony_toolkit.doctrine_exception_handler` service definition already passes
+  `@translator`, so this only affects code instantiating the class directly instead of injecting
+  it. The default error messages (previously hardcoded English strings) are now translation ids
+  resolved through the new `openium_symfony_toolkit` translation domain, shipped with English and
+  French catalogs in `Resources/translations/`. The `set*Message()` setters are unaffected: a
+  literal string passed to them is returned unchanged by the translator's fallback for unknown
+  ids, so existing custom-message overrides keep working as-is.
+
 ### Fixed
 
 - `DoctrineExceptionHandlerService::toHttpException()` used `switch ($throwable::class)`, which

@@ -22,6 +22,7 @@ services:
         class: Openium\SymfonyToolKitBundle\Service\DoctrineExceptionHandlerService
         arguments:
             - '@monolog.logger'
+            - '@translator'
         public: true
 
     openium_symfony_toolkit.server:
