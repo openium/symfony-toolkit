@@ -332,6 +332,10 @@ $phpMemory = MemoryUtils::getMemoryUsage();
 
 ### ContentExtractorService
 
+> **Deprecated since 7.0, will be removed in 8.0.** Validate request payloads with a typed DTO
+> and Symfony's Validator instead (e.g. via `#[MapRequestPayload]`), rather than manually pulling
+> and type-checking individual keys out of an array.
+
 Use to extract types data from array with specific key
 
 ~~~php

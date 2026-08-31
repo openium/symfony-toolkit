@@ -778,4 +778,22 @@ class ContentExtractorUtilsTest extends TestCase
         // then
         self::assertEquals($default, $result);
     }
+
+    public function testGetStringTriggersDeprecation(): void
+    {
+        // given
+        $deprecations = [];
+        set_error_handler(static function (int $errno, string $errstr) use (&$deprecations): bool {
+            $deprecations[] = $errstr;
+            return true;
+        }, \E_USER_DEPRECATED);
+
+        // when
+        ContentExtractorUtils::getString(['key' => 'value'], 'key');
+        restore_error_handler();
+
+        // then
+        self::assertNotEmpty($deprecations);
+        self::assertStringContainsString('ContentExtractorUtils" class is deprecated', $deprecations[0]);
+    }
 }

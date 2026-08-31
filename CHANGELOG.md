@@ -4,6 +4,10 @@
 
 ### Deprecated
 
+- `ContentExtractorUtils` is deprecated and will be removed in 8.0. It reimplements, by hand and
+  per-field, what a typed DTO validated through Symfony's Validator (e.g. via
+  `#[MapRequestPayload]`) already provides. All 12 public static methods now trigger a
+  deprecation notice when called.
 - `AbstractCommand` is deprecated and will be removed in 8.0. Its `--nl` option and
   `writeMessage()` helper only duplicate the standard `-q`/`--quiet` console flag and
   `OutputInterface::isQuiet()`. Instantiating a command extending it triggers a deprecation
