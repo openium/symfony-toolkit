@@ -373,6 +373,11 @@ All the methods in this class are static.
 
 ### DateStringUtils
 
+> **Deprecated since 7.0, will be removed in 8.0.** The format guess based on string
+> length/suffix is fragile. Use Symfony Serializer's `DateTimeNormalizer`, or plain
+> `new DateTimeImmutable($dateString)` (which already parses ATOM/ISO8601 and most common
+> formats), instead.
+
 Provide a static method to get date from string :
 
 ~~~php

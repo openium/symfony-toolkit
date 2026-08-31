@@ -25,4 +25,22 @@ class DateStringUtilsTest extends TestCase
         $result = DateStringUtils::getDateTimeFromString("2021-12");
         self::assertFalse($result);
     }
+
+    public function testGetDateTimeFromStringTriggersDeprecation(): void
+    {
+        // given
+        $deprecations = [];
+        set_error_handler(static function (int $errno, string $errstr) use (&$deprecations): bool {
+            $deprecations[] = $errstr;
+            return true;
+        }, \E_USER_DEPRECATED);
+
+        // when
+        DateStringUtils::getDateTimeFromString("2021-06-12");
+        restore_error_handler();
+
+        // then
+        self::assertCount(1, $deprecations);
+        self::assertStringContainsString('DateStringUtils" class is deprecated', $deprecations[0]);
+    }
 }

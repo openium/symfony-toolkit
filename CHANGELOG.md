@@ -4,6 +4,10 @@
 
 ### Deprecated
 
+- `DateStringUtils` is deprecated and will be removed in 8.0. Its format guess based on string
+  length/suffix is fragile; use Symfony Serializer's `DateTimeNormalizer` or plain
+  `new DateTimeImmutable($dateString)` instead. `getDateTimeFromString()` now triggers a
+  deprecation notice when called.
 - `ContentExtractorUtils` is deprecated and will be removed in 8.0. It reimplements, by hand and
   per-field, what a typed DTO validated through Symfony's Validator (e.g. via
   `#[MapRequestPayload]`) already provides. All 12 public static methods now trigger a
