@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Openium\SymfonyToolKitBundle\Service;
 
 use Exception;
-use InvalidArgumentException;
 use Openium\SymfonyToolKitBundle\DTO\DevExceptionDTO;
 use Openium\SymfonyToolKitBundle\DTO\DevPreviousExceptionDTO;
 use Openium\SymfonyToolKitBundle\DTO\ExceptionDTO;
