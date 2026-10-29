@@ -139,7 +139,7 @@ class ExceptionFormatService implements ExceptionFormatServiceInterface
     public function getStatusText(Exception $exception): string
     {
         $code = $this->getStatusCode($exception);
-        if ($code == Response::HTTP_PAYMENT_REQUIRED) {
+        if ($code === Response::HTTP_PAYMENT_REQUIRED) {
             return 'Request Failed';
         } else {
             $isCodeExists = array_key_exists($code, Response::$statusTexts);
