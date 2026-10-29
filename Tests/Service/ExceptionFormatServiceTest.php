@@ -13,6 +13,9 @@ use ReflectionClass;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 use Symfony\Component\Security\Core\Exception\UserNotFoundException;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\SerializerInterface;
 
 /**
@@ -184,5 +187,40 @@ class ExceptionFormatServiceTest extends TestCase
         $dto = $reflectionMethod->invoke($exceptionFormatService, $exception);
         $this->assertInstanceOf(DevExceptionDTO::class, $dto);
         $this->assertNull($dto->previous);
+    }
+
+    public function testFormatExceptionResponseSerializesTraceWithObjectArgumentsInDev(): void
+    {
+        $previousIgnoreArgs = ini_set('zend.exception_ignore_args', '0');
+        try {
+            $exception = $this->throwWithObjectArgument(new \ReflectionMethod(\ArrayObject::class, 'count'));
+        } finally {
+            ini_set('zend.exception_ignore_args', (string) $previousIgnoreArgs);
+        }
+
+        $this->assertArrayHasKey('args', $exception->getTrace()[0]);
+        $serializer = new Serializer([new ObjectNormalizer()], [new JsonEncoder()]);
+        $utils = $this->createStub(ExceptionFormatUtilsInterface::class);
+        $utils->method('getStatusCode')->willReturn(404);
+        $utils->method('getStatusText')->willReturn('Not Found');
+        $exceptionFormatService = new ExceptionFormatService($serializer, $utils, 'dev');
+        $response = $exceptionFormatService->formatExceptionResponse($exception);
+        $this->assertEquals(\Symfony\Component\HttpFoundation\Response::HTTP_NOT_FOUND, $response->getStatusCode());
+        $content = json_decode($response->getContent(), true);
+        $this->assertNotEmpty($content['trace']);
+        $this->assertSame('throwWithObjectArgument', $content['trace'][0]['function']);
+        $this->assertSame(self::class, $content['trace'][0]['class']);
+        foreach ($content['trace'] as $frame) {
+            $this->assertArrayNotHasKey('args', $frame);
+        }
+    }
+
+    private function throwWithObjectArgument(object $argument): Exception
+    {
+        try {
+            throw new Exception(sprintf('Introuvable (%s)', $argument::class), 404);
+        } catch (Exception $exception) {
+            return $exception;
+        }
     }
 }
