@@ -58,6 +58,12 @@ class ExceptionFormatService implements ExceptionFormatServiceInterface
             $jsonResponse->setContent($throwable->getMessage());
         }
 
+        // HttpKernel only copies HttpException headers onto responses that are not already 4xx/5xx,
+        // so Retry-After, WWW-Authenticate, Allow... must be carried over here.
+        if ($throwable instanceof HttpExceptionInterface) {
+            $jsonResponse->headers->add($throwable->getHeaders());
+        }
+
         return $jsonResponse;
     }
 
