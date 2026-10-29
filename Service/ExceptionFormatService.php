@@ -23,6 +23,8 @@ use Throwable;
  */
 class ExceptionFormatService implements ExceptionFormatServiceInterface
 {
+    private const array TRACE_KEYS = ['file', 'line', 'class', 'type', 'function'];
+
     /**
      * ExceptionFormatService constructor.
      */
@@ -76,10 +78,25 @@ class ExceptionFormatService implements ExceptionFormatServiceInterface
                 $code,
                 $text,
                 $messageValue,
-                $exception->getTrace(),
+                $this->buildTrace($exception),
                 $this->buildPreviousDTO($exception)
             ),
         };
+    }
+
+    /**
+     * buildTrace
+     *
+     * @return array<int, array<string, int|string>>
+     */
+    private function buildTrace(Exception $exception): array
+    {
+        // With zend.exception_ignore_args=0, frames carry live objects under `args` that the
+        // Serializer walks through and crashes on: keep only the scalar keys.
+        return array_map(
+            static fn (array $frame): array => array_intersect_key($frame, array_flip(self::TRACE_KEYS)),
+            $exception->getTrace()
+        );
     }
 
     /**
