@@ -11,8 +11,13 @@ use Openium\SymfonyToolKitBundle\Utils\ExceptionFormatUtilsInterface;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 use Symfony\Component\Security\Core\Exception\UserNotFoundException;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\SerializerInterface;
 
 /**
@@ -184,5 +189,72 @@ class ExceptionFormatServiceTest extends TestCase
         $dto = $reflectionMethod->invoke($exceptionFormatService, $exception);
         $this->assertInstanceOf(DevExceptionDTO::class, $dto);
         $this->assertNull($dto->previous);
+    }
+
+    public function testFormatExceptionResponseSerializesTraceWithObjectArgumentsInDev(): void
+    {
+        $previousIgnoreArgs = ini_set('zend.exception_ignore_args', '0');
+        try {
+            $exception = $this->throwWithObjectArgument(new \ReflectionMethod(\ArrayObject::class, 'count'));
+        } finally {
+            ini_set('zend.exception_ignore_args', (string) $previousIgnoreArgs);
+        }
+
+        $this->assertArrayHasKey('args', $exception->getTrace()[0]);
+        $serializer = new Serializer([new ObjectNormalizer()], [new JsonEncoder()]);
+        $utils = $this->createStub(ExceptionFormatUtilsInterface::class);
+        $utils->method('getStatusCode')->willReturn(404);
+        $utils->method('getStatusText')->willReturn('Not Found');
+        $exceptionFormatService = new ExceptionFormatService($serializer, $utils, 'dev');
+        $response = $exceptionFormatService->formatExceptionResponse($exception);
+        $this->assertEquals(\Symfony\Component\HttpFoundation\Response::HTTP_NOT_FOUND, $response->getStatusCode());
+        $content = json_decode($response->getContent(), true);
+        $this->assertNotEmpty($content['trace']);
+        $this->assertSame('throwWithObjectArgument', $content['trace'][0]['function']);
+        $this->assertSame(self::class, $content['trace'][0]['class']);
+        foreach ($content['trace'] as $frame) {
+            $this->assertArrayNotHasKey('args', $frame);
+        }
+    }
+
+    public function testFormatExceptionResponseKeepsHttpExceptionHeadersInProd(): void
+    {
+        $serializer = new Serializer([new ObjectNormalizer()], [new JsonEncoder()]);
+        $utils = $this->createStub(ExceptionFormatUtilsInterface::class);
+        $utils->method('getStatusCode')->willReturn(429);
+        $utils->method('getStatusText')->willReturn('Too Many Requests');
+        $exceptionFormatService = new ExceptionFormatService($serializer, $utils, 'prod');
+        $tooManyRequestsHttpException = new TooManyRequestsHttpException(30, 'Trop de requêtes', null, 0, [
+            'X-RateLimit-Limit' => 60,
+            'X-RateLimit-Remaining' => 0,
+        ]);
+        $response = $exceptionFormatService->formatExceptionResponse($tooManyRequestsHttpException);
+        $this->assertEquals(\Symfony\Component\HttpFoundation\Response::HTTP_TOO_MANY_REQUESTS, $response->getStatusCode());
+        $this->assertSame('30', $response->headers->get('Retry-After'));
+        $this->assertSame('60', $response->headers->get('X-RateLimit-Limit'));
+        $this->assertSame('0', $response->headers->get('X-RateLimit-Remaining'));
+        $this->assertSame('application/json', $response->headers->get('Content-Type'));
+    }
+
+    public function testFormatExceptionResponseKeepsHttpExceptionHeadersInDev(): void
+    {
+        $serializer = new Serializer([new ObjectNormalizer()], [new JsonEncoder()]);
+        $utils = $this->createStub(ExceptionFormatUtilsInterface::class);
+        $utils->method('getStatusCode')->willReturn(401);
+        $utils->method('getStatusText')->willReturn('Unauthorized');
+        $exceptionFormatService = new ExceptionFormatService($serializer, $utils, 'dev');
+        $unauthorizedHttpException = new UnauthorizedHttpException('Bearer realm="api"', 'Non autorisé');
+        $response = $exceptionFormatService->formatExceptionResponse($unauthorizedHttpException);
+        $this->assertEquals(\Symfony\Component\HttpFoundation\Response::HTTP_UNAUTHORIZED, $response->getStatusCode());
+        $this->assertSame('Bearer realm="api"', $response->headers->get('WWW-Authenticate'));
+    }
+
+    private function throwWithObjectArgument(object $argument): Exception
+    {
+        try {
+            throw new Exception(sprintf('Introuvable (%s)', $argument::class), 404);
+        } catch (Exception $exception) {
+            return $exception;
+        }
     }
 }

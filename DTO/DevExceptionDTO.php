@@ -7,7 +7,7 @@ namespace Openium\SymfonyToolKitBundle\DTO;
 class DevExceptionDTO extends ExceptionDTO
 {
     /**
-     * @param array<int, array<string, mixed>> $trace
+     * @param array<int, array<string, int|string>> $trace
      */
     public function __construct(
         int $code,

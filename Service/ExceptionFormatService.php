@@ -12,6 +12,7 @@ use Openium\SymfonyToolKitBundle\DTO\ExceptionDTO;
 use Openium\SymfonyToolKitBundle\Utils\ExceptionFormatUtilsInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Serializer\SerializerInterface;
 use Throwable;
@@ -23,6 +24,8 @@ use Throwable;
  */
 class ExceptionFormatService implements ExceptionFormatServiceInterface
 {
+    private const array TRACE_KEYS = ['file', 'line', 'class', 'type', 'function'];
+
     /**
      * ExceptionFormatService constructor.
      */
@@ -37,12 +40,21 @@ class ExceptionFormatService implements ExceptionFormatServiceInterface
     {
         if ($throwable instanceof Exception) {
             $dto = $this->getDTO($throwable);
-            return JsonResponse::fromJsonString(
+            $response = JsonResponse::fromJsonString(
                 $this->serializer->serialize($dto, 'json'),
                 $dto->code
             );
+        } else {
+            $response = new Response($throwable->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-        return new Response($throwable->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+
+        // HttpKernel only copies HttpException headers onto responses that are not already 4xx/5xx,
+        // so Retry-After, WWW-Authenticate, Allow... must be carried over here.
+        if ($throwable instanceof HttpExceptionInterface) {
+            $response->headers->add($throwable->getHeaders());
+        }
+
+        return $response;
     }
 
     /**
@@ -76,10 +88,25 @@ class ExceptionFormatService implements ExceptionFormatServiceInterface
                 $code,
                 $text,
                 $messageValue,
-                $exception->getTrace(),
+                $this->buildTrace($exception),
                 $this->buildPreviousDTO($exception)
             ),
         };
+    }
+
+    /**
+     * buildTrace
+     *
+     * @return array<int, array<string, int|string>>
+     */
+    private function buildTrace(Exception $exception): array
+    {
+        // With zend.exception_ignore_args=0, frames carry live objects under `args` that the
+        // Serializer walks through and crashes on: keep only the scalar keys.
+        return array_map(
+            static fn (array $frame): array => array_intersect_key($frame, array_flip(self::TRACE_KEYS)),
+            $exception->getTrace()
+        );
     }
 
     /**
