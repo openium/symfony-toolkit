@@ -219,4 +219,41 @@ class ExceptionFormatServiceTest extends TestCase
         self::assertEquals(Response::HTTP_UNAUTHORIZED, $response->getStatusCode());
         self::assertStringNotContainsString('not found', (string) $response->getContent());
     }
+
+    public function testFormatExceptionResponseEncodesTraceWithUnencodableArgumentsInDev(): void
+    {
+        $resource = fopen('php://memory', 'r');
+        self::assertIsResource($resource);
+        $previousIgnoreArgs = ini_set('zend.exception_ignore_args', '0');
+        try {
+            $exception = $this->throwWithArgument($resource);
+        } finally {
+            ini_set('zend.exception_ignore_args', (string) $previousIgnoreArgs);
+            fclose($resource);
+        }
+
+        self::assertArrayHasKey('args', $exception->getTrace()[0]);
+        $testKernel = $this->createStub(KernelInterface::class);
+        $testKernel->method('getEnvironment')->willReturn('dev');
+        $exceptionFormatService = new ExceptionFormatService($testKernel);
+        $response = $exceptionFormatService->formatExceptionResponse($exception);
+        self::assertEquals(Response::HTTP_NOT_FOUND, $response->getStatusCode());
+        $content = json_decode((string) $response->getContent(), true);
+        self::assertIsArray($content);
+        self::assertNotEmpty($content['trace']);
+        self::assertSame('throwWithArgument', $content['trace'][0]['function']);
+        self::assertSame(self::class, $content['trace'][0]['class']);
+        foreach ($content['trace'] as $frame) {
+            self::assertArrayNotHasKey('args', $frame);
+        }
+    }
+
+    private function throwWithArgument(mixed $argument): HttpException
+    {
+        try {
+            throw new HttpException(Response::HTTP_NOT_FOUND, sprintf('Introuvable (%s)', get_debug_type($argument)));
+        } catch (HttpException $httpException) {
+            return $httpException;
+        }
+    }
 }

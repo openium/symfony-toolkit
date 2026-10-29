@@ -18,6 +18,8 @@ use Throwable;
  */
 class ExceptionFormatService implements ExceptionFormatServiceInterface
 {
+    private const array TRACE_KEYS = ['file', 'line', 'class', 'type', 'function'];
+
     /**
      * ExceptionFormatService constructor.
      */
@@ -91,7 +93,7 @@ class ExceptionFormatService implements ExceptionFormatServiceInterface
         ];
         $error = $this->addKeyToErrorArray($error, $exception);
         if ($this->kernel->getEnvironment() !== 'prod') {
-            $error['trace'] = $exception->getTrace();
+            $error['trace'] = $this->buildTrace($exception);
             if (!($exception instanceof AuthenticationException)) {
                 $error['previous'] = [];
                 if (!is_null($exception->getPrevious())) {
@@ -102,6 +104,22 @@ class ExceptionFormatService implements ExceptionFormatServiceInterface
         }
 
         return $error;
+    }
+
+    /**
+     * buildTrace
+     *
+     * @return array<int, array<string, int|string>>
+     */
+    private function buildTrace(Exception $exception): array
+    {
+        // With zend.exception_ignore_args=0, frames carry live arguments under `args` that may not be
+        // JSON-encodable (resources, recursive objects) or may expose sensitive values: keep only the
+        // scalar keys.
+        return array_map(
+            static fn (array $frame): array => array_intersect_key($frame, array_flip(self::TRACE_KEYS)),
+            $exception->getTrace()
+        );
     }
 
     /**
