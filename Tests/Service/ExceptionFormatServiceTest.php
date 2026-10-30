@@ -9,6 +9,8 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 use Symfony\Component\Security\Core\Exception\UserNotFoundException;
@@ -218,5 +220,70 @@ class ExceptionFormatServiceTest extends TestCase
         $response = $exceptionFormatService->formatExceptionResponse($exception);
         self::assertEquals(Response::HTTP_UNAUTHORIZED, $response->getStatusCode());
         self::assertStringNotContainsString('not found', (string) $response->getContent());
+    }
+
+    public function testFormatExceptionResponseKeepsHttpExceptionHeadersInProd(): void
+    {
+        $testKernel = $this->createStub(KernelInterface::class);
+        $testKernel->method('getEnvironment')->willReturn('prod');
+        $exceptionFormatService = new ExceptionFormatService($testKernel);
+        $tooManyRequestsHttpException = new TooManyRequestsHttpException(30, 'Trop de requêtes', null, 0, [
+            'X-RateLimit-Limit' => 60,
+            'X-RateLimit-Remaining' => 0,
+        ]);
+        $response = $exceptionFormatService->formatExceptionResponse($tooManyRequestsHttpException);
+        self::assertEquals(Response::HTTP_TOO_MANY_REQUESTS, $response->getStatusCode());
+        self::assertSame('30', $response->headers->get('Retry-After'));
+        self::assertSame('60', $response->headers->get('X-RateLimit-Limit'));
+        self::assertSame('0', $response->headers->get('X-RateLimit-Remaining'));
+        self::assertSame('application/json', $response->headers->get('Content-Type'));
+    }
+
+    public function testFormatExceptionResponseKeepsHttpExceptionHeadersInDev(): void
+    {
+        $testKernel = $this->createStub(KernelInterface::class);
+        $testKernel->method('getEnvironment')->willReturn('dev');
+        $exceptionFormatService = new ExceptionFormatService($testKernel);
+        $unauthorizedHttpException = new UnauthorizedHttpException('Bearer realm="api"', 'Non autorisé');
+        $response = $exceptionFormatService->formatExceptionResponse($unauthorizedHttpException);
+        self::assertEquals(Response::HTTP_UNAUTHORIZED, $response->getStatusCode());
+        self::assertSame('Bearer realm="api"', $response->headers->get('WWW-Authenticate'));
+    }
+
+    public function testFormatExceptionResponseEncodesTraceWithUnencodableArgumentsInDev(): void
+    {
+        $resource = fopen('php://memory', 'r');
+        self::assertIsResource($resource);
+        $previousIgnoreArgs = ini_set('zend.exception_ignore_args', '0');
+        try {
+            $exception = $this->throwWithArgument($resource);
+        } finally {
+            ini_set('zend.exception_ignore_args', (string) $previousIgnoreArgs);
+            fclose($resource);
+        }
+
+        self::assertArrayHasKey('args', $exception->getTrace()[0]);
+        $testKernel = $this->createStub(KernelInterface::class);
+        $testKernel->method('getEnvironment')->willReturn('dev');
+        $exceptionFormatService = new ExceptionFormatService($testKernel);
+        $response = $exceptionFormatService->formatExceptionResponse($exception);
+        self::assertEquals(Response::HTTP_NOT_FOUND, $response->getStatusCode());
+        $content = json_decode((string) $response->getContent(), true);
+        self::assertIsArray($content);
+        self::assertNotEmpty($content['trace']);
+        self::assertSame('throwWithArgument', $content['trace'][0]['function']);
+        self::assertSame(self::class, $content['trace'][0]['class']);
+        foreach ($content['trace'] as $frame) {
+            self::assertArrayNotHasKey('args', $frame);
+        }
+    }
+
+    private function throwWithArgument(mixed $argument): HttpException
+    {
+        try {
+            throw new HttpException(Response::HTTP_NOT_FOUND, sprintf('Introuvable (%s)', get_debug_type($argument)));
+        } catch (HttpException $httpException) {
+            return $httpException;
+        }
     }
 }
