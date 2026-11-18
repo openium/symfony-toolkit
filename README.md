@@ -231,6 +231,12 @@ parameters:
 it use the ExceptionFormatService to format automatically the kernel exceptions
 only for the routes defined in exception_listener_path parameter
 
+Since the listener sets the response itself, Symfony's `ErrorListener` does not log the
+exception anymore, so the listener logs it the same way, with the throwable in the `exception`
+context key (class, file, line and stack trace end up in JSON/ELK logs):
+`critical` for a 5xx response, `warning` for any other status (4xx). Override the protected
+`logException()` method in a subclass to change this.
+
 ---
 
 ### MemoryUtils
