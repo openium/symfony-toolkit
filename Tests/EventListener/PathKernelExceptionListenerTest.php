@@ -2,12 +2,13 @@
 
 namespace Openium\SymfonyToolKitBundle\Tests\EventListener;
 
-use Exception;
+use LogicException;
 use Openium\SymfonyToolKitBundle\Service\ExceptionFormatServiceInterface;
 use Openium\SymfonyToolKitBundle\Tests\Fixtures\EventListener\TestPathKernelExceptionListener;
-use PHPUnit\Framework\MockObject\MockObject;
-use Psr\Log\LoggerInterface;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
+use Psr\Log\LogLevel;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
@@ -40,77 +41,73 @@ class PathKernelExceptionListenerTest extends TestCase
         self::assertFalse($listener->getEnable());
     }
 
-    public function testOnKernelExceptionWithRandowError(): void
+    /**
+     * @return iterable<string, array{int, string}>
+     */
+    public static function statusCodeToLogLevelProvider(): iterable
     {
-        $logger = $this->getMockBuilder(LoggerInterface::class)
-        ->disableOriginalConstructor()
-        ->getMock();
-        $exceptionFormat = $this->createMock(ExceptionFormatServiceInterface::class);
-        $response = new Response('test');
-        $exceptionFormat->expects(self::once())
-            ->method('formatExceptionResponse')
-            ->willReturn($response);
-        $logger->expects(self::once())->method('error');
-        $testPathKernelExceptionListener = new TestPathKernelExceptionListener(
-            $exceptionFormat,
-            '/api',
-            true,
-            $logger
-        );
-        $kernel = $this->createStub(HttpKernelInterface::class);
-        $request = Request::create('/api');
-        $exception = new Exception("testError", 123);
-        $exceptionEvent = new ExceptionEvent($kernel, $request, HttpKernelInterface::MAIN_REQUEST, $exception);
-        $testPathKernelExceptionListener->onKernelException($exceptionEvent);
-        self::assertEquals($response, $exceptionEvent->getResponse());
+        yield '500 is critical' => [Response::HTTP_INTERNAL_SERVER_ERROR, LogLevel::CRITICAL];
+        yield '503 is critical' => [Response::HTTP_SERVICE_UNAVAILABLE, LogLevel::CRITICAL];
+        yield '400 is a warning' => [Response::HTTP_BAD_REQUEST, LogLevel::WARNING];
+        yield '401 is a warning' => [Response::HTTP_UNAUTHORIZED, LogLevel::WARNING];
+        yield '403 is a warning' => [Response::HTTP_FORBIDDEN, LogLevel::WARNING];
+        yield '404 is a warning' => [Response::HTTP_NOT_FOUND, LogLevel::WARNING];
+        yield '422 is a warning' => [Response::HTTP_UNPROCESSABLE_ENTITY, LogLevel::WARNING];
     }
 
-    public function testOnKernelExceptionWithCritError(): void
-    {
-        $logger = $this->getMockBuilder(LoggerInterface::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+    #[DataProvider('statusCodeToLogLevelProvider')]
+    public function testOnKernelExceptionLogsTheExceptionInContextThenSetsTheResponse(
+        int $statusCode,
+        string $expectedLevel
+    ): void {
+        $exception = new LogicException('Something went wrong');
+        $response = new Response('test', $statusCode);
         $exceptionFormat = $this->createMock(ExceptionFormatServiceInterface::class);
-        $response = new Response('test', Response::HTTP_INTERNAL_SERVER_ERROR);
         $exceptionFormat->expects(self::once())
             ->method('formatExceptionResponse')
+            ->with($exception)
             ->willReturn($response);
-        $logger->expects(self::once())->method('critical');
-        $testPathKernelExceptionListener = new TestPathKernelExceptionListener(
-            $exceptionFormat,
-            '/api',
-            true,
-            $logger
+        $logger = $this->createMock(LoggerInterface::class);
+        $logger->expects(self::once())
+            ->method('log')
+            ->with(
+                $expectedLevel,
+                sprintf(
+                    'Uncaught PHP Exception LogicException: "Something went wrong" at %s line %d',
+                    basename(__FILE__),
+                    $exception->getLine()
+                ),
+                ['exception' => $exception]
+            );
+        $listener = new TestPathKernelExceptionListener($exceptionFormat, '/api', true, $logger);
+        $exceptionEvent = new ExceptionEvent(
+            $this->createStub(HttpKernelInterface::class),
+            Request::create('/api/users'),
+            HttpKernelInterface::MAIN_REQUEST,
+            $exception
         );
-        $kernel = $this->createStub(HttpKernelInterface::class);
-        $request = Request::create('/api');
-        $exception = new Exception("testError", Response::HTTP_INTERNAL_SERVER_ERROR);
-        $exceptionEvent = new ExceptionEvent($kernel, $request, HttpKernelInterface::MAIN_REQUEST, $exception);
-        $testPathKernelExceptionListener->onKernelException($exceptionEvent);
-        self::assertEquals($response, $exceptionEvent->getResponse());
+
+        $listener->onKernelException($exceptionEvent);
+
+        self::assertSame($response, $exceptionEvent->getResponse());
     }
 
-    public function testOnKernelExceptionWithAuthError(): void
+    public function testOnKernelExceptionIgnoresRequestsOutsideThePath(): void
     {
-        $logger = $this->getMockBuilder(LoggerInterface::class)
-            ->disableOriginalConstructor()
-            ->getMock();
         $exceptionFormat = $this->createMock(ExceptionFormatServiceInterface::class);
-        $response = new Response('test', Response::HTTP_UNAUTHORIZED);
-        $exceptionFormat->expects(self::once())->method('formatExceptionResponse')
-            ->willReturn($response);
-        $logger->expects(self::once())->method('info');
-        $testPathKernelExceptionListener = new TestPathKernelExceptionListener(
-            $exceptionFormat,
-            '/api',
-            true,
-            $logger
+        $exceptionFormat->expects(self::never())->method('formatExceptionResponse');
+        $logger = $this->createMock(LoggerInterface::class);
+        $logger->expects(self::never())->method('log');
+        $listener = new TestPathKernelExceptionListener($exceptionFormat, '/api', true, $logger);
+        $exceptionEvent = new ExceptionEvent(
+            $this->createStub(HttpKernelInterface::class),
+            Request::create('/admin'),
+            HttpKernelInterface::MAIN_REQUEST,
+            new LogicException('Something went wrong')
         );
-        $kernel = $this->createStub(HttpKernelInterface::class);
-        $request = Request::create('/api');
-        $exception = new Exception("testError", Response::HTTP_UNAUTHORIZED);
-        $exceptionEvent = new ExceptionEvent($kernel, $request, HttpKernelInterface::MAIN_REQUEST, $exception);
-        $testPathKernelExceptionListener->onKernelException($exceptionEvent);
-        self::assertEquals($response, $exceptionEvent->getResponse());
+
+        $listener->onKernelException($exceptionEvent);
+
+        self::assertNull($exceptionEvent->getResponse());
     }
 }
