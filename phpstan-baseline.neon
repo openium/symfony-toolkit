@@ -1,0 +1,131 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Strict comparison using \\=\\=\\= between resource\\|string and null will always evaluate to false\\.$#"
+			count: 1
+			path: Controller/AbstractController.php
+
+		-
+			message: "#^Unreachable statement \\- code above always terminates\\.$#"
+			count: 11
+			path: Service/DoctrineExceptionHandlerService.php
+
+		-
+			message: "#^Else branch is unreachable because ternary operator condition is always true\\.$#"
+			count: 1
+			path: Service/ExceptionFormatService.php
+
+		-
+			message: "#^Method Openium\\\\SymfonyToolKitBundle\\\\Service\\\\ExceptionFormatService\\:\\:addKeyToErrorArray\\(\\) has parameter \\$error with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: Service/ExceptionFormatService.php
+
+		-
+			message: "#^Method Openium\\\\SymfonyToolKitBundle\\\\Service\\\\ExceptionFormatService\\:\\:addKeyToErrorArray\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: Service/ExceptionFormatService.php
+
+		-
+			message: "#^Method Openium\\\\SymfonyToolKitBundle\\\\Service\\\\ExceptionFormatService\\:\\:genericExceptionResponse\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: Service/ExceptionFormatService.php
+
+		-
+			message: "#^Property Openium\\\\SymfonyToolKitBundle\\\\Service\\\\ExceptionFormatService\\:\\:\\$jsonKeys type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: Service/ExceptionFormatService.php
+
+		-
+			message: "#^Return type \\(array\\) of method Openium\\\\SymfonyToolKitBundle\\\\Service\\\\ExceptionFormatService\\:\\:genericExceptionResponse\\(\\) should be covariant with return type \\(array\\<int\\|string\\>\\) of method Openium\\\\SymfonyToolKitBundle\\\\Service\\\\ExceptionFormatServiceInterface\\:\\:genericExceptionResponse\\(\\)$#"
+			count: 1
+			path: Service/ExceptionFormatService.php
+
+		-
+			message: "#^Strict comparison using \\!\\=\\= between non\\-empty\\-string and false will always evaluate to true\\.$#"
+			count: 1
+			path: Service/ExceptionFormatService.php
+
+		-
+			message: "#^Method Openium\\\\SymfonyToolKitBundle\\\\Service\\\\ExceptionFormatServiceInterface\\:\\:addKeyToErrorArray\\(\\) has parameter \\$error with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: Service/ExceptionFormatServiceInterface.php
+
+		-
+			message: "#^Method Openium\\\\SymfonyToolKitBundle\\\\Service\\\\ExceptionFormatServiceInterface\\:\\:addKeyToErrorArray\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: Service/ExceptionFormatServiceInterface.php
+
+		-
+			message: "#^Cannot cast mixed to string\\.$#"
+			count: 1
+			path: Utils/ContentExtractorUtils.php
+
+		-
+			message: "#^Method Openium\\\\SymfonyToolKitBundle\\\\Utils\\\\ContentExtractorUtils\\:\\:checkKeyIsString\\(\\) has parameter \\$content with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: Utils/ContentExtractorUtils.php
+
+		-
+			message: "#^Method Openium\\\\SymfonyToolKitBundle\\\\Utils\\\\ContentExtractorUtils\\:\\:getArray\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: Utils/ContentExtractorUtils.php
+
+		-
+			message: "#^Method Openium\\\\SymfonyToolKitBundle\\\\Utils\\\\ContentExtractorUtils\\:\\:getArray\\(\\) should return array\\|null but returns mixed\\.$#"
+			count: 1
+			path: Utils/ContentExtractorUtils.php
+
+		-
+			message: "#^Method Openium\\\\SymfonyToolKitBundle\\\\Utils\\\\ContentExtractorUtils\\:\\:getBool\\(\\) should return bool\\|null but returns mixed\\.$#"
+			count: 1
+			path: Utils/ContentExtractorUtils.php
+
+		-
+			message: "#^Method Openium\\\\SymfonyToolKitBundle\\\\Utils\\\\ContentExtractorUtils\\:\\:getFloat\\(\\) should return float\\|null but returns mixed\\.$#"
+			count: 1
+			path: Utils/ContentExtractorUtils.php
+
+		-
+			message: "#^Method Openium\\\\SymfonyToolKitBundle\\\\Utils\\\\ContentExtractorUtils\\:\\:getInt\\(\\) should return int\\|null but returns mixed\\.$#"
+			count: 1
+			path: Utils/ContentExtractorUtils.php
+
+		-
+			message: "#^Only booleans are allowed in a negated boolean, bool\\|null given\\.$#"
+			count: 1
+			path: Utils/ContentExtractorUtils.php
+
+		-
+			message: "#^Parameter \\#1 \\$dateString of static method Openium\\\\SymfonyToolKitBundle\\\\Utils\\\\DateStringUtils\\:\\:getDateTimeFromString\\(\\) expects string, mixed given\\.$#"
+			count: 1
+			path: Utils/ContentExtractorUtils.php
+
+		-
+			message: "#^Call to an undefined method DateTimeInterface\\:\\:setTimezone\\(\\)\\.$#"
+			count: 1
+			path: Utils/DebugUtils.php
+
+		-
+			message: "#^Method Openium\\\\SymfonyToolKitBundle\\\\Utils\\\\DebugUtils\\:\\:formatSqlParam\\(\\) has parameter \\$value with no type specified\\.$#"
+			count: 1
+			path: Utils/DebugUtils.php
+
+		-
+			message: "#^Method Openium\\\\SymfonyToolKitBundle\\\\Utils\\\\DebugUtils\\:\\:formatSqlParam\\(\\) should return string but returns float\\|int\\|string\\.$#"
+			count: 2
+			path: Utils/DebugUtils.php
+
+		-
+			message: "#^Method Openium\\\\SymfonyToolKitBundle\\\\Utils\\\\DebugUtils\\:\\:logDoctrineQuery\\(\\) should return string but returns array\\<int, string\\>\\|string\\|null\\.$#"
+			count: 1
+			path: Utils/DebugUtils.php
+
+		-
+			message: "#^Parameter \\#2 \\$subject of function preg_match_all expects string, string\\|null given\\.$#"
+			count: 1
+			path: Utils/DebugUtils.php
+
+		-
+			message: "#^Parameter \\#3 \\$subject of function preg_replace expects array\\|string, array\\<int, string\\>\\|string\\|null given\\.$#"
+			count: 1
+			path: Utils/DebugUtils.php
