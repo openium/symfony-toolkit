@@ -1,0 +1,106 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Deprecated in PHP 8\\.4\\: Parameter \\#2 \\$name \\(string\\) is implicitly nullable via default value null\\.$#"
+			count: 1
+			path: Command/AbstractCommand.php
+
+		-
+			message: "#^Parameter \\#1 \\$json of function json_decode expects string, string\\|null given\\.$#"
+			count: 1
+			path: Controller/AbstractController.php
+
+		-
+			message: "#^Parameter \\#1 \\$json of method Openium\\\\SymfonyToolKitBundle\\\\Controller\\\\AbstractController\\:\\:extractObjectFromString\\(\\) expects string\\|null, bool\\|float\\|int\\|string\\|null given\\.$#"
+			count: 1
+			path: Controller/AbstractController.php
+
+		-
+			message: "#^Return type \\(Symfony\\\\Component\\\\Config\\\\Definition\\\\Builder\\\\TreeBuilder\\) of method Openium\\\\SymfonyToolKitBundle\\\\DependencyInjection\\\\Configuration\\:\\:getConfigTreeBuilder\\(\\) should be covariant with return type \\(Symfony\\\\Component\\\\Config\\\\Definition\\\\Builder\\\\TreeBuilder\\<'array'\\>\\) of method Symfony\\\\Component\\\\Config\\\\Definition\\\\ConfigurationInterface\\:\\:getConfigTreeBuilder\\(\\)$#"
+			count: 1
+			path: DependencyInjection/Configuration.php
+
+		-
+			message: "#^Instanceof between Openium\\\\SymfonyToolKitBundle\\\\DependencyInjection\\\\Configuration and Symfony\\\\Component\\\\Config\\\\Definition\\\\ConfigurationInterface will always evaluate to true\\.$#"
+			count: 1
+			path: DependencyInjection/OpeniumSymfonyToolKitExtension.php
+
+		-
+			message: "#^Deprecated in PHP 8\\.4\\: Parameter \\#4 \\$previous \\(Exception\\) is implicitly nullable via default value null\\.$#"
+			count: 1
+			path: Exception/ContentExtractorArrayPropertyException.php
+
+		-
+			message: "#^Deprecated in PHP 8\\.4\\: Parameter \\#4 \\$previous \\(Exception\\) is implicitly nullable via default value null\\.$#"
+			count: 1
+			path: Exception/ContentExtractorBooleanPropertyException.php
+
+		-
+			message: "#^Deprecated in PHP 8\\.4\\: Parameter \\#4 \\$previous \\(Exception\\) is implicitly nullable via default value null\\.$#"
+			count: 1
+			path: Exception/ContentExtractorDateFormatException.php
+
+		-
+			message: "#^Deprecated in PHP 8\\.4\\: Parameter \\#4 \\$previous \\(Throwable\\) is implicitly nullable via default value null\\.$#"
+			count: 1
+			path: Exception/ContentExtractorException.php
+
+		-
+			message: "#^Deprecated in PHP 8\\.4\\: Parameter \\#4 \\$previous \\(Exception\\) is implicitly nullable via default value null\\.$#"
+			count: 1
+			path: Exception/ContentExtractorFloatPropertyException.php
+
+		-
+			message: "#^Deprecated in PHP 8\\.4\\: Parameter \\#4 \\$previous \\(Exception\\) is implicitly nullable via default value null\\.$#"
+			count: 1
+			path: Exception/ContentExtractorIntegerPropertyException.php
+
+		-
+			message: "#^Deprecated in PHP 8\\.4\\: Parameter \\#4 \\$previous \\(Exception\\) is implicitly nullable via default value null\\.$#"
+			count: 1
+			path: Exception/ContentExtractorMissingParameterException.php
+
+		-
+			message: "#^Deprecated in PHP 8\\.4\\: Parameter \\#4 \\$previous \\(Exception\\) is implicitly nullable via default value null\\.$#"
+			count: 1
+			path: Exception/ContentExtractorStringPropertyException.php
+
+		-
+			message: "#^Deprecated in PHP 8\\.4\\: Parameter \\#1 \\$previous \\(Exception\\) is implicitly nullable via default value null\\.$#"
+			count: 1
+			path: Exception/InvalidContentFormatException.php
+
+		-
+			message: "#^Deprecated in PHP 8\\.4\\: Parameter \\#1 \\$previous \\(Exception\\) is implicitly nullable via default value null\\.$#"
+			count: 1
+			path: Exception/MissingContentException.php
+
+		-
+			message: "#^Deprecated in PHP 8\\.4\\: Parameter \\#2 \\$message \\(string\\) is implicitly nullable via default value null\\.$#"
+			count: 1
+			path: Service/DoctrineExceptionHandlerService.php
+
+		-
+			message: "#^Method Openium\\\\SymfonyToolKitBundle\\\\Utils\\\\PaginatedResult\\:\\:__construct\\(\\) has parameter \\$data with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: Utils/PaginatedResult.php
+
+		-
+			message: "#^Method Openium\\\\SymfonyToolKitBundle\\\\Utils\\\\PaginatedResult\\:\\:getData\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: Utils/PaginatedResult.php
+
+		-
+			message: "#^Method Openium\\\\SymfonyToolKitBundle\\\\Utils\\\\PaginatedResult\\:\\:setData\\(\\) has parameter \\$data with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: Utils/PaginatedResult.php
+
+		-
+			message: "#^Property Openium\\\\SymfonyToolKitBundle\\\\Utils\\\\PaginatedResult\\:\\:\\$data type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: Utils/PaginatedResult.php
+
+		-
+			message: "#^Property Openium\\\\SymfonyToolKitBundle\\\\Utils\\\\PaginatedResult\\:\\:\\$totalPage \\(int\\) does not accept float\\|int\\.$#"
+			count: 1
+			path: Utils/PaginatedResult.php
