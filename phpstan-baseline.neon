@@ -1,0 +1,71 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Deprecated in PHP 8\\.4\\: Parameter \\#2 \\$name \\(string\\) is implicitly nullable via default value null\\.$#"
+			count: 1
+			path: Command/AbstractCommand.php
+
+		-
+			message: "#^Parameter \\#1 \\$json of method Openium\\\\SymfonyToolKitBundle\\\\Controller\\\\AbstractController\\:\\:extractObjectFromString\\(\\) expects string\\|null, bool\\|float\\|int\\|string\\|null given\\.$#"
+			count: 1
+			path: Controller/AbstractController.php
+
+		-
+			message: "#^Return type \\(Symfony\\\\Component\\\\Config\\\\Definition\\\\Builder\\\\TreeBuilder\\) of method Openium\\\\SymfonyToolKitBundle\\\\DependencyInjection\\\\Configuration\\:\\:getConfigTreeBuilder\\(\\) should be covariant with return type \\(Symfony\\\\Component\\\\Config\\\\Definition\\\\Builder\\\\TreeBuilder\\<'array'\\>\\) of method Symfony\\\\Component\\\\Config\\\\Definition\\\\ConfigurationInterface\\:\\:getConfigTreeBuilder\\(\\)$#"
+			count: 1
+			path: DependencyInjection/Configuration.php
+
+		-
+			message: "#^Instanceof between Openium\\\\SymfonyToolKitBundle\\\\DependencyInjection\\\\Configuration and Symfony\\\\Component\\\\Config\\\\Definition\\\\ConfigurationInterface will always evaluate to true\\.$#"
+			count: 1
+			path: DependencyInjection/OpeniumSymfonyToolKitExtension.php
+
+		-
+			message: "#^Call to an undefined method DateTimeInterface\\:\\:setTimezone\\(\\)\\.$#"
+			count: 1
+			path: Utils/DebugUtils.php
+
+		-
+			message: "#^Method Openium\\\\SymfonyToolKitBundle\\\\Utils\\\\DebugUtils\\:\\:formatSqlParam\\(\\) has parameter \\$value with no type specified\\.$#"
+			count: 1
+			path: Utils/DebugUtils.php
+
+		-
+			message: "#^Method Openium\\\\SymfonyToolKitBundle\\\\Utils\\\\DebugUtils\\:\\:formatSqlParam\\(\\) should return string but returns float\\|int\\|string\\.$#"
+			count: 2
+			path: Utils/DebugUtils.php
+
+		-
+			message: "#^Method Openium\\\\SymfonyToolKitBundle\\\\Utils\\\\DebugUtils\\:\\:logDoctrineQuery\\(\\) should return string but returns array\\<int, string\\>\\|string\\|null\\.$#"
+			count: 1
+			path: Utils/DebugUtils.php
+
+		-
+			message: "#^Parameter \\#2 \\$subject of function preg_match_all expects string, string\\|null given\\.$#"
+			count: 1
+			path: Utils/DebugUtils.php
+
+		-
+			message: "#^Parameter \\#3 \\$subject of function preg_replace expects array\\|string, array\\<int, string\\>\\|string\\|null given\\.$#"
+			count: 1
+			path: Utils/DebugUtils.php
+
+		-
+			message: "#^Method Openium\\\\SymfonyToolKitBundle\\\\Utils\\\\PaginatedResult\\:\\:__construct\\(\\) has parameter \\$data with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: Utils/PaginatedResult.php
+
+		-
+			message: "#^Method Openium\\\\SymfonyToolKitBundle\\\\Utils\\\\PaginatedResult\\:\\:getData\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: Utils/PaginatedResult.php
+
+		-
+			message: "#^Method Openium\\\\SymfonyToolKitBundle\\\\Utils\\\\PaginatedResult\\:\\:setData\\(\\) has parameter \\$data with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: Utils/PaginatedResult.php
+
+		-
+			message: "#^Property Openium\\\\SymfonyToolKitBundle\\\\Utils\\\\PaginatedResult\\:\\:\\$totalPage \\(int\\) does not accept float\\|int\\.$#"
+			count: 1
+			path: Utils/PaginatedResult.php
