@@ -13,8 +13,10 @@ namespace Openium\SymfonyToolKitBundle\EventListener;
 use InvalidArgumentException;
 use Openium\SymfonyToolKitBundle\Service\ExceptionFormatServiceInterface;
 use Psr\Log\LoggerInterface;
+use Psr\Log\LogLevel;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
+use Throwable;
 use UnexpectedValueException;
 
 /**
@@ -62,14 +64,37 @@ class PathKernelExceptionListener implements PathKernelExceptionListenerInterfac
                     $exception->getMessage()
                 )
             );
-            if ($code === Response::HTTP_INTERNAL_SERVER_ERROR) {
-                $this->logger->critical($exception);
-            } elseif ($code !== Response::HTTP_UNAUTHORIZED && $code !== Response::HTTP_NOT_FOUND) {
-                $this->logger->error($exception);
-            } else {
-                $this->logger->info($exception);
-            }
+            // setResponse() stops the event propagation, so Symfony's ErrorListener never gets to
+            // log the exception: log it here, the same way it would have.
+            $this->logException($exception, $response);
             $event->setResponse($response);
         }
+    }
+
+    /**
+     * Logs the exception like Symfony's ErrorListener::logException() does: the throwable goes in
+     * the `exception` context key, so Monolog formatters (JSON, ELK...) get its class, file, line
+     * and stack trace.
+     *
+     * 5xx responses are logged as critical. Every other status (4xx) is logged as a warning: high
+     * enough to reach handlers starting at notice, low enough not to trip a fingers_crossed
+     * handler with an `error` action level on every 401 or 404.
+     */
+    protected function logException(Throwable $exception, Response $response): void
+    {
+        $level = $response->getStatusCode() >= Response::HTTP_INTERNAL_SERVER_ERROR
+            ? LogLevel::CRITICAL
+            : LogLevel::WARNING;
+        $this->logger->log(
+            $level,
+            sprintf(
+                'Uncaught PHP Exception %s: "%s" at %s line %s',
+                get_debug_type($exception),
+                $exception->getMessage(),
+                basename($exception->getFile()),
+                $exception->getLine()
+            ),
+            ['exception' => $exception]
+        );
     }
 }
