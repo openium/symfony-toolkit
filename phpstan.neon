@@ -1,1 +1,17 @@
 includes:
+    - phpstan-baseline.neon
+
+parameters:
+    level: max
+    # DependencyInjection/OpeniumSymfonyToolKitExtension.php carries a now-useless
+    # @phpstan-ignore-next-line, which a baseline cannot absorb.
+    reportUnmatchedIgnoredErrors: false
+    paths:
+        - Command
+        - Controller
+        - DependencyInjection
+        - Entity
+        - EventListener
+        - Exception
+        - Service
+        - Utils
